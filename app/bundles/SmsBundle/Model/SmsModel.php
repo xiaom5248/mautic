@@ -94,6 +94,14 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
     }
 
     /**
+     * @return \Mautic\SmsBundle\Entity\EventRepository
+     */
+    public function getEventRepository()
+    {
+        return $this->em->getRepository("MauticSmsBundle:Event");
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getPermissionBase()
@@ -302,6 +310,8 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
                         'content' => $tokenEvent->getContent(),
                     ];
 
+
+                    //$metadata = true;
                     $metadata = $this->smsApi->sendSms($leadPhoneNumber, $tokenEvent->getContent());
 
                     if (true !== $metadata) {

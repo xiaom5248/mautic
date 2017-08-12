@@ -34,8 +34,58 @@ class SmsQueueCommand extends ModeratedCommand
         $translator = $container->get('translator');
         $segmentId = $input->getoption('segment-id');
         $messageId = $input->getOption('message-id');
+        $em         = $container->get('doctrine')->getManager();
 
-        $output->write('hello world!');
+        if (!$this->checkRunStatus($input, $output, 1)) {
+            return 0;
+        }
+
+        /** @var \Mautic\SmsBundle\Model\SmsModel $model */
+        $model = $container->get('mautic.sms.model.sms');
+
+        $events = $model->getEventRepository()->getEntities(
+            [
+                'iterator_mode' => true,
+            ]
+        );
+
+        while (($e = $events->next()) !== false) {
+            $e = reset($e);
+
+            $properties = $e->getProperties();
+
+            $output->writeln('<info>'.$translator->trans('mautic.sms.schedule.sending', ['%id%' => $e->getId()]).'</info>');
+
+            //Sending
+            $now = new \DateTime();
+
+            $output->writeln('<info>'.$translator->trans('mautic.sms.schedule.sending', ['%id%' => $e->getId()]).'</info>');
+
+
+            if($e->getTriggerDate() < $now)
+            {
+                //Sending
+                $sms = $e->getSms();
+                $listModel = $container->get('mautic.lead.model.list');
+                $lead_list = $listModel->getEntity($properties['segment_id']);
+                $leads = $listModel->getLeadsByList($lead_list);
+
+                foreach ($leads as $group){
+                    foreach($group as $lead){
+                        $ret = $model->sendSms($sms,$lead);
+                    }
+                }
+                //Delete
+                $model->getEventRepository()->deleteEntity($e);
+            }
+
+            $em->detach($e);
+            unset($e);
+        }
+
+        unset($events);
+
+        $this->completeRun();
 
         return 0;
     }

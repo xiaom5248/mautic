@@ -1368,6 +1368,7 @@ class EmailController extends FormController
         $form = $this->createForm(ExampleSendType::class, ['emails' => ['list' => [$user->getEmail()]]], ['action' => $action]);
         /* @var \Mautic\EmailBundle\Model\EmailModel $model */
 
+
         if ($this->request->getMethod() == 'POST') {
             $isCancelled = $this->isFormCancelled($form);
             $isValid     = $this->isFormValid($form);

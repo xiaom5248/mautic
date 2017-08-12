@@ -63,11 +63,20 @@ class UrlHelper
         try {
             $response = $this->http->get($this->shortnerServiceUrl.urlencode($url));
 
+
+
+            if(strpos($this->shortnerServiceUrl,"sina")){
+                $data = json_decode($response->body,true);
+                return rtrim($data[0]['url_short']);
+            }
+
             if ($response->code === 200) {
                 return rtrim($response->body);
             } elseif ($this->logger) {
                 $this->logger->addWarning("Url shortner failed with code {$response->code}: {$response->body}");
             }
+
+
         } catch (\Exception $exception) {
             if ($this->logger) {
                 $this->logger->addError(
