@@ -5,25 +5,25 @@ Mautic.smsOnLoad = function (container, response) {
     }
 
     if (mQuery('#counter').length) {
-        mQuery(".toolwar").after("<div class='sms-toolbox'><button type='button' class='btn btn-default' data-toggle='modal' data-target='#shortenModal' data-whatever='@getbootstrap'>插入短链接</button></div>");
-
-            mQuery('.short_insert').click(function () {
-            mQuery('#shortenModal').modal('toggle');
-            var url = mQuery("#short-url").val();
-            var request_url = "/s/sms/short?url="+url;
-
-            mQuery.ajax({
-                type:"get",
-                async:false,
-                url:request_url,
-                dataType:"json",
-                success:function (json) {
-                    mQuery("#sms_message").val(mQuery("#sms_message").val()+json[0].url_short);
-                    Mautic.countChar('sms_message','counter');
-                    mQuery("#short-url").val("");
-                }
-            });
-        });
+        // mQuery(".toolwar").after("<div class='sms-toolbox'><button type='button' class='btn btn-default' data-toggle='modal' data-target='#shortenModal' data-whatever='@getbootstrap'>插入短链接</button></div>");
+        //
+        //     mQuery('.short_insert').click(function () {
+        //     mQuery('#shortenModal').modal('toggle');
+        //     var url = mQuery("#short-url").val();
+        //     var request_url = "/s/sms/short?url="+url;
+        //
+        //     mQuery.ajax({
+        //         type:"get",
+        //         async:false,
+        //         url:request_url,
+        //         dataType:"json",
+        //         success:function (json) {
+        //             mQuery("#sms_message").val(mQuery("#sms_message").val()+json[0].url_short);
+        //             Mautic.countChar('sms_message','counter');
+        //             mQuery("#short-url").val("");
+        //         }
+        //     });
+        // });
     }
 };
 

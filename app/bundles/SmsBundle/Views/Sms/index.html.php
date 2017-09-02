@@ -24,17 +24,17 @@ if($permissions['sms:smses:create']){
             'btnText'   => '签名管理',
             'primary'   => true,
     ];
-
-    $pageButtons[] = [
-        'attr'  =>   [
-            'class'       => 'btn btn-default btn-nospin quickadd',
-            'href'        => $view['router']->path('mautic_contact_action', ['objectAction' => 'quickAdd']),
-            'data-header' => $view['translator']->trans('mautic.lead.lead.menu.quickadd'),
-        ],
-        'iconClass' => 'fa fa-comment',
-        'btnText'   => '事务性短信',
-        'primary'   => true,
-    ];
+//
+//    $pageButtons[] = [
+//        'attr'  =>   [
+//            'class'       => 'btn btn-default btn-nospin quickadd',
+//            'href'        => $view['router']->path('mautic_contact_action', ['objectAction' => 'quickAdd']),
+//            'data-header' => $view['translator']->trans('mautic.lead.lead.menu.quickadd'),
+//        ],
+//        'iconClass' => 'fa fa-comment',
+//        'btnText'   => '事务性短信',
+//        'primary'   => true,
+//    ];
 }
 
 $view['slots']->set(

@@ -34,6 +34,19 @@ $customButtons[] =
         'primary'   => true,
     ];
 
+$customButtons[] =
+    [
+        'attr'  =>   [
+            'class'       => 'btn btn-default btn-nospin quickadd',
+            'data-toggle' => 'ajaxmodal',
+            'data-target' => '#MauticSharedModal',
+            'href'        => $view['router']->path('mautic_sms_action', ['objectId' => $sms->getId(),'objectAction' => 'testSend']),
+            'data-header' => $view['translator']->trans('mautic.campaign.sms.send_text_sms'),
+        ],
+        'iconClass' => 'fa fa-comment',
+        'btnText'   => '测试短信',
+        'primary'   => true,
+    ];
 
 if (!$isEmbedded) {
     $view['slots']->set(
@@ -72,6 +85,7 @@ if (!$isEmbedded) {
 );
 }
 ?>
+
 
 <!-- start: box layout -->
 <div class="box-layout">

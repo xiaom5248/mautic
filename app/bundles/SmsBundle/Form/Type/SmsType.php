@@ -12,11 +12,13 @@
 namespace Mautic\SmsBundle\Form\Type;
 
 use Mautic\CoreBundle\Factory\MauticFactory;
+use Mautic\CoreBundle\Form\DataTransformer\IdToEntityModelTransformer;
 use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class SmsType.
@@ -26,6 +28,7 @@ class SmsType extends AbstractType
     private $translator;
     private $em;
     private $request;
+    private $factory;
 
     /**
      * @param MauticFactory $factory
@@ -35,6 +38,7 @@ class SmsType extends AbstractType
         $this->translator = $factory->getTranslator();
         $this->em         = $factory->getEntityManager();
         $this->request    = $factory->getRequest();
+        $this->factory    = $factory;
     }
 
     /**
@@ -51,6 +55,22 @@ class SmsType extends AbstractType
             'text',
             [
                 'label'      => 'mautic.sms.form.internal.name',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => ['class' => 'form-control'],
+            ]
+        );
+
+        $builder->add(
+            'smsType',
+            'choice',
+            [
+                'label'      => '短信类型',
+                'multiple'   => false,
+                'choices'    => [
+                    'template'  =>  '通知短信',
+                    'sale'      =>  '营销型短信',
+                ],
+                'required'   => false,
                 'label_attr' => ['class' => 'control-label'],
                 'attr'       => ['class' => 'form-control'],
             ]
@@ -123,6 +143,33 @@ class SmsType extends AbstractType
                  'bundle' => 'sms',
              ]
          );
+
+        $transformer = new IdToEntityModelTransformer(
+            $this->factory->getEntityManager(),
+            'MauticSmsBundle:Sign'
+        );
+
+        $builder->add(
+            $builder->create(
+            'sign',
+            'sign_list',
+            [
+                'label'      => 'mautic.sms.sign.name',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => [
+                    'class' => 'form-control',
+                ],
+                'required' => true,
+                'multiple' => false,
+                'constraints' => [
+                    new NotBlank(
+                        ['message' => 'mautic.sms.choosesign.notblank']
+                    ),
+                ],
+            ]
+            )
+            ->addModelTransformer($transformer)
+        );
 
         $builder->add(
             'language',

@@ -53,7 +53,7 @@ if (count($items)):
                 );
                 ?>
 
-                <th class="visible-sm visible-md visible-lg col-sms-stats"><?php echo $view['translator']->trans('mautic.sms.timeline.status'); ?></th>
+                <th class="visible-sm visible-md visible-lg col-sms-stats"><?php echo $view['translator']->trans('mautic.sms.timeline.type'); ?></th>
 
                 <th class="visible-sm visible-md visible-lg col-sms-stats"><?php echo $view['translator']->trans('mautic.core.stats'); ?></th>
 
@@ -148,7 +148,7 @@ if (count($items)):
                         <?php echo $item->getMessage(); ?>
                     </td>
                     <td class="visible-md visible-lg">
-                        <?php echo $item->getMessage(); ?>
+                        <?php echo $item->getSmsType() == "template" ? "事务性短信" : "营销型短信"; ?>
                     </td>
                     <td class="visible-sm visible-md visible-lg col-stats">
                         <span class="mt-xs label label-warning"><?php echo $view['translator']->trans(

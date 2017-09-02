@@ -16,9 +16,11 @@ use Joomla\Http\HttpFactory;
 use Mautic\CoreBundle\Controller\AbstractFormController;
 use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\LeadBundle\Controller\EntityContactsTrait;
+use Mautic\LeadBundle\Entity\Lead;
 use Mautic\SmsBundle\Entity\Event;
 use Mautic\SmsBundle\Entity\Sms;
 use Mautic\SmsBundle\Form\Type\SmsPatchSendType;
+use Mautic\SmsBundle\Form\Type\SmsTestSendType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -278,9 +280,9 @@ class SmsController extends AbstractFormController
             ? $this->request->request->get('sms[updateSelect]', false, true)
             : $this->request->get('updateSelect', false);
 
-        if ($updateSelect) {
-            $entity->setSmsType('template');
-        }
+//        if ($updateSelect) {
+//            $entity->setSmsType('template');
+//        }
 
         //create the form
         $form = $model->createForm($entity, $this->get('form.factory'), $action, ['update_select' => $updateSelect]);
@@ -784,9 +786,12 @@ class SmsController extends AbstractFormController
 
                 //立即发送
                 if($time>=$sendTime){
+
+                    /** @var \Mautic\LeadBundle\Model\ListModel $listModel */
                     $listModel = $this->getModel('lead.list');
                     $lead_list = $listModel->getEntity($segment);
                     $leads = $listModel->getLeadsByList($lead_list);
+
 
                     foreach ($leads as $group){
                         foreach($group as $lead){
@@ -852,45 +857,115 @@ class SmsController extends AbstractFormController
         return new Response('', Response::HTTP_NOT_FOUND);
     }
 
+    /**
+     * @param $objectId
+     *
+     * @return JsonResponse|Response
+     */
+    public function testSendAction($objectId)
+    {
+        /** @var \Mautic\SmsBundle\Model\SmsModel $model */
+        $model    = $this->getModel('sms');
+        $sms      = $model->getEntity($objectId);
+        $security = $this->get('mautic.security');
 
-//    public function sendAction($objectId)
-//    {
-//        /** @var \Mautic\SmsBundle\Model\SmsModel $model */
-//        $model    = $this->getModel('sms');
-//        $sms      = $model->getEntity($objectId);
-//
-//        $list_id = intval($this->request->get("segment"));
-//
-//        $listModel = $this->getModel('lead.list');
-//        $lead_list = $listModel->getEntity($list_id);
-//        $leads = $listModel->getLeadsByList($lead_list);
-//
-//        foreach ($leads as $group){
-//            foreach($group as $lead){
-//                $ret = $model->sendSms($sms,$lead);
-//            }
-//        }
-//
-//
-//        $returnUrl = $this->generateUrl('mautic_sms_action', ['objectAction' => 'view', 'objectId' => $sms->getId()]);
-//
-//        $flashes[] = [
-//            'type'    => 'notice',
-//            'msg'     => '发送成功',
-//            'msgVars' => ['%id%' => $objectId],
-//        ];
-//
-//        return $this->postActionRedirect([
-//            'flashes'         => $flashes,
-//            'returnUrl'       => $returnUrl,
-//            'viewParameters'  => [],
-//            'contentTemplate' => 'MauticSmsBundle:Sms:index',
-//            'passthroughVars' => [
-//                'activeLink'    => '#mautic_sms_index',
-//                'mauticContent' => 'sms',
-//            ],
-//        ]);
-//    }
+
+        if($sms === null
+            || (!$security->hasEntityAccess('sms:smses:viewown', 'sms:smses:viewother',$sms->getCreatedBy()))){
+            return $this->postActionRedirect(
+                [
+                    'passthroughVars'   =>  [
+                        'closeModal'    =>  1,
+                        'route'         =>  false,
+                    ]
+                ]
+            );
+        }
+
+        $action = $this->generateUrl('mautic_sms_action',['objectAction'    =>  'testSend','objectId'  =>  $objectId]);
+
+
+        $form = $this->get('form.factory')->create(SmsTestSendType::class, null, ['action' => $action]);
+
+        if($this->request->getMethod() == 'POST') {
+
+
+            $isCancelled = $this->isFormCancelled($form);
+            $isValid     = $this->isFormValid($form);
+            if(!$isCancelled && $isValid) {
+                $mobile = $form['mobile']->getData();
+                /** @var \Mautic\LeadBundle\Model\LeadModel $leadModel */
+                $leadModel = $this->getModel('lead');
+                $lead = $leadModel->getCurrentLead();
+                $lead->setMobile($mobile);
+                $ret = $model->sendSms($sms,$lead);
+            }
+
+            if($isValid || $isCancelled) {
+                return $this->postActionRedirect(
+                    [
+                        'passthroughVars' => [
+                            'closeModal'    => 1,
+                            'route'         => false,
+                        ],
+                    ]
+                );
+            }
+        }
+
+
+        if ($sms !== null && $security->hasEntityAccess('sms:smses:viewown', 'sms:smses:viewother',$sms->getCreatedBy())) {
+            return $this->delegateView([
+                'viewParameters' => [
+                    'sms' => $sms,
+                    'form'  =>  $form->createView(),
+                ],
+                'contentTemplate' => 'MauticSmsBundle:Sms:test_send.html.php',
+                'passthroughVars' => [
+                    'activeLink'    => '#mautic_sms_index',
+                    'mauticContent' => 'sms',
+                    'updateSelect'  => InputHelper::clean($this->request->query->get('updateSelect')),
+                    'route'         => $this->generateUrl(
+                        'mautic_sms_action',
+                        [
+                            'objectAction' => 'testSend',
+                            'objectId'     => $sms->getId(),
+                        ]
+                    ),
+                ],
+            ]);
+        }
+
+        return new Response('', Response::HTTP_NOT_FOUND);
+    }
+
+
+    public function sendAction($objectId)
+    {
+        /** @var \Mautic\SmsBundle\Model\SmsModel $model */
+        $model    = $this->getModel('sms');
+
+
+
+        $returnUrl = $this->generateUrl('mautic_sms_action', ['objectAction' => 'view', 'objectId' => 1]);
+
+        $flashes[] = [
+            'type'    => 'notice',
+            'msg'     => '发送成功',
+            'msgVars' => ['%id%' => $objectId],
+        ];
+
+        return $this->postActionRedirect([
+            'flashes'         => $flashes,
+            'returnUrl'       => $returnUrl,
+            'viewParameters'  => [],
+            'contentTemplate' => 'MauticSmsBundle:Sms:index',
+            'passthroughVars' => [
+                'activeLink'    => '#mautic_sms_index',
+                'mauticContent' => 'sms',
+            ],
+        ]);
+    }
 
     /**
      * @param     $objectId

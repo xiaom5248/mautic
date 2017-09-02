@@ -77,6 +77,7 @@ class DateTimeHelper
         $this->utc   = new \DateTimeZone('UTC');
         $this->local = new \DateTimeZone(date_default_timezone_get());
 
+
         if ($datetime instanceof \DateTime) {
             $this->datetime = $datetime;
             $this->string   = $this->datetime->format($fromFormat);
@@ -137,7 +138,6 @@ class DateTimeHelper
             if (empty($format)) {
                 $format = $this->format;
             }
-
             return $local->format($format);
         }
 

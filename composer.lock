@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1b21ab23752686280a41e571eeed646a",
-    "content-hash": "91b704e41f47b8a3f97718caee085965",
+    "hash": "d114b128a4f9f7b5730ef2f0cd396d95",
+    "content-hash": "6bc8d8966e00bf9b850f293d99311233",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -4001,6 +4001,49 @@
                 "type"
             ],
             "time": "2015-07-25 16:39:46"
+        },
+        {
+            "name": "picqer/sendcloud-php-client",
+            "version": "v2.3.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/picqer/sendcloud-php-client.git",
+                "reference": "ab819da47f1750a6720fd436c54a8d8cf93cece5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/picqer/sendcloud-php-client/ab819da47f1750a6720fd436c54a8d8cf93cece5.zip",
+                "reference": "ab819da47f1750a6720fd436c54a8d8cf93cece5",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Picqer\\Carriers\\SendCloud\\": "src/Picqer/Carriers/SendCloud"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stephan Groen",
+                    "email": "info@picqer.com"
+                }
+            ],
+            "description": "A PHP Client for the SendCloud API",
+            "homepage": "http://github.com/picqer/sendcloud-php-client",
+            "keywords": [
+                "api",
+                "php",
+                "sendcloud"
+            ],
+            "time": "2017-08-17 14:01:01"
         },
         {
             "name": "piwik/device-detector",

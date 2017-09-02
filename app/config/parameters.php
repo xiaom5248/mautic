@@ -93,6 +93,7 @@ foreach ($mauticParams as $k => &$v) {
 // Used for passing params into factory/services
 $container->setParameter('mautic.parameters', $mauticParams);
 
+
 // Set the router URI for CLI
 if (isset($mauticParams['site_url'])) {
     $parts = parse_url($mauticParams['site_url']);

@@ -13,6 +13,7 @@ use Mautic\CoreBundle\Command\ModeratedCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Routing\RequestContext;
 
 class SmsQueueCommand extends ModeratedCommand
 {
@@ -31,6 +32,7 @@ class SmsQueueCommand extends ModeratedCommand
     {
         $processed  =   0;
         $container = $this->getContainer();
+
         $translator = $container->get('translator');
         $segmentId = $input->getoption('segment-id');
         $messageId = $input->getOption('message-id');
@@ -40,8 +42,15 @@ class SmsQueueCommand extends ModeratedCommand
             return 0;
         }
 
+
+
+
+
+
         /** @var \Mautic\SmsBundle\Model\SmsModel $model */
         $model = $container->get('mautic.sms.model.sms');
+
+
 
         $events = $model->getEventRepository()->getEntities(
             [
@@ -53,8 +62,6 @@ class SmsQueueCommand extends ModeratedCommand
             $e = reset($e);
 
             $properties = $e->getProperties();
-
-            $output->writeln('<info>'.$translator->trans('mautic.sms.schedule.sending', ['%id%' => $e->getId()]).'</info>');
 
             //Sending
             $now = new \DateTime();
@@ -84,6 +91,8 @@ class SmsQueueCommand extends ModeratedCommand
         }
 
         unset($events);
+
+
 
         $this->completeRun();
 

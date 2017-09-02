@@ -212,6 +212,7 @@ class ConfigType extends AbstractType
                 'choices' => [
                     'mautic.transport.amazon'       => 'mautic.email.config.mailer_transport.amazon',
                     'mautic.transport.elasticemail' => 'mautic.email.config.mailer_transport.elasticemail',
+                    'mautic.transport.sendcloud'    => 'mautic.email.config.mailer_transport.sendcloud',
                     'gmail'                         => 'mautic.email.config.mailer_transport.gmail',
                     'mautic.transport.mandrill'     => 'mautic.email.config.mailer_transport.mandrill',
                     'mautic.transport.mailjet'      => 'mautic.email.config.mailer_transport.mailjet',

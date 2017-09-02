@@ -68,7 +68,6 @@ class DateHelper extends Helper
             return '';
         } else {
             $this->helper->setDateTime($datetime, $fromFormat, $timezone);
-
             return $this->helper->toLocalString(
                 $this->formats[$type]
             );

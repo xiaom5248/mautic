@@ -10,9 +10,11 @@ namespace Mautic\SmsBundle\Controller;
 
 
 use Mautic\CoreBundle\Controller\AbstractFormController;
+use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\LeadBundle\Controller\EntityContactsTrait;
 use Mautic\SmsBundle\Entity\Sign;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class SignController extends AbstractFormController
 {
@@ -32,8 +34,6 @@ class SignController extends AbstractFormController
         //set some permissions
         $permissions = $this->get('mautic.security')->isGranted(
             [
-                'sms:smses:viewown',
-                'sms:smses:viewother',
                 'sms:smses:create',
                 'sms:smses:editown',
                 'sms:smses:editother',
@@ -59,7 +59,7 @@ class SignController extends AbstractFormController
 
         $filter = ['string' => $search];
 
-        $orderBy    = $session->get('mautic.sms.sign.orderby', 'e.name');
+        $orderBy    = $session->get('mautic.sms.sign.orderby', 's.name');
         $orderByDir = $session->get('mautic.sms.sign.orderbydir', 'DESC');
 
 
@@ -121,7 +121,282 @@ class SignController extends AbstractFormController
      */
     public function newAction($entity = null)
     {
+        /** @var \Mautic\SmsBundle\Model\SignModel $model */
         $model = $this->getModel('sign');
+
+        if (!$entity instanceof Sign) {
+            $entity = $model->getEntity();
+        }
+
+        $method  = $this->request->getMethod();
+        $session = $this->get('session');
+
+        if (!$this->get('mautic.security')->isGranted('sms:smses:create')) {
+            return $this->accessDenied();
+        }
+
+        $page    = $session->get('mautic.sign.page', 1);
+        $action  = $this->generateUrl('mautic_sms_sign_action', ['objectAction' => 'new']);
+
+        $updateSelect = ($method == 'POST')
+            ? $this->request->request->get('sign[updateSelect]', false, true)
+            : $this->request->get('updateSelect', false);
+
+        //create the form
+        $form = $model->createForm($entity, $this->get('form.factory'), $action, ['update_select' => $updateSelect]);
+
+        ////Check for a submitted form and process it
+        if ($method == 'POST') {
+            $valid = false;
+            if (!$cancelled = $this->isFormCancelled($form)) {
+                if ($valid = $this->isFormValid($form)) {
+                    $model->saveEntity($entity);
+
+                    $this->addFlash(
+                        'mautic.core.notice.created',
+                        [
+                            '%name%'        =>  $entity->getName(),
+                            '%menu_link%'   =>  'mautic_sms_sign_index',
+                            '%url%'         => $this->generateUrl(
+                                'mautic_sms_sign_action',
+                                [
+                                    'objectAction'  =>  'edit',
+                                    'objectId'      =>  $entity->getId(),
+                                ]
+                            ),
+                        ]
+                    );
+
+                    if ($form->get('buttons')->get('save')->isClicked()) {
+                        $viewParameters = ['page' => $page];
+                        $returnUrl = $this->generateUrl('mautic_sms_sign_index', $viewParameters);
+                        $template = 'MauticSmsBundle:Sign:index';
+                    } else {
+                        return $this->editAction($entity->getId(), true);
+                    }
+                }
+            } else {
+                $viewParameters = ['page' => $page];
+                $returnUrl      = $this->generateUrl('mautic_sms_sign_index', $viewParameters);
+                $template       = 'MauticSmsBundle:Sign:index';
+                //clear any modified content
+                $session->remove('mautic.sign.'.$entity->getId().'.content');
+            }
+
+            $passthrough = [
+                'activeLink'    => 'mautic_sms_sign_index',
+                'mauticContent' => 'sign',
+            ];
+
+            // Check to see if this is a popup
+            if (isset($form['updateSelect'])) {
+                $template    = false;
+                $passthrough = array_merge(
+                    $passthrough,
+                    [
+                        'updateSelect' => $form['updateSelect']->getData(),
+                        'id'           => $entity->getId(),
+                        'name'         => $entity->getName(),
+                        'group'        => $entity->getLanguage(),
+                    ]
+                );
+            }
+
+            if ($cancelled || ($valid && $form->get('buttons')->get('save')->isClicked())) {
+                return $this->postActionRedirect(
+                    [
+                        'returnUrl'       => $returnUrl,
+                        'viewParameters'  => $viewParameters,
+                        'contentTemplate' => $template,
+                        'passthroughVars' => $passthrough,
+                    ]
+                );
+            }
+        }
+
+        return $this->delegateView(
+            [
+                'viewParameters' => [
+                    'form' => $this->setFormTheme($form, 'MauticSmsBundle:Sign:form.html.php', 'MauticSmsBundle:FormTheme\Sign'),
+                    'sign'  => $entity,
+                ],
+                'contentTemplate' => 'MauticSmsBundle:Sign:form.html.php',
+                'passthroughVars' => [
+                    'activeLink'    => '#mautic_sms_sign_index',
+                    'mauticContent' => 'sms',
+                    'updateSelect'  => InputHelper::clean($this->request->query->get('updateSelect')),
+                    'route'         => $this->generateUrl(
+                        'mautic_sms_sign_action',
+                        [
+                            'objectAction' => 'new',
+                        ]
+                    ),
+                ],
+            ]
+        );
     }
+
+    /**
+     * @param      $objectId
+     * @param bool $ignorePost
+     * @param bool $forceTypeSelection
+     *
+     * @return array|\Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function editAction($objectId, $ignorePost = false, $forceTypeSelection = false)
+    {
+        /** @var \Mautic\SmsBundle\Model\SignModel $model */
+        $model   = $this->getModel('sign');
+        $method  = $this->request->getMethod();
+        $entity  = $model->getEntity($objectId);
+        $session = $this->get('session');
+        $page    = $session->get('mautic.sign.page', 1);
+
+        //set the return URL
+        $returnUrl = $this->generateUrl('mautic_sms_sign_index', ['page' => $page]);
+
+        $postActionVars = [
+            'returnUrl'       => $returnUrl,
+            'viewParameters'  => ['page' => $page],
+            'contentTemplate' => 'MauticSmsBundle:Sign:index',
+            'passthroughVars' => [
+                'activeLink'    => 'mautic_sms_sign_index',
+                'mauticContent' => 'sign',
+            ],
+        ];
+
+        //not found
+        if ($entity === null) {
+            return $this->postActionRedirect(
+                array_merge(
+                    $postActionVars,
+                    [
+                        'flashes' => [
+                            [
+                                'type'    => 'error',
+                                'msg'     => 'mautic.sms.error.notfound',
+                                'msgVars' => ['%id%' => $objectId],
+                            ],
+                        ],
+                    ]
+                )
+            );
+        } elseif (!$this->get('mautic.security')->hasEntityAccess(
+            'sms:smses:viewown',
+            'sms:smses:viewother',
+            $entity->getCreatedBy()
+        )
+        ) {
+            return $this->accessDenied();
+        } elseif ($model->isLocked($entity)) {
+            //deny access if the entity is locked
+            return $this->isLocked($postActionVars, $entity, 'sign');
+        }
+
+        //Create the form
+        $action = $this->generateUrl('mautic_sms_sign_action', ['objectAction' => 'edit', 'objectId' => $objectId]);
+
+        $updateSelect = ($method == 'POST')
+            ? $this->request->request->get('sign[updateSelect]', false, true)
+            : $this->request->get('updateSelect', false);
+
+        $form = $model->createForm($entity, $this->get('form.factory'), $action, ['update_select' => $updateSelect]);
+
+        ///Check for a submitted form and process it
+        if (!$ignorePost && $method == 'POST') {
+            $valid = false;
+            if (!$cancelled = $this->isFormCancelled($form)) {
+                if ($valid = $this->isFormValid($form)) {
+                    //form is valid so process the data
+                    $model->saveEntity($entity, $form->get('buttons')->get('save')->isClicked());
+
+                    $this->addFlash(
+                        'mautic.core.notice.updated',
+                        [
+                            '%name%'      => $entity->getName(),
+                            '%menu_link%' => 'mautic_sms_sign_index',
+                            '%url%'       => $this->generateUrl(
+                                'mautic_sms_sign_action',
+                                [
+                                    'objectAction' => 'edit',
+                                    'objectId'     => $entity->getId(),
+                                ]
+                            ),
+                        ],
+                        'warning'
+                    );
+                }
+            } else {
+                //clear any modified content
+                $session->remove('mautic.sign.'.$objectId.'.content');
+                //unlock the entity
+                $model->unlockEntity($entity);
+            }
+
+            $passthrough = [
+                'activeLink'    => 'mautic_sms_sign_index',
+                'mauticContent' => 'sign',
+            ];
+
+            $template = 'MauticSmsBundle:Sign:index';
+
+            // Check to see if this is a popup
+            if (isset($form['updateSelect'])) {
+                $template    = false;
+                $passthrough = array_merge(
+                    $passthrough,
+                    [
+                        'updateSelect' => $form['updateSelect']->getData(),
+                        'id'           => $entity->getId(),
+                        'name'         => $entity->getName(),
+                        'group'        => $entity->getLanguage(),
+                    ]
+                );
+            }
+
+            if ($cancelled || ($valid && $form->get('buttons')->get('save')->isClicked())) {
+                $viewParameters = ['page' => $page];
+
+                return $this->postActionRedirect(
+                    array_merge(
+                        $postActionVars,
+                        [
+                            'returnUrl'       => $this->generateUrl('mautic_sms_sign_index', $viewParameters),
+                            'viewParameters'  => $viewParameters,
+                            'contentTemplate' => $template,
+                            'passthroughVars' => $passthrough,
+                        ]
+                    )
+                );
+            }
+        } else {
+            //lock the entity
+            $model->lockEntity($entity);
+        }
+
+        return $this->delegateView(
+            [
+                'viewParameters' => [
+                    'form'               => $this->setFormTheme($form, 'MauticSmsBundle:Sign:form.html.php', 'MauticSmsBundle:FormTheme\Sign'),
+                    'sign'                => $entity,
+                    'forceTypeSelection' => $forceTypeSelection,
+                ],
+                'contentTemplate' => 'MauticSmsBundle:Sign:form.html.php',
+                'passthroughVars' => [
+                    'activeLink'    => '#mautic_sms_sign_index',
+                    'mauticContent' => 'sign',
+                    'updateSelect'  => InputHelper::clean($this->request->query->get('updateSelect')),
+                    'route'         => $this->generateUrl(
+                        'mautic_sms_sign_action',
+                        [
+                            'objectAction' => 'edit',
+                            'objectId'     => $entity->getId(),
+                        ]
+                    ),
+                ],
+            ]
+        );
+    }
+
 
 }

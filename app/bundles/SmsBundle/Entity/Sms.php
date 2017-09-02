@@ -74,6 +74,11 @@ class Sms extends FormEntity
     private $category;
 
     /**
+     * @var \Mautic\SmsBundle\Entity\Sign
+     */
+    private $sign;
+
+    /**
      * @var ArrayCollection
      */
     private $lists;
@@ -170,6 +175,10 @@ class Sms extends FormEntity
             ->cascadePersist()
             ->fetchExtraLazy()
             ->build();
+
+        $builder->createManyToOne('sign','Mautic\SmsBundle\Entity\Sign')
+            ->addJoinColumn('sign_id', 'id', true, false, 'SET NULL')
+            ->build();
     }
 
     /**
@@ -233,6 +242,7 @@ class Sms extends FormEntity
                     'message',
                     'language',
                     'category',
+                    'sign'
                 ]
             )
             ->addProperties(
@@ -255,7 +265,7 @@ class Sms extends FormEntity
         $getter  = 'get'.ucfirst($prop);
         $current = $this->$getter();
 
-        if ($prop == 'category' || $prop == 'list') {
+        if ($prop == 'category' || $prop == 'list' || $prop == 'sign') {
             $currentId = ($current) ? $current->getId() : '';
             $newId     = ($val) ? $val->getId() : null;
             if ($currentId != $newId) {
@@ -344,6 +354,27 @@ class Sms extends FormEntity
 
         return $this;
     }
+
+    /**
+     * @return Sign
+     */
+    public function getSign()
+    {
+        return $this->sign;
+    }
+
+    /**
+     * @param Sign $sign
+     */
+    public function setSign($sign)
+    {
+        $this->isChanged('sign', $sign);
+        $this->sign = $sign;
+
+        return $this;
+    }
+
+
 
     /**
      * @return string

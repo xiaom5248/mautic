@@ -36,7 +36,7 @@ class DateRangeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $humanFormat = 'M j, Y';
+        $humanFormat = 'Y-m-d';
 
         $dateFrom = (empty($options['data']['date_from']))
             ?

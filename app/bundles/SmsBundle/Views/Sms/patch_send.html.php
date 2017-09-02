@@ -12,7 +12,7 @@
 
 ?>
 <blockquote>
-    <p><?=$sms->getMessage()?></p>
+    <p>【<?=$sms->getSign()->getName()?>】<?=$sms->getMessage()?></p>
 </blockquote>
 
 <?php

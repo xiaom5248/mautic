@@ -14,6 +14,7 @@ use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class SignType extends AbstractType
 {
@@ -47,16 +48,18 @@ class SignType extends AbstractType
             ]
         );
 
-        $builder->add(
-            'description',
-            'textarea',
-            [
-                'label'     =>  'mautic.sms.form.internal.description',
-                'label_attr'=>  ['class' => 'control-label'],
-                'attr'      =>  ['class' => 'form-control'],
-                'required'  =>  false,
-            ]
-        );
+//        $builder->add(
+//            'description',
+//            'textarea',
+//            [
+//                'label'     =>  'mautic.sms.form.internal.description',
+//                'label_attr'=>  ['class' => 'control-label'],
+//                'attr'      =>  ['class' => 'form-control'],
+//                'required'  =>  false,
+//            ]
+//        );
+
+
 
         $builder->add('buttons','form_buttons');
 
@@ -70,5 +73,21 @@ class SignType extends AbstractType
             );
         }
 
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(
+            [
+                'data_class'    => 'Mautic\SmsBundle\Entity\Sign',
+            ]
+        );
+
+        $resolver->setOptional(['update_select']);
+    }
+
+    public function getName()
+    {
+        return 'sign';
     }
 }

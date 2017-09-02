@@ -41,6 +41,8 @@ class EmayIntegration extends AbstractIntegration
         return [
             'username'  =>  'mautic.sms.config.form.sms.username',
             'password'  =>  'mautic.sms.config.form.sms.password',
+            'username2' =>  '营销短信账号',
+            'password2' =>  '营销短信密码',
         ];
     }
 

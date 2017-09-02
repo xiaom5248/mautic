@@ -110,4 +110,9 @@ class TwilioApi extends AbstractSmsApi
             return $e->getMessage();
         }
     }
+
+    public function getMo()
+    {
+        // TODO: Implement getMo() method.
+    }
 }

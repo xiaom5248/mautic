@@ -26,6 +26,8 @@ class EmayApi extends AbstractSmsApi
      */
     protected $logger;
 
+    protected $keys;
+
 
     /**
      * EmayApi constructor.
@@ -42,6 +44,7 @@ class EmayApi extends AbstractSmsApi
 
         if($integration && $integration->getIntegrationSettings()->getIsPublished()) {
             $keys = $integration->getDecryptedApiKeys();
+            $this->keys = $keys;
 
             $config =  [
                 'gwUrl' => 'http://hprpt2.eucp.b2m.cn:8080/sdk/SDKService?wsdl',
@@ -64,16 +67,43 @@ class EmayApi extends AbstractSmsApi
         return $number;
     }
 
-    public function sendSms($number, $content)
+    public function sendSms($number, $content, $type = 1)
     {
+        if ($type == 2) {
+            $config =  [
+                'gwUrl' => 'http://hprpt2.eucp.b2m.cn:8080/sdk/SDKService?wsdl',
+                'serialNumber' => $this->keys['username2'],
+                'password' => $this->keys['password2'],
+                'sessionKey' => $this->keys['password2'],
+            ];
+            $this->client = \Chxj1992\YimeiSms\App\ClientFactory::instance($config);
+
+        }
+
         if($number == null){
             return false;
         }
 
         $ret = $this->client->sendSMS([$number],$content);
+//        dump($ret);
         if($ret == "0")
             return true;
         else
             return $ret;
+    }
+
+    public function getMo()
+    {
+        $moResult = $this->client->getMO();
+     
+        /*     echo "发送者附加码:".$mo->getAddSerial();
+        *      echo "接收者附加码:".$mo->getAddSerialRev();
+        *      echo "通道号:".$mo->getChannelnumber();
+        *      echo "手机号:".$mo->getMobileNumber();
+        *      echo "发送时间:".$mo->getSentTime();
+        *      echo "短信内容:".$mo->getSmsContent();
+        * }
+        */
+        return $moResult;
     }
 }

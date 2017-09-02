@@ -11,6 +11,7 @@ namespace Mautic\SmsBundle\Model;
 
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\SmsBundle\Entity\Sign;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class SignModel extends FormModel
 {
@@ -58,6 +59,18 @@ class SignModel extends FormModel
             }
         }
         $this->em->flush();
+    }
+
+    public function createForm($entity, $formFactory, $action = null, $options = [])
+    {
+        if (!$entity instanceof Sign) {
+            throw new MethodNotAllowedHttpException(['Sign']);
+        }
+        if (!empty($action)) {
+            $options['action'] = $action;
+        }
+
+        return $formFactory->create('sign', $entity, $options);
     }
 
 

@@ -67,7 +67,7 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
      * @param MessageQueueModel $messageQueueModel
      * @param AbstractSmsApi    $smsApi
      */
-    public function __construct(TrackableModel $pageTrackableModel, LeadModel $leadModel, MessageQueueModel $messageQueueModel,         AbstractSmsApi $smsApi)
+    public function __construct(TrackableModel $pageTrackableModel, LeadModel $leadModel, MessageQueueModel $messageQueueModel,  AbstractSmsApi $smsApi)
     {
         $this->pageTrackableModel = $pageTrackableModel;
         $this->leadModel          = $leadModel;
@@ -197,6 +197,7 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
     public function sendSms(Sms $sms, $sendTo, $options = [])
     {
         $channel = (isset($options['channel'])) ? $options['channel'] : null;
+        $sms_type = 1;
 
         if ($sendTo instanceof Lead) {
             $sendTo = [$sendTo];
@@ -310,10 +311,13 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
                         'content' => $tokenEvent->getContent(),
                     ];
 
-
+                    //"【{$sms->getSign()->getName()}】 " .
                     //$metadata = true;
-                    $metadata = $this->smsApi->sendSms($leadPhoneNumber, $tokenEvent->getContent());
+                    $smsType = $sms->getSmsType();
+                    if($smsType == 'sale')
+                        $sms_type = 2;
 
+                    $metadata = $this->smsApi->sendSms($leadPhoneNumber,  "【{$sms->getSign()->getName()}】 " . $tokenEvent->getContent(), $sms_type);
                     if (true !== $metadata) {
                         $sendResult['status'] = $metadata;
                     } else {
@@ -336,6 +340,14 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
         }
 
         return $results;
+    }
+
+
+
+    public function getMo()
+    {
+        $ret = $this->smsApi->getMo();
+        return $ret;
     }
 
     /**

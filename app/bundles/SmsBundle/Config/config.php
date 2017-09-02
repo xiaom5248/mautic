@@ -53,6 +53,11 @@ return [
                 'arguments' => 'mautic.factory',
                 'alias'     => 'sms',
             ],
+            'mautic.form.type.sign' => [
+                'class'     => 'Mautic\SmsBundle\Form\Type\SignType',
+                'arguments' => 'mautic.factory',
+                'alias'     => 'sign',
+            ],
             'mautic.form.type.smsconfig' => [
                 'class' => 'Mautic\SmsBundle\Form\Type\ConfigType',
                 'alias' => 'smsconfig',
@@ -66,10 +71,20 @@ return [
                 'class' => 'Mautic\SmsBundle\Form\Type\SmsListType',
                 'alias' => 'sms_list',
             ],
+            'mautic.form.type.sign_list' => [
+                'class' => 'Mautic\SmsBundle\Form\Type\SignListType',
+                'arguments' => 'mautic.factory',
+                'alias' => 'sign_list',
+            ],
             'mautic.form.type.sms_patch_send' => [
                 'class'     =>  'Mautic\SmsBundle\Form\Type\SmsPatchSendType',
                 'arguments' =>  'mautic.factory',
                 'alias'     =>  'smspatch',
+            ],
+            'mautic.form.type.sms_test_send' => [
+                'class'     =>  'Mautic\SmsBundle\Form\Type\SmsTestSendType',
+                'arguments' =>  'mautic.factory',
+                'alias'     =>  'smstest',
             ]
         ],
         'helpers' => [
@@ -106,6 +121,12 @@ return [
                     'mautic.lead.model.lead',
                     'mautic.channel.model.queue',
                     'mautic.sms.api',
+                ],
+            ],
+            'mautic.sign.model.sign' => [
+                'class'     => 'Mautic\SmsBundle\Model\SignModel',
+                'arguments' => [
+
                 ],
             ],
         ],

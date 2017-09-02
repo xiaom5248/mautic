@@ -13,5 +13,25 @@ use Mautic\CoreBundle\Entity\CommonRepository;
 
 class SignRepository extends CommonRepository
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getEntities(array $args = [])
+    {
+        $q = $this
+            ->createQueryBuilder($this->getTableAlias());
+
+        $args['qb'] = $q;
+
+        return parent::getEntities($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTableAlias()
+    {
+        return 's';
+    }
 
 }

@@ -38,7 +38,9 @@ abstract class AbstractSmsApi
      *
      * @return mixed
      */
-    abstract public function sendSms($number, $content);
+    abstract public function sendSms($number, $content,$type = 1);
+
+    abstract public function getMo();
 
     /**
      * Convert a non-tracked url to a tracked url.

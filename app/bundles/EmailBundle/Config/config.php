@@ -330,6 +330,14 @@ return [
                     'setPassword' => ['%mautic.mailer_password%'],
                 ],
             ],
+            'mautic.transport.sendcloud' => [
+                'class'         => 'Mautic\EmailBundle\Swiftmailer\Transport\SendcloudTransport',
+                'serviceAlias'  => 'swiftmailer.mailer.transport.%s',
+                'methodCalls'   => [
+                    'setUsername' => ['%mautic.mailer_user%'],
+                    'setPassword' => ['%mautic.mailer_password%'],
+                ]
+            ],
             'mautic.transport.elasticemail' => [
                 'class'        => 'Mautic\EmailBundle\Swiftmailer\Transport\ElasticemailTransport',
                 'serviceAlias' => 'swiftmailer.mailer.transport.%s',
