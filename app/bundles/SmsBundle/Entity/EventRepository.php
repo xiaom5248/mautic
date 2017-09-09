@@ -38,4 +38,12 @@ class EventRepository extends CommonRepository
 //
 //        return parent::getEntities($args);
 //    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTableAlias()
+    {
+        return 'e';
+    }
 }

@@ -31,7 +31,7 @@ class StageListType extends AbstractType
             'filter' => [
                 'force' => [
                     [
-                        'column' => 's.isPublished',
+                        'column' => 'e.isPublished',
                         'expr'   => 'eq',
                         'value'  => true,
                     ],

@@ -217,7 +217,7 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
             }
         }
 
-        if ($fetchContacts) {
+        if (count($fetchContacts)) {
             $foundContacts = $this->leadModel->getEntities(
                 [
                     'ids' => $fetchContacts,
@@ -228,8 +228,8 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
                 $contacts[$contact->getId()] = $contact;
             }
         }
-        $contactIds = array_keys($contacts);
 
+        $contactIds = array_keys($contacts);
         /** @var DoNotContactRepository $dncRepo */
         $dncRepo = $this->em->getRepository('MauticLeadBundle:DoNotContact');
         $dnc     = $dncRepo->getChannelList('sms', $contactIds);

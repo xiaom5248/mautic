@@ -57,17 +57,8 @@ if (count($items)):
 
                 <th class="visible-sm visible-md visible-lg col-sms-stats"><?php echo $view['translator']->trans('mautic.core.stats'); ?></th>
 
-                <?php
-                echo $view->render(
-                    'MauticCoreBundle:Helper:tableheader.html.php',
-                    [
-                        'sessionVar' => 'sms',
-                        'orderBy'    => 'e.id',
-                        'text'       => 'mautic.core.id',
-                        'class'      => 'visible-md visible-lg col-sms-id',
-                    ]
-                );
-                ?>
+                <th class="visible-sm visible-md visible-lg col-sms-stats">发送详情</th>
+
             </tr>
             </thead>
             <tbody>
@@ -156,7 +147,7 @@ if (count($items)):
                                 ['%count%' => $item->getSentCount(true)]
                             ); ?></span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
+                    <td class="visible-md visible-lg"><a href="<?php echo $view['router']->path('mautic_sms_slist', ['objectId' => $item->getId(),'page' => 1]); ?>">详情</a></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

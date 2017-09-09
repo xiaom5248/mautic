@@ -149,6 +149,10 @@ return [
                 'path'       => '/sms/{objectAction}/{objectId}',
                 'controller' => 'MauticSmsBundle:Sms:execute',
             ],
+            'mautic_sms_slist' => [
+                'path'       => '/sms/view/{objectId}/slist/{page}',
+                'controller' => 'MauticSmsBundle:Sms:slist',
+            ],
             'mautic_sms_contacts' => [
                 'path'       => '/sms/view/{objectId}/contact/{page}',
                 'controller' => 'MauticSmsBundle:Sms:contacts',

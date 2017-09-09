@@ -84,6 +84,7 @@ class EmayApi extends AbstractSmsApi
             return false;
         }
 
+//        $ret = "0";
         $ret = $this->client->sendSMS([$number],$content);
 //        dump($ret);
         if($ret == "0")

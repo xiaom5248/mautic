@@ -15,6 +15,7 @@ use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CampaignBundle\Entity\LeadEventLog;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\LeadBundle\Entity\Lead as Contact;
+use Mautic\LeadBundle\Entity\LeadList;
 
 class Event
 {
@@ -68,6 +69,11 @@ class Event
     private $triggerInterval = 0;
 
     /**
+     * @var int
+     */
+    private $sendCount = 0;
+
+    /**
      * @var string
      */
     private $triggerIntervalUnit;
@@ -106,6 +112,12 @@ class Event
      * @var ArrayCollection
      */
     private $log;
+
+    /**
+     * @var int
+     */
+    private $status;
+
 
 
     /**
@@ -156,12 +168,17 @@ class Event
             ->columnName('event_order')
             ->build();
 
+        $builder->createField('sendCount', 'integer')
+            ->columnName('send_count')
+            ->build();
+
         $builder->addField('properties', 'array');
 
         $builder->createField('triggerDate', 'datetime')
             ->columnName('trigger_date')
             ->nullable()
             ->build();
+
 
         $builder->createField('triggerInterval', 'integer')
             ->columnName('trigger_interval')
@@ -207,6 +224,11 @@ class Event
             ->nullable()
             ->build();
 
+        $builder->createField('status', 'integer')
+            ->columnName('status')
+            ->nullable()
+            ->build();
+
     }
 
     /**
@@ -224,6 +246,9 @@ class Event
                     'description',
                     'type',
                     'eventType',
+                    'status',
+                    'status',
+                    'sendCount'
                 ]
             )
             ->addProperties(
@@ -309,7 +334,8 @@ class Event
             if ($currentId != $newId) {
                 $this->changes[$prop] = [$currentId, $newId];
             }
-        } elseif ($this->$prop != $val) {
+        }
+        elseif ($this->$prop != $val) {
             $this->changes[$prop] = [$this->$prop, $val];
         }
     }
@@ -384,6 +410,8 @@ class Event
         return $this->properties;
     }
 
+
+
     /**
      * Set sms.
      *
@@ -407,6 +435,24 @@ class Event
     {
         return $this->sms;
     }
+
+    /**
+     * @return int
+     */
+    public function getSendCount()
+    {
+        return $this->sendCount;
+    }
+
+    /**
+     * @param int $sendCount
+     */
+    public function setSendCount($sendCount)
+    {
+        $this->sendCount = $sendCount;
+    }
+
+
 
     /**
      * Set type.
@@ -684,6 +730,23 @@ class Event
     {
         $this->tempId = $tempId;
     }
+
+    /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param int $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
 
 
 
