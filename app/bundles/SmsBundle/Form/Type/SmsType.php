@@ -64,11 +64,11 @@ class SmsType extends AbstractType
             'smsType',
             'choice',
             [
-                'label'      => '短信类型',
+                'label'            => '短信类型',
                 'multiple'   => false,
                 'choices'    => [
-                    'template'  =>  '通知短信',
-                    'sale'      =>  '营销型短信',
+                    'template'  =>  '事务性短信',
+                    'sale'      =>  '推广性短信',
                 ],
                 'required'   => false,
                 'label_attr' => ['class' => 'control-label'],
@@ -97,6 +97,8 @@ class SmsType extends AbstractType
                     'class' => 'form-control message',
                     'rows'  => 6,
                     'onkeydown' =>  "Mautic.countChar('sms_message','counter');",
+                    'onpaste' =>  "Mautic.countChar('sms_message','counter');",
+                    'oninput' =>  "Mautic.countChar('sms_message','counter');",
                 ],
             ]
         );
@@ -158,6 +160,7 @@ class SmsType extends AbstractType
                 'label_attr' => ['class' => 'control-label'],
                 'attr'       => [
                     'class' => 'form-control',
+                    'onchange' =>  "Mautic.countChar('sms_message','counter');",
                 ],
                 'required' => true,
                 'multiple' => false,

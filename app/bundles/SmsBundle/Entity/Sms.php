@@ -69,6 +69,11 @@ class Sms extends FormEntity
     private $sentCount = 0;
 
     /**
+     * @var int
+     */
+    private $groupSendCount = 0;
+
+    /**
      * @var \Mautic\CategoryBundle\Entity\Category
      **/
     private $category;
@@ -104,6 +109,7 @@ class Sms extends FormEntity
         $this->stats     = new ArrayCollection();
         $this->sentCount = 0;
         $this->readCount = 0;
+        $this->groupSendCount = 0;
 
         parent::__clone();
     }
@@ -151,6 +157,11 @@ class Sms extends FormEntity
         $builder->createField('sentCount', 'integer')
             ->columnName('sent_count')
             ->build();
+
+        $builder->createField('groupSendCount', 'integer')
+            ->columnName('group_send_count')
+            ->build();
+
 
         $builder->addCategory();
 
@@ -475,6 +486,24 @@ class Sms extends FormEntity
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getGroupSendCount()
+    {
+        return $this->groupSendCount;
+    }
+
+    /**
+     * @param int $groupSendCount
+     */
+    public function setGroupSendCount($groupSendCount)
+    {
+        $this->groupSendCount = $groupSendCount;
+    }
+
+
 
     /**
      * @return LeadList

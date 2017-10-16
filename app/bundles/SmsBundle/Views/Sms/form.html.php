@@ -30,7 +30,7 @@ $view->addGlobal('mauticContent', 'sms');
 </div>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" id="sign-box">
         <?php echo $view['form']->row($form['sign']); ?>
     </div>
 </div>

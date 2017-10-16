@@ -36,7 +36,7 @@ if (count($items)):
                     [
                         'sessionVar' => 'sms',
                         'orderBy'    => 'e.name',
-                        'text'       => 'mautic.core.name',
+                        'text'       => '短信名称',
                         'class'      => 'col-sms-name',
                         'default'    => true,
                     ]
@@ -57,17 +57,7 @@ if (count($items)):
 
                 <th class="visible-sm visible-md visible-lg col-sms-stats"><?php echo $view['translator']->trans('mautic.core.stats'); ?></th>
 
-                <?php
-                echo $view->render(
-                    'MauticCoreBundle:Helper:tableheader.html.php',
-                    [
-                        'sessionVar' => 'sms',
-                        'orderBy'    => 'e.id',
-                        'text'       => 'mautic.core.id',
-                        'class'      => 'visible-md visible-lg col-sms-id',
-                    ]
-                );
-                ?>
+                <th class="visible-sm visible-md visible-lg col-sms-stats">操作</th>
             </tr>
             </thead>
             <tbody>
@@ -100,32 +90,52 @@ if (count($items)):
                                 'iconClass' => 'fa fa-share',
                             ],
                         ];
-                        echo $view->render(
-                            'MauticCoreBundle:Helper:list_actions.html.php',
-                            [
-                                'item'            => $item,
-                                'templateButtons' => [
-                                    'edit' => $view['security']->hasEntityAccess(
-                                        $permissions['sms:smses:editown'],
-                                        $permissions['sms:smses:editother'],
-                                        $item->getCreatedBy()
-                                    ),
-                                    'clone'  => $permissions['sms:smses:create'],
-                                    'delete' => $view['security']->hasEntityAccess(
-                                        $permissions['sms:smses:deleteown'],
-                                        $permissions['sms:smses:deleteother'],
-                                        $item->getCreatedBy()
-                                    ),
-                                ],
-                                'routeBase'     => 'sms',
-                                'customButtons' => $customButtons,
-                            ]
-                        );
+                        if($item->getSentCount(true)>0){
+                            echo $view->render(
+                                'MauticCoreBundle:Helper:list_actions.html.php',
+                                [
+                                    'item'            => $item,
+                                    'templateButtons' => [
+                                        'clone'  => $permissions['sms:smses:create'],
+                                        'delete' => $view['security']->hasEntityAccess(
+                                            $permissions['sms:smses:deleteown'],
+                                            $permissions['sms:smses:deleteother'],
+                                            $item->getCreatedBy()
+                                        ),
+                                    ],
+                                    'routeBase'     => 'sms',
+                                    'customButtons' => $customButtons,
+                                ]
+                            );
+                        }else{
+                            echo $view->render(
+                                'MauticCoreBundle:Helper:list_actions.html.php',
+                                [
+                                    'item'            => $item,
+                                    'templateButtons' => [
+                                        'edit' => $view['security']->hasEntityAccess(
+                                            $permissions['sms:smses:editown'],
+                                            $permissions['sms:smses:editother'],
+                                            $item->getCreatedBy()
+                                        ),
+                                        'clone'  => $permissions['sms:smses:create'],
+                                        'delete' => $view['security']->hasEntityAccess(
+                                            $permissions['sms:smses:deleteown'],
+                                            $permissions['sms:smses:deleteother'],
+                                            $item->getCreatedBy()
+                                        ),
+                                    ],
+                                    'routeBase'     => 'sms',
+                                    'customButtons' => $customButtons,
+                                ]
+                            );
+                        }
+
                         ?>
                     </td>
                     <td>
                         <div>
-                            <?php if ($type == 'template'): ?>
+                            <?php if ($type == 'template' || $type == 'sale'): ?>
                                 <?php echo $view->render(
                                     'MauticCoreBundle:Helper:publishstatus_icon.html.php',
                                     ['item' => $item, 'model' => 'sms']
@@ -148,15 +158,15 @@ if (count($items)):
                         <?php echo $item->getMessage(); ?>
                     </td>
                     <td class="visible-md visible-lg">
-                        <?php echo $item->getSmsType() == "template" ? "事务性短信" : "营销型短信"; ?>
+                        <?php echo $item->getSmsType() == "template" ? "事务性短信" : "推广性短信"; ?>
                     </td>
                     <td class="visible-sm visible-md visible-lg col-stats">
-                        <span class="mt-xs label label-warning"><?php echo $view['translator']->trans(
-                                'mautic.sms.stat.sentcount',
-                                ['%count%' => $item->getSentCount(true)]
-                            ); ?></span>
+                        <span class="mt-xs label label-warning">已群发<?php echo $item->getGroupSendCount(); ?>次</span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
+                    <td class="visible-md visible-lg"><a href="<?php echo $view['router']->path(
+                            'mautic_sms_slist',
+                            ['objectId' => $item->getId()]
+                        ); ?>"><span><i class="iconfont">&#xe65c;</i></span></a></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

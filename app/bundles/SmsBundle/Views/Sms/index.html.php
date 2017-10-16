@@ -28,11 +28,22 @@ if($permissions['sms:smses:create']){
 //    $pageButtons[] = [
 //        'attr'  =>   [
 //            'class'       => 'btn btn-default btn-nospin quickadd',
-//            'href'        => $view['router']->path('mautic_contact_action', ['objectAction' => 'quickAdd']),
+//            'href'        => $view['router']->path('mautic_sms_action',  ['objectAction' => 'new', 'objectId' => 'template']),
 //            'data-header' => $view['translator']->trans('mautic.lead.lead.menu.quickadd'),
 //        ],
 //        'iconClass' => 'fa fa-comment',
 //        'btnText'   => '事务性短信',
+//        'primary'   => true,
+//    ];
+//
+//    $pageButtons[] = [
+//        'attr'  =>   [
+//            'class'       => 'btn btn-default btn-nospin quickadd',
+//            'href'        => $view['router']->path('mautic_sms_action', ['objectAction' => 'new', 'objectId' => 'sale']),
+//            'data-header' => $view['translator']->trans('mautic.lead.lead.menu.quickadd'),
+//        ],
+//        'iconClass' => 'fa fa-comment',
+//        'btnText'   => '推广性短信',
 //        'primary'   => true,
 //    ];
 }

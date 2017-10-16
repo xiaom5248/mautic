@@ -259,22 +259,20 @@ class SmsController extends AbstractFormController
     {
         /** @var \Mautic\SmsBundle\Model\SmsModel $model */
         $model = $this->getModel('sms');
-
+        $objectId = $entity;
         if (!$entity instanceof Sms) {
             /** @var \Mautic\SmsBundle\Entity\Sms $entity */
             $entity = $model->getEntity();
         }
-
         $method  = $this->request->getMethod();
         $session = $this->get('session');
 
         if (!$this->get('mautic.security')->isGranted('sms:smses:create')) {
             return $this->accessDenied();
         }
-
         //set the page we came from
         $page   = $session->get('mautic.sms.page', 1);
-        $action = $this->generateUrl('mautic_sms_action', ['objectAction' => 'new']);
+        $action = $this->generateUrl('mautic_sms_action', ['objectAction' => 'new', 'objectId' => $objectId]);
 
         $updateSelect = ($method == 'POST')
             ? $this->request->request->get('sms[updateSelect]', false, true)
@@ -791,13 +789,34 @@ class SmsController extends AbstractFormController
                     $listModel = $this->getModel('lead.list');
                     $lead_list = $listModel->getEntity($segment);
                     $leads = $listModel->getLeadsByList($lead_list);
+                    /** @var \Mautic\LeadBundle\Model\LeadModel $leadModel */
+                    $leadModel = $this->getModel('lead');
 
+                    $sendCount = 0;
 
                     foreach ($leads as $group){
                         foreach($group as $lead){
+                            $sendCount++;
+                            $lead = $leadModel->getEntity($lead['id']);
                             $ret = $model->sendSms($sms,$lead);
                         }
                     }
+
+                    $event = new Event();
+                    $event->setSms($sms);
+                    $event->setName($sms->getName());
+                    $event->setType("message:send");
+                    $event->setEventType("action");
+                    $event->setOrder(0);
+                    $event->setProperties(["segment_id" => $segment,'send' => true]);
+                    $event->setTriggerDate($sendTime);
+                    $event->setTriggerInterval(1);
+                    $event->setTriggerIntervalUnit("d");
+                    $event->setTriggerMode("date");
+                    $event->setTempId("new1234");
+                    $event->setStatus(1);
+                    $event->setSendCount($sendCount);
+                    $model->getEventRepository()->saveEntity($event);
 
                 }else{
 
@@ -813,9 +832,13 @@ class SmsController extends AbstractFormController
                     $event->setTriggerIntervalUnit("d");
                     $event->setTriggerMode("date");
                     $event->setTempId("new1234");
+                    $event->setStatus(0);
 
                     $model->getEventRepository()->saveEntity($event);
                 }
+
+                $sms->setGroupSendCount($sms->getGroupSendCount()+1);
+                $model->saveEntity($sms);
             }
 
             if($isValid || $isCancelled) {
@@ -856,6 +879,141 @@ class SmsController extends AbstractFormController
 
         return new Response('', Response::HTTP_NOT_FOUND);
     }
+
+    /**
+     * @param int $page
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function slistAction($objectId,$page = 1)
+    {
+        /** @var \Mautic\SmsBundle\Model\SmsModel $model */
+        $model = $this->getModel('sms');
+
+        //set some permissions
+        $permissions = $this->get('mautic.security')->isGranted(
+            [
+                'sms:smses:viewown',
+                'sms:smses:viewother',
+                'sms:smses:create',
+                'sms:smses:editown',
+                'sms:smses:editother',
+                'sms:smses:deleteown',
+                'sms:smses:deleteother',
+                'sms:smses:publishown',
+                'sms:smses:publishother',
+            ],
+            'RETURN_ARRAY'
+        );
+
+        if (!$permissions['sms:smses:viewown'] && !$permissions['sms:smses:viewother']) {
+            return $this->accessDenied();
+        }
+
+        if ($this->request->getMethod() == 'POST') {
+            $this->setListFilters();
+        }
+
+        $session = $this->get('session');
+
+        //set limits
+        $limit = $session->get('mautic.sms.limit', $this->coreParametersHelper->getParameter('default_pagelimit'));
+        $start = ($page === 1) ? 0 : (($page - 1) * $limit);
+        if ($start < 0) {
+            $start = 0;
+        }
+
+        $search = $this->request->get('search', $session->get('mautic.sms.filter', ''));
+        $session->set('mautic.sms.filter', $search);
+
+        $filter = ['string' => $search];
+        $filter['force'][] =
+            [
+                'column' => 'e.sms',
+                'expr'   => 'eq',
+                'value'  => $objectId,
+            ];
+
+
+        if (!$permissions['sms:smses:viewother']) {
+            $filter['force'][] =
+                [
+                    'column' => 'e.createdBy',
+                    'expr'   => 'eq',
+                    'value'  => $this->user->getId(),
+                ];
+        }
+
+        $orderBy    = $session->get('mautic.sms.orderby', 'e.name');
+        $orderByDir = $session->get('mautic.sms.orderbydir', 'DESC');
+
+        $smss = $model->getEventRepository()->getEntities([
+            'start'      => $start,
+            'limit'      => $limit,
+            'filter'     => $filter,
+            'orderBy'    => $orderBy,
+            'orderByDir' => $orderByDir,
+        ]);
+
+        foreach ($smss as &$sms)
+        {
+            $segment_id = $sms->getProperties()['segment_id'];
+            $listModel = $this->getModel('lead.list');
+            $lead_list = $listModel->getEntity($segment_id);
+
+            $prop = $sms->getProperties();
+            $prop['segment_name'] = $lead_list->getName();
+            $sms->setProperties($prop);
+        }
+
+        $count = count($smss);
+        if ($count && $count < ($start + 1)) {
+            //the number of entities are now less then the current page so redirect to the last page
+            if ($count === 1) {
+                $lastPage = 1;
+            } else {
+                $lastPage = (floor($count / $limit)) ?: 1;
+            }
+
+            $session->set('mautic.sms.page', $lastPage);
+            $returnUrl = $this->generateUrl('mautic_sms_slist', ['page' => $lastPage]);
+
+            return $this->postActionRedirect([
+                'returnUrl'       => $returnUrl,
+                'viewParameters'  => ['page' => $lastPage],
+                'contentTemplate' => 'MauticSmsBundle:Sms:slist',
+                'passthroughVars' => [
+                    'activeLink'    => '#mautic_sms_slist',
+                    'mauticContent' => 'sms',
+                ],
+            ]);
+        }
+        $session->set('mautic.sms.page', $page);
+
+        $integration = $this->get('mautic.helper.integration')->getIntegrationObject('Emay');
+
+        return $this->delegateView([
+            'viewParameters' => [
+                'searchValue' => $search,
+                'items'       => $smss,
+                'totalItems'  => $count,
+                'page'        => $page,
+                'limit'       => $limit,
+                'tmpl'        => $this->request->get('tmpl', 'index'),
+                'permissions' => $permissions,
+                'model'       => $model,
+                'security'    => $this->get('mautic.security'),
+                'configured'  => ($integration && $integration->getIntegrationSettings()->getIsPublished()),
+            ],
+            'contentTemplate' => 'MauticSmsBundle:Sms:slist.html.php',
+            'passthroughVars' => [
+                'activeLink'    => '#mautic_sms_slist',
+                'mauticContent' => 'sms',
+                'route'         => $this->generateUrl('mautic_sms_slist', ['page' => $page]),
+            ],
+        ]);
+    }
+
 
     /**
      * @param $objectId

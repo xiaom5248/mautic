@@ -80,6 +80,23 @@ Mautic.disabledSmsAction = function(opener) {
 };
 
 Mautic.countChar = function (textAreaName,spanName) {
-    document.getElementById("char").innerHTML= document.getElementById(textAreaName).value.length;
-    document.getElementById("piece").innerHTML = Math.ceil(document.getElementById(textAreaName).value.length / 67);
+    var signSelectedValue = document.querySelector('#sign-box').querySelector('#sms_sign').value;
+    var signLength = 0;
+
+    if (signSelectedValue) {
+        var signText = document.querySelector('#sign-box').querySelector('a.chosen-single>span').innerText;
+        signLength = signText.length + 3;
+    }
+
+    var char = document.getElementById(textAreaName).value;
+    var charLength = char.length;
+    // var strRegex = '((https?|ftps?):\/\/)([a-zA-Z0-9-\.{}]*[a-zA-Z0-9=}]*)(\??)([^\s\]"]+)?';
+    // var result = char.match(strRegex);
+    // console.log(result);
+    // if (char.match(strRegex)) {
+    //     charLength = charLength - result[0].length + 19;
+    // }
+
+    document.getElementById("char").innerHTML= charLength + signLength;
+    document.getElementById("piece").innerHTML = Math.ceil((charLength + signLength) / 67);
 }

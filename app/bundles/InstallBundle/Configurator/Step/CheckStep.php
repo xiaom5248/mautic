@@ -345,7 +345,7 @@ class CheckStep implements StepInterface
      */
     public function toBytes($val)
     {
-        $val = trim($val);
+        $val = (float)trim($val);
 
         if ($val == -1) {
             return PHP_INT_MAX;

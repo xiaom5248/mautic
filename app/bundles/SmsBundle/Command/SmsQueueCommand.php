@@ -44,17 +44,21 @@ class SmsQueueCommand extends ModeratedCommand
 
 
 
-
-
-
         /** @var \Mautic\SmsBundle\Model\SmsModel $model */
         $model = $container->get('mautic.sms.model.sms');
-
-
 
         $events = $model->getEventRepository()->getEntities(
             [
                 'iterator_mode' => true,
+                'filter' => [
+                    'force' => [
+                        [
+                            'column' => 'e.status',
+                            'expr'   => 'eq',
+                            'value'  => 0,
+                        ],
+                    ],
+                ],
             ]
         );
 
@@ -76,14 +80,20 @@ class SmsQueueCommand extends ModeratedCommand
                 $listModel = $container->get('mautic.lead.model.list');
                 $lead_list = $listModel->getEntity($properties['segment_id']);
                 $leads = $listModel->getLeadsByList($lead_list);
+                /** @var \Mautic\LeadBundle\Model\LeadModel $leadModel */
+                $leadModel = $this->getModel('lead');
+                $sendCount = 0;
 
                 foreach ($leads as $group){
                     foreach($group as $lead){
+                        $lead = $leadModel->getEntity($lead['id']);
                         $ret = $model->sendSms($sms,$lead);
+                        $sendCount++;
                     }
                 }
-                //Delete
-                $model->getEventRepository()->deleteEntity($e);
+                $e->setStatus(1);
+                $e->setSendCount($sendCount);
+                $model->getEventRepository()->saveEntity($e);
             }
 
             $em->detach($e);
