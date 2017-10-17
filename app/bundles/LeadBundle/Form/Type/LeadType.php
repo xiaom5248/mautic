@@ -52,60 +52,60 @@ class LeadType extends AbstractType
         $builder->addEventSubscriber(new CleanFormSubscriber());
         $builder->addEventSubscriber(new FormExitSubscriber('lead.lead', $options));
 
-        if (!$options['isShortForm']) {
-            $imageChoices = [
-                'gravatar' => 'Gravatar',
-                'custom'   => 'mautic.lead.lead.field.custom_avatar',
-            ];
-
-            $cache = $options['data']->getSocialCache();
-            if (count($cache)) {
-                foreach ($cache as $key => $data) {
-                    $imageChoices[$key] = $key;
-                }
-            }
-
-            $builder->add(
-                'preferred_profile_image',
-                'choice',
-                [
-                    'choices'    => $imageChoices,
-                    'label'      => 'mautic.lead.lead.field.preferred_profile',
-                    'label_attr' => ['class' => 'control-label'],
-                    'required'   => true,
-                    'multiple'   => false,
-                    'attr'       => [
-                        'class' => 'form-control',
-                    ],
-                ]
-            );
-
-            $builder->add(
-                'custom_avatar',
-                'file',
-                [
-                    'label'      => false,
-                    'label_attr' => ['class' => 'control-label'],
-                    'required'   => false,
-                    'attr'       => [
-                        'class' => 'form-control',
-                    ],
-                    'mapped'      => false,
-                    'constraints' => [
-                        new File(
-                            [
-                                'mimeTypes' => [
-                                    'image/gif',
-                                    'image/jpeg',
-                                    'image/png',
-                                ],
-                                'mimeTypesMessage' => 'mautic.lead.avatar.types_invalid',
-                            ]
-                        ),
-                    ],
-                ]
-            );
-        }
+//        if (!$options['isShortForm']) {
+//            $imageChoices = [
+//                'gravatar' => 'Gravatar',
+//                'custom'   => 'mautic.lead.lead.field.custom_avatar',
+//            ];
+//
+//            $cache = $options['data']->getSocialCache();
+//            if (count($cache)) {
+//                foreach ($cache as $key => $data) {
+//                    $imageChoices[$key] = $key;
+//                }
+//            }
+//
+//            $builder->add(
+//                'preferred_profile_image',
+//                'choice',
+//                [
+//                    'choices'    => $imageChoices,
+//                    'label'      => 'mautic.lead.lead.field.preferred_profile',
+//                    'label_attr' => ['class' => 'control-label'],
+//                    'required'   => true,
+//                    'multiple'   => false,
+//                    'attr'       => [
+//                        'class' => 'form-control',
+//                    ],
+//                ]
+//            );
+//
+//            $builder->add(
+//                'custom_avatar',
+//                'file',
+//                [
+//                    'label'      => false,
+//                    'label_attr' => ['class' => 'control-label'],
+//                    'required'   => false,
+//                    'attr'       => [
+//                        'class' => 'form-control',
+//                    ],
+//                    'mapped'      => false,
+//                    'constraints' => [
+//                        new File(
+//                            [
+//                                'mimeTypes' => [
+//                                    'image/gif',
+//                                    'image/jpeg',
+//                                    'image/png',
+//                                ],
+//                                'mimeTypesMessage' => 'mautic.lead.avatar.types_invalid',
+//                            ]
+//                        ),
+//                    ],
+//                ]
+//            );
+//        }
 
         $this->getFormFields($builder, $options);
 
