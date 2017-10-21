@@ -66,6 +66,8 @@
 !/plugins/MauticSocialBundle
 !/plugins/index.html
 
+!/plugins/WeixinBundle
+
 /themes/*
 !/themes/blank
 !/themes/coffee
