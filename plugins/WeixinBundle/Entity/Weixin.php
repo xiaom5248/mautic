@@ -49,6 +49,7 @@ class Weixin
 
     private $rules;
 
+    private $menus;
 
     public function __construct()
     {
@@ -88,6 +89,13 @@ class Weixin
             ->build();
 
         $builder->createOneToMany('rules', 'Rule')
+            ->setIndexBy('id')
+            ->mappedBy('weixin')
+            ->cascadePersist()
+            ->fetchExtraLazy()
+            ->build();
+
+        $builder->createOneToMany('menus', 'Menu')
             ->setIndexBy('id')
             ->mappedBy('weixin')
             ->cascadePersist()
@@ -257,6 +265,21 @@ class Weixin
         $this->rules = $rules;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMenus()
+    {
+        return $this->menus;
+    }
+
+    /**
+     * @param mixed $menus
+     */
+    public function setMenus($menus)
+    {
+        $this->menus = $menus;
+    }
 
 
 }

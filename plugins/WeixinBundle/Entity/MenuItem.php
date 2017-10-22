@@ -26,17 +26,8 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 /**
  * Class Weixin.
  */
-class Rule
+class MenuItem
 {
-
-    const RULE_TYPE_COMPLET = 'complet';
-    const RULE_TYPE_LIKE = 'like';
-
-    static $ruleTypes = [
-        self::RULE_TYPE_COMPLET => 'weixin.rule.type.complet',
-        self::RULE_TYPE_LIKE => 'weixin.rule.type.like',
-    ];
-
     /**
      * @var int
      */
@@ -44,22 +35,14 @@ class Rule
 
     private $name;
 
-    private $message;
-
-    private $keywords;
-
     private $type;
 
-    private $weixin;
+    private $message;
+
+    private $url;
 
     public function __construct()
     {
-
-    }
-
-    public function getTypeText()
-    {
-        return Rule::$ruleTypes[$this->getType()];
     }
 
     /**
@@ -69,34 +52,26 @@ class Rule
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('weixin_rule')
-            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\RuleRepository');
+        $builder->setTable('weixin_menu_item')
+            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\WeixinMenuItemRepository');
 
         $builder->addId();
-
-        $builder->createField('type', 'string')
-            ->columnName('type')
-            ->build();
 
         $builder->createField('name', 'string')
             ->columnName('name')
             ->build();
 
-        $builder->createOneToMany('keywords', 'Keyword')
-            ->setIndexBy('id')
-            ->mappedBy('rule')
-            ->cascadePersist()
-            ->fetchExtraLazy()
+        $builder->createField('type', 'string')
+            ->columnName('type')
+            ->build();
+
+        $builder->createField('url', 'string')
+            ->columnName('url')
             ->build();
 
         $builder->createManyToOne('message', 'Message')
             ->addJoinColumn('message_id', 'id', false, false, 'CASCADE')
             ->build();
-
-        $builder->createManyToOne('weixin','Weixin')
-            ->addJoinColumn('weixin_id', 'id', false, false, 'CASCADE')
-            ->build();
-
     }
 
     /**
@@ -118,33 +93,17 @@ class Rule
     /**
      * @return mixed
      */
-    public function getMessage()
+    public function getName()
     {
-        return $this->message;
+        return $this->name;
     }
 
     /**
-     * @param mixed $message
+     * @param mixed $name
      */
-    public function setMessage($message)
+    public function setName($name)
     {
-        $this->message = $message;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getKeywords()
-    {
-        return $this->keywords;
-    }
-
-    /**
-     * @param mixed $keywords
-     */
-    public function setKeywords($keywords)
-    {
-        $this->keywords = $keywords;
+        $this->name = $name;
     }
 
     /**
@@ -166,34 +125,35 @@ class Rule
     /**
      * @return mixed
      */
-    public function getWeixin()
+    public function getMessage()
     {
-        return $this->weixin;
+        return $this->message;
     }
 
     /**
-     * @param mixed $weixin
+     * @param mixed $message
      */
-    public function setWeixin($weixin)
+    public function setMessage($message)
     {
-        $this->weixin = $weixin;
+        $this->message = $message;
     }
 
     /**
      * @return mixed
      */
-    public function getName()
+    public function getUrl()
     {
-        return $this->name;
+        return $this->url;
     }
 
     /**
-     * @param mixed $name
+     * @param mixed $url
      */
-    public function setName($name)
+    public function setUrl($url)
     {
-        $this->name = $name;
+        $this->url = $url;
     }
+
 
 
 }

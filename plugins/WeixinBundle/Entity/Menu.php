@@ -26,16 +26,11 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 /**
  * Class Weixin.
  */
-class Rule
+class Menu
 {
 
-    const RULE_TYPE_COMPLET = 'complet';
-    const RULE_TYPE_LIKE = 'like';
-
-    static $ruleTypes = [
-        self::RULE_TYPE_COMPLET => 'weixin.rule.type.complet',
-        self::RULE_TYPE_LIKE => 'weixin.rule.type.like',
-    ];
+    const TYPE_MENU_CATEGORY = 'category';
+    const TYPE_MENU_ITEM = 'item';
 
     /**
      * @var int
@@ -44,22 +39,14 @@ class Rule
 
     private $name;
 
-    private $message;
-
-    private $keywords;
-
-    private $type;
+    private $items;
 
     private $weixin;
 
+    private $type;
+
     public function __construct()
     {
-
-    }
-
-    public function getTypeText()
-    {
-        return Rule::$ruleTypes[$this->getType()];
     }
 
     /**
@@ -69,32 +56,28 @@ class Rule
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('weixin_rule')
-            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\RuleRepository');
+        $builder->setTable('weixin_menu')
+            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\MenuRepository');
 
         $builder->addId();
-
-        $builder->createField('type', 'string')
-            ->columnName('type')
-            ->build();
 
         $builder->createField('name', 'string')
             ->columnName('name')
             ->build();
 
-        $builder->createOneToMany('keywords', 'Keyword')
+        $builder->createField('type', 'string')
+            ->columnName('type')
+            ->build();
+
+        $builder->createManyToOne('weixin', 'Weixin')
+            ->addJoinColumn('weixin_id', 'id', false, false, 'CASCADE')
+            ->build();
+
+        $builder->createOneToMany('items', 'MenuItem')
             ->setIndexBy('id')
-            ->mappedBy('rule')
+            ->mappedBy('menu')
             ->cascadePersist()
             ->fetchExtraLazy()
-            ->build();
-
-        $builder->createManyToOne('message', 'Message')
-            ->addJoinColumn('message_id', 'id', false, false, 'CASCADE')
-            ->build();
-
-        $builder->createManyToOne('weixin','Weixin')
-            ->addJoinColumn('weixin_id', 'id', false, false, 'CASCADE')
             ->build();
 
     }
@@ -118,49 +101,33 @@ class Rule
     /**
      * @return mixed
      */
-    public function getMessage()
+    public function getName()
     {
-        return $this->message;
+        return $this->name;
     }
 
     /**
-     * @param mixed $message
+     * @param mixed $name
      */
-    public function setMessage($message)
+    public function setName($name)
     {
-        $this->message = $message;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getKeywords()
-    {
-        return $this->keywords;
-    }
-
-    /**
-     * @param mixed $keywords
-     */
-    public function setKeywords($keywords)
-    {
-        $this->keywords = $keywords;
+        $this->name = $name;
     }
 
     /**
      * @return mixed
      */
-    public function getType()
+    public function getItems()
     {
-        return $this->type;
+        return $this->items;
     }
 
     /**
-     * @param mixed $type
+     * @param mixed $items
      */
-    public function setType($type)
+    public function setItems($items)
     {
-        $this->type = $type;
+        $this->items = $items;
     }
 
     /**
@@ -182,18 +149,19 @@ class Rule
     /**
      * @return mixed
      */
-    public function getName()
+    public function getType()
     {
-        return $this->name;
+        return $this->type;
     }
 
     /**
-     * @param mixed $name
+     * @param mixed $type
      */
-    public function setName($name)
+    public function setType($type)
     {
-        $this->name = $name;
+        $this->type = $type;
     }
+
 
 
 }
