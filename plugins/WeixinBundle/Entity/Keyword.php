@@ -37,10 +37,17 @@ class Keyword
 
     private $type;
 
+    private $rule;
 
     public function __construct()
     {
     }
+
+    public function getTypeText()
+    {
+        return Rule::$ruleTypes[$this->getType()];
+    }
+
 
     /**
      * @param ORM\ClassMetadata $metadata
@@ -60,6 +67,10 @@ class Keyword
 
         $builder->createField('type', 'string')
             ->columnName('type')
+            ->build();
+
+        $builder->createManyToOne('rule', 'Rule')
+            ->addJoinColumn('rule_id', 'id', false, false, 'CASCADE')
             ->build();
     }
 
@@ -157,7 +168,21 @@ class Keyword
         $this->type = $type;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getRule()
+    {
+        return $this->rule;
+    }
 
+    /**
+     * @param mixed $rule
+     */
+    public function setRule($rule)
+    {
+        $this->rule = $rule;
+    }
 
 
 }

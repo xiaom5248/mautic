@@ -15,6 +15,7 @@ use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
 use MauticPlugin\WeixinBundle\Entity\Message;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\File;
@@ -67,6 +68,18 @@ class MessageType extends AbstractType
 
         $builder->add(
             'image',
+            'image',
+            [
+                'label' => false,
+                'attr'       => [
+                    'data-toggle' => 'msg-type',
+                    'toggle-type' => 'img imgtext',
+                ],
+            ]
+        );
+
+        $builder->add(
+            'file',
             'file',
             [
                 'label'      => 'mautic.weixin.message.img',
@@ -77,7 +90,7 @@ class MessageType extends AbstractType
                     'data-toggle' => 'msg-type',
                     'toggle-type' => 'img imgtext',
                 ],
-                'mapped'      => false,
+                'mapped' => false,
                 'constraints' => [
                     new File(
                         [

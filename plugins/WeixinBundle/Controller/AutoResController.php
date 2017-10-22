@@ -3,9 +3,14 @@
 namespace MauticPlugin\WeixinBundle\Controller;
 
 use Mautic\CoreBundle\Controller\AbstractFormController;
+use MauticPlugin\WeixinBundle\Entity\Keyword;
 use MauticPlugin\WeixinBundle\Entity\Message;
+use MauticPlugin\WeixinBundle\Entity\Rule;
 use MauticPlugin\WeixinBundle\Form\Type\FollowedMessageType;
 use MauticPlugin\WeixinBundle\Form\Type\KeywordMessageType;
+use MauticPlugin\WeixinBundle\Form\Type\KeywordType;
+use MauticPlugin\WeixinBundle\Form\Type\RuleEditType;
+use MauticPlugin\WeixinBundle\Form\Type\RuleType;
 use Symfony\Component\HttpFoundation\Request;
 
 class AutoResController extends BaseController
@@ -23,16 +28,12 @@ class AutoResController extends BaseController
         $followedMessageForm = $this->createForm(FollowedMessageType::class, $currentWeixin, [
             'action' => $this->generateUrl('mautic_weixin_auto_res_followed_message'),
         ]);
-        $keywordMessageForm = $this->createForm(KeywordMessageType::class, $currentWeixin, [
-            'action' => $this->generateUrl('mautic_weixin_auto_res_keyword_message'),
-        ]);
 
         return $this->delegateView([
             'viewParameters' => [
                 'currentWeixin' => $currentWeixin,
                 'module' => $module,
                 'followedMessageForm' => $this->setFormTheme($followedMessageForm, 'WeixinBundle:AutoRes:index.html.php', 'WeixinBundle:FormTheme\Rule'),
-                'keywordMessageForm' => $this->setFormTheme($keywordMessageForm, 'WeixinBundle:AutoRes:index.html.php', 'WeixinBundle:FormTheme\Rule'),
             ],
             'contentTemplate' => 'WeixinBundle:AutoRes:index.html.php',
             'passthroughVars' => [
@@ -53,23 +54,11 @@ class AutoResController extends BaseController
         $followedMessageForm = $this->createForm(FollowedMessageType::class, $currentWeixin, [
             'action' => $this->generateUrl('mautic_weixin_auto_res_followed_message'),
         ]);
-        $keywordMessageForm = $this->createForm(KeywordMessageType::class, $currentWeixin, [
-            'action' => $this->generateUrl('mautic_weixin_auto_res_keyword_message'),
-        ]);
         $followedMessageForm->handleRequest($request);
 
         if ($followedMessageForm->isSubmitted() && $followedMessageForm->isValid()) {
 
-            if (in_array($currentWeixin->getFollowedMessage()->getType(), [Message::MSG_TYPE_IMG, Message::MSG_TYPE_IMGTEXT])) {
-                $file = $currentWeixin->getFollowedMessage()->getImage();
-                $fileName = md5(uniqid()).'.'.$file->guessExtension();
-                $file->move(
-                    $this->getParameter('kernel.root_dir'). '/../uploads',
-                    $fileName
-                );
-                $currentWeixin->getFollowedMessage()->setImage($fileName);
-            }
-
+            $this->handleMessageImage($currentWeixin->getFollowedMessage(), $followedMessageForm->get('followedMessage')->get('file')->getData());
             $em->persist($currentWeixin->getFollowedMessage());
             $em->persist($currentWeixin);
             $em->flush();
@@ -82,7 +71,6 @@ class AutoResController extends BaseController
                 'currentWeixin' => $currentWeixin,
                 'module' => 'followed',
                 'followedMessageForm' => $this->setFormTheme($followedMessageForm, 'WeixinBundle:AutoRes:index.html.php', 'WeixinBundle:FormTheme\Rule'),
-                'keywordMessageForm' => $this->setFormTheme($keywordMessageForm, 'WeixinBundle:AutoRes:index.html.php', 'WeixinBundle:FormTheme\Rule'),
             ],
             'contentTemplate' => 'WeixinBundle:AutoRes:index.html.php',
             'passthroughVars' => [
@@ -91,22 +79,27 @@ class AutoResController extends BaseController
         ]);
     }
 
-    public function keywordAction(Request $request)
+    public function newRuleAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
         $currentWeixin = $this->getCurrentWeixin();
 
-        $followedMessageForm = $this->createForm(FollowedMessageType::class, $currentWeixin, [
-            'action' => $this->generateUrl('mautic_weixin_auto_res_followed_message'),
-        ]);
-        $keywordMessageForm = $this->createForm(KeywordMessageType::class, $currentWeixin, [
-            'action' => $this->generateUrl('mautic_weixin_auto_res_keyword_message'),
-        ]);
+        $rule = new Rule();
 
-        $keywordMessageForm->handleRequest($request);
+        $form = $this->createForm(RuleType::class, $rule);
 
-        if ($keywordMessageForm->isSubmitted() && $keywordMessageForm->isValid()) {
 
-            $this->getDoctrine()->getManager()->flush();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $currentWeixin->addRule($rule);
+            $rule->setWeixin($currentWeixin);
+            $this->handleMessageImage($rule->getMessage(), $form->get('message')->get('file')->getData());
+
+            $em->persist($rule);
+            $em->persist($rule->getMessage());
+            $em->flush();
 
             return $this->redirectToRoute('mautic_weixin_auto_res', ['m' => 'keyword']);
         }
@@ -114,14 +107,117 @@ class AutoResController extends BaseController
         return $this->delegateView([
             'viewParameters' => [
                 'currentWeixin' => $currentWeixin,
-                'module' => 'keyword',
-                'followedMessageForm' => $this->setFormTheme($followedMessageForm, 'WeixinBundle:AutoRes:index.html.php', 'WeixinBundle:FormTheme\Rule'),
-                'keywordMessageForm' => $this->setFormTheme($keywordMessageForm, 'WeixinBundle:AutoRes:index.html.php', 'WeixinBundle:FormTheme\Rule'),
+                'form' => $form->createView(),
             ],
-            'contentTemplate' => 'WeixinBundle:AutoRes:index.html.php',
+            'contentTemplate' => 'WeixinBundle:AutoRes:newRule.html.php',
             'passthroughVars' => [
 
             ],
         ]);
     }
+
+    public function editRuleAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $currentWeixin = $this->getCurrentWeixin();
+
+        $rule = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Rule')->find($id);
+
+        $form = $this->createForm(RuleEditType::class, $rule, ['action' => $this->generateUrl('mautic_weixin_auto_res_edit_rule', ['id' => $id])]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $this->handleMessageImage($rule->getMessage(), $form->get('message')->get('file')->getData());
+            $em->persist($rule->getMessage());
+            $em->flush();
+
+            return $this->redirectToRoute('mautic_weixin_auto_res', ['m' => 'keyword']);
+        }
+
+        return $this->delegateView([
+            'viewParameters' => [
+                'currentWeixin' => $currentWeixin,
+                'form' => $form->createView(),
+            ],
+            'contentTemplate' => 'WeixinBundle:AutoRes:editRule.html.php',
+            'passthroughVars' => [
+
+            ],
+        ]);
+    }
+
+    public function editKeyWordAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $currentWeixin = $this->getCurrentWeixin();
+
+        if (0 == $id) {
+            $keyword = new Keyword();
+            $em->persist($keyword);
+            $ruleId = $request->query->get('ruleId');
+            $rule = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Rule')->find($ruleId);
+            $keyword->setRule($rule);
+        } else {
+            $keyword = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Keyword')->find($id);
+        }
+
+        $form = $this->createForm(KeywordType::class, $keyword);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $em->flush();
+            return $this->redirectToRoute('mautic_weixin_auto_res_edit_rule', ['id' => $keyword->getRule()->getId()]);
+        }
+
+        return $this->delegateView([
+            'viewParameters' => [
+                'currentWeixin' => $currentWeixin,
+                'form' => $form->createView(),
+            ],
+            'contentTemplate' => 'WeixinBundle:AutoRes:editKeyword.html.php',
+            'passthroughVars' => [
+
+            ],
+        ]);
+
+    }
+
+    public function deleteKeyWordAction(Request $request, $id)
+    {
+
+        $em = $this->getDoctrine()->getManager();
+        $keyword = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Keyword')->find($id);
+        $ruleId = $keyword->getRule()->getId();
+        $em->remove($keyword);
+        $em->flush();
+
+        return $this->redirectToRoute('mautic_weixin_auto_res_edit_rule', ['id' => $ruleId]);
+    }
+
+    public function deleteRuleAction(Request $request, $id)
+    {
+
+        $em = $this->getDoctrine()->getManager();
+        $rule = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Rule')->find($id);
+        $em->remove($rule);
+        $em->flush();
+
+        return $this->redirectToRoute('mautic_weixin_auto_res', ['m' => 'keyword']);
+    }
+
+    private function handleMessageImage(Message $message, $file)
+    {
+        if (in_array($message->getMsgType(), [Message::MSG_TYPE_IMG, Message::MSG_TYPE_IMGTEXT])) {
+            $fileName = md5(uniqid()) . '.' . $file->guessExtension();
+            $file->move(
+                $this->getParameter('kernel.root_dir') . '/../uploads',
+                $fileName
+            );
+            $message->setImage('uploads/' . $fileName);
+        }
+    }
+
 }

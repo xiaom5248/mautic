@@ -24,7 +24,7 @@ use Symfony\Component\Form\FormEvent;
 /**
  * Class RoleType.
  */
-class RuleType extends AbstractType
+class KeywordType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -32,8 +32,8 @@ class RuleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
-        $builder->add('name', 'text', [
-            'label' => 'weixin.rule.name',
+        $builder->add('keyword', 'text', [
+            'label' => 'weixin.rule_keyword',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],
             'required'   => true,
@@ -45,42 +45,10 @@ class RuleType extends AbstractType
             'required'   => true,
             'expanded' => true,
         ]);
-        $builder->add('keywords', 'text', [
-            'label' => 'weixin.rule.keywords',
-            'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
-            'required'   => true,
-        ]);
-        $builder->add('message', MessageType::class, [
-            'label' => false,
-            'required'   => false,
-        ]);
-
         $builder->add('save', 'submit', [
             'label' => 'mautic.core.form.save',
             'attr' => ['class' => 'btn btn-success']
         ]);
-
-
-        $builder->addEventListener(FormEvents::SUBMIT, function(FormEvent $event) {
-
-            $rule = $event->getData();
-
-            $keywordsArray = explode(' ', $rule->getKeywords());
-            $keywords = new ArrayCollection();
-            foreach ($keywordsArray as $keywordValue) {
-
-                $keyword = new Keyword();
-                $keyword->setKeyword($keywordValue);
-                $keyword->setRule($rule);
-                $keyword->setType($rule->getType());
-                $keywords->add($keyword);
-            }
-
-            $rule->setKeywords($keywords);
-        });
-
-
     }
 
     /**
@@ -89,7 +57,7 @@ class RuleType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MauticPlugin\WeixinBundle\Entity\Rule',
+            'data_class' => 'MauticPlugin\WeixinBundle\Entity\Keyword',
         ]);
     }
 
@@ -98,6 +66,6 @@ class RuleType extends AbstractType
      */
     public function getName()
     {
-        return 'weixin_rule_new';
+        return 'weixin_rule_keyword';
     }
 }

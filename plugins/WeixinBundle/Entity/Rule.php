@@ -42,6 +42,8 @@ class Rule
      */
     private $id;
 
+    private $name;
+
     private $message;
 
     private $keywords;
@@ -52,6 +54,12 @@ class Rule
 
     public function __construct()
     {
+
+    }
+
+    public function getTypeText()
+    {
+        return Rule::$ruleTypes[$this->getType()];
     }
 
     /**
@@ -70,8 +78,16 @@ class Rule
             ->columnName('type')
             ->build();
 
-        $builder->createField('keywords', 'array')
-            ->columnName('keywords')
+        $builder->createField('name', 'string')
+            ->columnName('name')
+            ->build();
+
+        $builder->createOneToMany('keywords', 'Keyword')
+            ->addJoinColumn('message_id', 'id', false, false, 'CASCADE')
+            ->setIndexBy('id')
+            ->mappedBy('rule')
+            ->cascadePersist()
+            ->fetchExtraLazy()
             ->build();
 
         $builder->createManyToOne('message', 'Message')
@@ -162,6 +178,22 @@ class Rule
     public function setWeixin($weixin)
     {
         $this->weixin = $weixin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
 

@@ -42,7 +42,8 @@ $pageButtons = [];
 
                 <!-- start: tab-content -->
                 <div class="tab-content pa-md">
-                    <div class="tab-pane fade bdr-w-0 <?php if ($module == 'followed') echo 'active in'; ?>" id="followed">
+                    <div class="tab-pane fade bdr-w-0 <?php if ($module == 'followed') echo 'active in'; ?>"
+                         id="followed">
                         <div class="row">
                             <div class="col-md-12">
                                 <?php echo $view['form']->start($followedMessageForm); ?>
@@ -60,27 +61,29 @@ $pageButtons = [];
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade bdr-w-0 <?php if ($module == 'keyword') echo 'active in'; ?>" id="keyword">
+                    <div class="tab-pane fade bdr-w-0 <?php if ($module == 'keyword') echo 'active in'; ?>"
+                         id="keyword">
                         <div class="row">
                             <div class="col-md-12">
-                                <?php echo $view['form']->start($keywordMessageForm); ?>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <?php echo $view['form']->label($keywordMessageForm['rules']); ?>
-                                        <a data-prototype="<?php echo $view->escape($view['form']->row($keywordMessageForm['rules']->vars['prototype'])); ?>"
-                                           class="btn btn-warning btn-xs btn-add-item" href="#"
-                                           onclick="addWeixinRule(this)">
-                                            <?php echo $view['translator']->trans('mautic.core.form.list.additem'); ?>
-                                        </a>
-                                        <?php echo $view['form']->widget($keywordMessageForm['rules']); ?>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <?php echo $view['form']->row($followedMessageForm['save']); ?>
+                                <?php foreach ($currentWeixin->getRules() as $rule): ?>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4><a href="<?php echo $view['router']->path('mautic_weixin_auto_res_edit_rule', ['id' => $rule->getId()]); ?>"><?php echo $rule->getName(); ?></a></h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <p><?php echo $view['translator']->trans('weixin.rule_keyword') ?>
+                                                <?php foreach ($rule->getKeywords() as $keyword): ?>
+                                                    <span><?php echo $keyword->getKeyword(); ?></span>
+                                                <?php endforeach; ?>
+                                            </p>
+                                            <p><?php echo $view['translator']->trans('mautic.weixin.message.msg_type') ?>: <?php echo $rule->getMessage()->getMsgType(); ?></p>
                                         </div>
                                     </div>
-                                </div>
-                                <?php echo $view['form']->end($keywordMessageForm); ?>
+                                <?php endforeach; ?>
+
+                                <a class="btn btn-success"
+                                   href="<?php echo $view['router']->path('mautic_weixin_auto_res_new_rule'); ?>"><i
+                                            class="fa fa-plus"></i><?php echo $view['translator']->trans('weixin.new_rule'); ?></a>
                             </div>
                         </div>
                     </div>
@@ -91,21 +94,12 @@ $pageButtons = [];
 </div>
 
 <script>
-    function addWeixinRule(btn) {
-        var count = mQuery(btn).data('count');
-        var prototype = mQuery(btn).attr('data-prototype');
-        prototype = prototype.replace(/__name__/g, count);
-        mQuery(prototype).appendTo(mQuery('#weixin_keyword_message_rules'));
-        count++;
-        mQuery(btn).data('count', count);
-    }
 
     (function () {
-        mQuery(document).ready(function() {
-            mQuery('#weixin_followed_message_followedMessage_msgType').on('change', function() {
-                var container = mQuery('#weixin_followed_message_followedMessage');
-                container.find('[data-toggle="msg-type"]').closest('.row').hide();
-                container.find('[toggle-type~="'+mQuery(this).val()+'"]').closest('.row').show();
+        mQuery(document).ready(function () {
+            mQuery('.msg-type').on('change', function () {
+                mQuery('[data-toggle="msg-type"]').closest('.row').hide();
+                mQuery('[toggle-type~="' + mQuery(this).val() + '"]').closest('.row').show();
 
             }).trigger('change');
         });

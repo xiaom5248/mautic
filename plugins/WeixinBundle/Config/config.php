@@ -25,11 +25,26 @@ return [
                 'path'         => '/weixin/auto-res/followed-message',
                 'controller'   => 'WeixinBundle:AutoRes:followedMessage',
             ],
-            'mautic_weixin_auto_res_keyword_message' => [
-                'path'         => '/weixin/auto-res/keyword-message',
-                'controller'   => 'WeixinBundle:AutoRes:keywordMessage',
+            'mautic_weixin_auto_res_new_rule' => [
+                'path'         => '/weixin/auto-res/rule/new',
+                'controller'   => 'WeixinBundle:AutoRes:newRule',
             ],
-
+            'mautic_weixin_auto_res_edit_rule' => [
+                'path'         => '/weixin/auto-res/rule/{id}/edit',
+                'controller'   => 'WeixinBundle:AutoRes:editRule',
+            ],
+            'mautic_weixin_auto_res_edit_keyword' => [
+                'path'         => '/weixin/auto-res/keyword/{id}/edit',
+                'controller'   => 'WeixinBundle:AutoRes:editKeyword',
+            ],
+            'mautic_weixin_auto_res_delete_keyword' => [
+                'path'         => '/weixin/auto-res/keyword/{id}/delete',
+                'controller'   => 'WeixinBundle:AutoRes:deleteKeyword',
+            ],
+            'mautic_weixin_auto_res_delete_rule' => [
+                'path'         => '/weixin/auto-res/rule/{id}/delete',
+                'controller'   => 'WeixinBundle:AutoRes:deleteRule',
+            ],
             'mautic_weixin_menu' => [
                 'path'         => '/weixin/menu',
                 'controller'   => 'WeixinBundle:Menu:index',

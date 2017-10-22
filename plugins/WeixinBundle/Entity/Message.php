@@ -58,6 +58,8 @@ class Message
 
     private $articleUrl;
 
+    private $image;
+
 
     public function __construct()
     {
@@ -106,6 +108,11 @@ class Message
 
         $builder->createField('articleUrl', 'string')
             ->columnName('article_url')
+            ->nullable()
+            ->build();
+
+        $builder->createField('image', 'string')
+            ->columnName('image')
             ->nullable()
             ->build();
     }
@@ -274,6 +281,22 @@ class Message
     public function setArticleUrl($articleUrl)
     {
         $this->articleUrl = $articleUrl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param mixed $image
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
     }
 
 

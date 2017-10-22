@@ -280,6 +280,10 @@ return [
                 'class' => 'Mautic\CoreBundle\Form\Type\SlotType',
                 'alias' => 'slot',
             ],
+            'mautic.form.type.image' => [
+                'class' => 'Mautic\CoreBundle\Form\Type\ImageType',
+                'alias' => 'image',
+            ],
             'mautic.form.type.slot.button' => [
                 'class' => 'Mautic\CoreBundle\Form\Type\SlotButtonType',
                 'alias' => 'slot_button',
