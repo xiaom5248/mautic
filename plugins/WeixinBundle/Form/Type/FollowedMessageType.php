@@ -31,6 +31,11 @@ class FollowedMessageType extends AbstractType
         $builder->add('followedMessage', MessageType::class, [
             'label'      => 'weixin.followed_message',
         ]);
+
+        $builder->add('save', 'submit', [
+            'label' => 'mautic.core.form.save',
+            'attr' => ['class' => 'btn btn-success']
+        ]);
     }
 
     /**

@@ -33,35 +33,35 @@ class MessageType extends AbstractType
         $builder->add('msgType', 'choice', [
             'label'      => 'mautic.weixin.message.msg_type',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => ['class' => 'form-control msg-type'],
             'choices'    => Message::$msgTypes
         ]);
 
         $builder->add('content', 'textarea', [
             'label'      => 'mautic.weixin.message.content',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => ['class' => 'form-control', 'data-toggle' => 'msg-type', 'toggle-type' => 'text'],
             'required'   => false,
         ]);
 
         $builder->add('articleTitle', 'text', [
             'label'      => 'mautic.weixin.message.article_title',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control editor'],
+            'attr'       => ['class' => 'form-control', 'data-toggle' => 'msg-type', 'toggle-type' => 'imgtext'],
             'required'   => false,
         ]);
 
         $builder->add('articleDesc', 'text', [
             'label'      => 'mautic.weixin.message.article_desc',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control editor'],
+            'attr'       => ['class' => 'form-control', 'data-toggle' => 'msg-type', 'toggle-type' => 'imgtext'],
             'required'   => false,
         ]);
 
         $builder->add('articleUrl', 'text', [
             'label'      => 'mautic.weixin.message.article_url',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control editor'],
+            'attr'       => ['class' => 'form-control', 'data-toggle' => 'msg-type', 'toggle-type' => 'imgtext'],
             'required'   => false,
         ]);
 
@@ -74,6 +74,8 @@ class MessageType extends AbstractType
                 'required'   => false,
                 'attr'       => [
                     'class' => 'form-control',
+                    'data-toggle' => 'msg-type',
+                    'toggle-type' => 'img imgtext',
                 ],
                 'mapped'      => false,
                 'constraints' => [

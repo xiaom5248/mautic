@@ -43,10 +43,8 @@ class RuleType extends AbstractType
             'attr'       => ['class' => 'form-control'],
             'required'   => false,
         ]);
-        $builder->add('followedMessage', MessageType::class, [
+        $builder->add('message', MessageType::class, [
             'label' => 'weixin.rule.message',
-            'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
             'required'   => false,
         ]);
 

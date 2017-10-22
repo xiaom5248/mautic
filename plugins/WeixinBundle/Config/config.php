@@ -21,6 +21,27 @@ return [
                 'path'         => '/weixin/auto-res',
                 'controller'   => 'WeixinBundle:AutoRes:index',
             ],
+            'mautic_weixin_auto_res_followed_message' => [
+                'path'         => '/weixin/auto-res/followed-message',
+                'controller'   => 'WeixinBundle:AutoRes:followedMessage',
+            ],
+            'mautic_weixin_auto_res_keyword_message' => [
+                'path'         => '/weixin/auto-res/keyword-message',
+                'controller'   => 'WeixinBundle:AutoRes:keywordMessage',
+            ],
+
+            'mautic_weixin_menu' => [
+                'path'         => '/weixin/menu',
+                'controller'   => 'WeixinBundle:Menu:index',
+            ],
+            'mautic_weixin_qrcode' => [
+                'path'         => '/weixin/qrcode',
+                'controller'   => 'WeixinBundle:Qrcode:index',
+            ],
+            'mautic_weixin_article' => [
+                'path'         => '/weixin/article',
+                'controller'   => 'WeixinBundle:Article:index',
+            ],
         ],
     ],
     'menu' => [

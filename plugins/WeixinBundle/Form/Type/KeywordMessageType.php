@@ -36,6 +36,11 @@ class KeywordMessageType extends AbstractType
             'allow_delete'   => true,
             'prototype'      => true,
         ]);
+
+        $builder->add('save', 'submit', [
+            'label' => 'mautic.core.form.save',
+            'attr' => ['class' => 'btn btn-success']
+        ]);
     }
 
     /**

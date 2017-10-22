@@ -30,11 +30,11 @@ $pageButtons = [];
         <div class="row">
             <div class="col-xs-12">
                 <ul class="bg-auto nav nav-tabs pr-md pl-md">
-                    <li class="active">
+                    <li class="<?php if ($module == 'followed') echo 'active in'; ?>">
                         <a href="#followed" role="tab" data-toggle="tab">
                             被添加自动回复 </a>
                     </li>
-                    <li class="">
+                    <li class="<?php if ($module == 'keyword') echo 'active in'; ?>">
                         <a href="#keyword" role="tab" data-toggle="tab">
                             关键词自动回复 </a>
                     </li>
@@ -42,23 +42,28 @@ $pageButtons = [];
 
                 <!-- start: tab-content -->
                 <div class="tab-content pa-md">
-                    <div class="tab-pane fade bdr-w-0 active in" id="followed">
+                    <div class="tab-pane fade bdr-w-0 <?php if ($module == 'followed') echo 'active in'; ?>" id="followed">
                         <div class="row">
                             <div class="col-md-12">
-                                <?php $view['form']->start($followedMessageForm); ?>
+                                <?php echo $view['form']->start($followedMessageForm); ?>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <?php echo $view['form']->row($followedMessageForm['followedMessage']); ?>
                                     </div>
                                 </div>
-                                <?php $view['form']->end($followedMessageForm); ?>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <?php echo $view['form']->row($followedMessageForm['save']); ?>
+                                    </div>
+                                </div>
+                                <?php echo $view['form']->end($followedMessageForm); ?>
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade bdr-w-0" id="keyword">
+                    <div class="tab-pane fade bdr-w-0 <?php if ($module == 'keyword') echo 'active in'; ?>" id="keyword">
                         <div class="row">
                             <div class="col-md-12">
-                                <?php $view['form']->start($keywordMessageForm); ?>
+                                <?php echo $view['form']->start($keywordMessageForm); ?>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <?php echo $view['form']->label($keywordMessageForm['rules']); ?>
@@ -69,8 +74,13 @@ $pageButtons = [];
                                         </a>
                                         <?php echo $view['form']->widget($keywordMessageForm['rules']); ?>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <?php echo $view['form']->row($followedMessageForm['save']); ?>
+                                        </div>
+                                    </div>
                                 </div>
-                                <?php $view['form']->end($keywordMessageForm); ?>
+                                <?php echo $view['form']->end($keywordMessageForm); ?>
                             </div>
                         </div>
                     </div>
@@ -89,4 +99,16 @@ $pageButtons = [];
         count++;
         mQuery(btn).data('count', count);
     }
+
+    (function () {
+        mQuery(document).ready(function() {
+            mQuery('#weixin_followed_message_followedMessage_msgType').on('change', function() {
+                var container = mQuery('#weixin_followed_message_followedMessage');
+                container.find('[data-toggle="msg-type"]').closest('.row').hide();
+                container.find('[toggle-type~="'+mQuery(this).val()+'"]').closest('.row').show();
+
+            }).trigger('change');
+        });
+    })();
+
 </script>

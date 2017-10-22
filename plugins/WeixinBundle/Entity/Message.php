@@ -46,15 +46,9 @@ class Message
 
     private $msgType;
 
-    private $formUserName;
-
-    private $toUserName;
-
     private $createTime;
 
     private $content;
-
-    private $mediaId;
 
     private $articleTitle;
 
@@ -67,6 +61,7 @@ class Message
 
     public function __construct()
     {
+        $this->createTime = new \DateTime();
     }
 
     /**
@@ -85,40 +80,33 @@ class Message
             ->columnName('msg_type')
             ->build();
 
-        $builder->createField('formUserName', 'string')
-            ->columnName('form_user_name')
-            ->build();
-
-        $builder->createField('toUserName', 'string')
-            ->columnName('to_user_name')
-            ->build();
-
         $builder->createField('createTime', 'datetime')
             ->columnName('create_time')
             ->build();
 
         $builder->createField('content', 'text')
             ->columnName('content')
-            ->build();
-
-        $builder->createField('mediaId', 'string')
-            ->columnName('media_id')
+            ->nullable()
             ->build();
 
         $builder->createField('articleTitle', 'string')
             ->columnName('article_title')
+            ->nullable()
             ->build();
 
         $builder->createField('articleDesc', 'string')
             ->columnName('article_desc')
+            ->nullable()
             ->build();
 
         $builder->createField('articlePic', 'string')
             ->columnName('article_pic')
+            ->nullable()
             ->build();
 
         $builder->createField('articleUrl', 'string')
             ->columnName('article_url')
+            ->nullable()
             ->build();
     }
 
@@ -195,38 +183,6 @@ class Message
     /**
      * @return mixed
      */
-    public function getFormUserName()
-    {
-        return $this->formUserName;
-    }
-
-    /**
-     * @param mixed $formUserName
-     */
-    public function setFormUserName($formUserName)
-    {
-        $this->formUserName = $formUserName;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getToUserName()
-    {
-        return $this->toUserName;
-    }
-
-    /**
-     * @param mixed $toUserName
-     */
-    public function setToUserName($toUserName)
-    {
-        $this->toUserName = $toUserName;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getCreateTime()
     {
         return $this->createTime;
@@ -254,22 +210,6 @@ class Message
     public function setContent($content)
     {
         $this->content = $content;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMediaId()
-    {
-        return $this->mediaId;
-    }
-
-    /**
-     * @param mixed $mediaId
-     */
-    public function setMediaId($mediaId)
-    {
-        $this->mediaId = $mediaId;
     }
 
     /**

@@ -99,7 +99,7 @@ class Weixin
             ->build();
 
         $builder->createManyToOne('owner','Mautic\UserBundle\Entity\User')
-            ->addJoinColumn('owner_id', 'id', false, false, 'SET NULL')
+            ->addJoinColumn('owner_id', 'id', false, false, 'CASCADE')
             ->build();
     }
 
