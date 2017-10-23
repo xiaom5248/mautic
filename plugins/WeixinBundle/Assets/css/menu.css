@@ -16,6 +16,12 @@
     height: 50px;
     border-top: 1px #ebedf0 solid;
     background-color: #fafafa;
+    text-align: center;
+    padding-top: 12px;
+}
+
+.weixin-menu-bar span {
+    font-size: 18px;
 }
 
 .weixin-menu-bar:nth-child(2) {
@@ -34,6 +40,12 @@
 .weixin-menu-item {
     height: 50px;
     border: 1px #ebedf0 solid;
+    text-align: center;
+    padding-top: 12px;
+}
+
+.weixin-menu-item span {
+    font-size: 18px;
 }
 
 .arrow-down {
@@ -52,10 +64,24 @@
 }
 
 .weixin-menu-items {
-    height: 250px;
     width: 130px;
     border: 1px #ebedf0 solid;
     position: absolute;
     background-color: #fafafa;
     cursor: pointer;
+}
+
+.weixin-menu-items-1 {
+    bottom: 50px;
+    left: 16.0146px;
+}
+
+.weixin-menu-items-2 {
+    bottom: 50px;
+    left: 146.0146px;
+}
+
+.weixin-menu-items-3 {
+    bottom: 50px;
+    left: 276.0146px;
 }

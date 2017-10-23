@@ -58,7 +58,7 @@ class AutoResController extends BaseController
 
         if ($followedMessageForm->isSubmitted() && $followedMessageForm->isValid()) {
 
-            $this->handleMessageImage($currentWeixin->getFollowedMessage(), $followedMessageForm->get('followedMessage')->get('file')->getData());
+            $this->get('weixin.helper.message')->handleMessageImage($currentWeixin->getFollowedMessage(), $followedMessageForm->get('followedMessage')->get('file')->getData());
             $em->persist($currentWeixin->getFollowedMessage());
             $em->persist($currentWeixin);
             $em->flush();
@@ -95,7 +95,7 @@ class AutoResController extends BaseController
 
             $currentWeixin->addRule($rule);
             $rule->setWeixin($currentWeixin);
-            $this->handleMessageImage($rule->getMessage(), $form->get('message')->get('file')->getData());
+            $this->get('weixin.helper.message')->handleMessageImage($rule->getMessage(), $form->get('message')->get('file')->getData());
 
             $em->persist($rule);
             $em->persist($rule->getMessage());
@@ -129,7 +129,7 @@ class AutoResController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $this->handleMessageImage($rule->getMessage(), $form->get('message')->get('file')->getData());
+            $this->get('weixin.helper.message')->handleMessageImage($rule->getMessage(), $form->get('message')->get('file')->getData());
             $em->persist($rule->getMessage());
             $em->flush();
 
@@ -206,18 +206,6 @@ class AutoResController extends BaseController
         $em->flush();
 
         return $this->redirectToRoute('mautic_weixin_auto_res', ['m' => 'keyword']);
-    }
-
-    private function handleMessageImage(Message $message, $file)
-    {
-        if (in_array($message->getMsgType(), [Message::MSG_TYPE_IMG, Message::MSG_TYPE_IMGTEXT])) {
-            $fileName = md5(uniqid()) . '.' . $file->guessExtension();
-            $file->move(
-                $this->getParameter('kernel.root_dir') . '/../uploads',
-                $fileName
-            );
-            $message->setImage('uploads/' . $fileName);
-        }
     }
 
 }

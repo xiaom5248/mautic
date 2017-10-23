@@ -49,6 +49,18 @@ return [
                 'path'         => '/weixin/menu',
                 'controller'   => 'WeixinBundle:Menu:index',
             ],
+            'mautic_weixin_menu_edit_menu' => [
+                'path'         => '/weixin/menu/edit/{id}',
+                'controller'   => 'WeixinBundle:Menu:editMenu',
+            ],
+            'mautic_weixin_menu_edit_menu_item' => [
+                'path'         => '/weixin/menu/edit/{menuId}/item/{id}',
+                'controller'   => 'WeixinBundle:Menu:editMenuItem',
+            ],
+            'mautic_weixin_menu' => [
+                'path'         => '/weixin/menu',
+                'controller'   => 'WeixinBundle:Menu:index',
+            ],
             'mautic_weixin_qrcode' => [
                 'path'         => '/weixin/qrcode',
                 'controller'   => 'WeixinBundle:Qrcode:index',
@@ -79,6 +91,11 @@ return [
         ],
     ],
     'services' => [
-
+        'others' => [
+            'weixin.helper.message' => [
+                'class'     => 'MauticPlugin\WeixinBundle\Service\MessageHelper',
+                'arguments' => ['%kernel.root_dir%']
+            ],
+        ],
     ],
 ];

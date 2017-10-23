@@ -29,8 +29,13 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 class Menu
 {
 
-    const TYPE_MENU_CATEGORY = 'category';
-    const TYPE_MENU_ITEM = 'item';
+    const MENU_TYPE_URL = 'url';
+    const MENU_TYPE_MESSAGE = 'message';
+
+    static $types = [
+        self::MENU_TYPE_URL => 'weixin.menu.type.url',
+        self::MENU_TYPE_MESSAGE => 'weixin.menu.type.message',
+    ];
 
     /**
      * @var int
@@ -45,8 +50,14 @@ class Menu
 
     private $type;
 
+    private $url;
+
+    private $message;
+
     public function __construct()
     {
+        $this->items = new ArrayCollection();
+        $this->type = self::MENU_TYPE_URL;
     }
 
     /**
@@ -56,8 +67,7 @@ class Menu
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('weixin_menu')
-            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\MenuRepository');
+        $builder->setTable('weixin_menu');
 
         $builder->addId();
 
@@ -69,6 +79,14 @@ class Menu
             ->columnName('type')
             ->build();
 
+        $builder->createField('url', 'string')
+            ->columnName('url')
+            ->nullable()
+            ->build();
+
+        $builder->createManyToOne('message', 'Message')
+            ->addJoinColumn('message_id', 'id', true, false, 'CASCADE')
+            ->build();
         $builder->createManyToOne('weixin', 'Weixin')
             ->addJoinColumn('weixin_id', 'id', false, false, 'CASCADE')
             ->build();
@@ -130,6 +148,16 @@ class Menu
         $this->items = $items;
     }
 
+    public function addItem($item)
+    {
+        $this->items->add($item);
+    }
+
+    public function removeItem($item)
+    {
+        $this->items->remove($item);
+    }
+
     /**
      * @return mixed
      */
@@ -162,6 +190,37 @@ class Menu
         $this->type = $type;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param mixed $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @param mixed $message
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
 
 
 }

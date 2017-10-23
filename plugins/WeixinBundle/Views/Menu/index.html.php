@@ -10,7 +10,7 @@
  */
 $view->extend('MauticCoreBundle:Default:content.html.php');
 $view['slots']->set('mauticContent', 'weixin');
-$view['slots']->set('headerTitle', $view['translator']->trans('mautic.weixin.menu'));
+$view['slots']->set('headerTitle', $view['translator']->trans('weixin.menu'));
 
 $view['slots']->set(
     'actions',
@@ -31,44 +31,87 @@ echo $view['assets']->includeStylesheet('plugins/WeixinBundle/Assets/css/menu.cs
     <div class="row">
         <div class="col-md-5">
             <div class="weixin-window">
-                <div class="weixin-menu-items" style="top: 295px; left: 16.0146px;">
-                    <div class="weixin-menu-item">
-
-                    </div>
-                    <div class="weixin-menu-item">
-
-                    </div>
-                    <div class="weixin-menu-item">
-
-                    </div>
-                    <div class="weixin-menu-item">
-
-                    </div>
-                    <div class="weixin-menu-item">
-
-                    </div>
-                    <div class="arrow-down"></div>
-                </div>
                 <div class="weixin-menu">
-                    <div class="weixin-menu-bar weixin-menu-selected col-md-4">
-
-                    </div>
-                    <div class="weixin-menu-bar col-md-4">
-
-                    </div>
-                    <div class="weixin-menu-bar col-md-4">
-
-                    </div>
+                    <?php
+                    $menuCount = count($currentWeixin->getMenus());
+                    $current = 0;
+                    $count = 0;
+                    ?>
+                    <?php foreach ($currentWeixin->getMenus() as $menu): ?>
+                        <div class="weixin-menu-bar col-md-4 <?php
+                        $count++;
+                        if ($currentMenu->getId() === $menu->getId()) {
+                            if (!isset($currentItem)) {
+                                echo 'weixin-menu-selected';
+                            }
+                            $current = $count;
+                        }
+                        ?>">
+                            <span><a href="<?php echo $view['router']->path('mautic_weixin_menu_edit_menu', ['id' => $menu->getId() ? $menu->getId() : 0]); ?>">
+                                    <?php echo $menu->getName(); ?>
+                                </a></span>
+                        </div>
+                    <?php endforeach; ?>
+                    <?php if ($menuCount < 3): ?>
+                        <div class="weixin-menu-bar col-md-4">
+                            <span><a href="<?php echo $view['router']->path('mautic_weixin_menu_edit_menu', ['id' => 0]) ?>"><i
+                                            class="fa fa-plus"></i></a></span>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="weixin-menu-items weixin-menu-items-<?php echo $current ?>">
+                    <?php foreach ($currentMenu->getItems() as $item): ?>
+                        <div class="weixin-menu-item
+                        <?php
+                        if (isset($currentItem) && $currentItem->getId() === $item->getId()) {
+                            echo 'weixin-menu-selected';
+                        }
+                        ?>">
+                            <span><a href="<?php echo $view['router']->path('mautic_weixin_menu_edit_menu_item', ['id' => ($item->getId() ? $item->getId() : 0), 'menuId' => $currentMenu->getId()]) ?>">
+                                    <?php echo $item->getName(); ?>
+                                </a></span>
+                        </div>
+                    <?php endforeach; ?>
+                    <?php if (count($currentMenu->getItems()) < 5 && $currentMenu->getId()): ?>
+                        <div class="weixin-menu-item">
+                            <span><a href="<?php echo $view['router']->path('mautic_weixin_menu_edit_menu_item', ['id' => 0, 'menuId' => $currentMenu->getId()]) ?>"><i
+                                            class="fa fa-plus"></i></a></span>
+                        </div>
+                    <?php endif; ?>
+                    <div class="arrow-down"></div>
                 </div>
             </div>
         </div>
         <div class="col-md-7">
             <div class="panel panel-success menu-editor">
                 <div class="panel-heading">
-                    <h4><i class="fa fa-trash delete-item cursor-pointer"></i></h4>
+                    <h4><?php
+                        if(isset($currentItem)) {
+                            echo $view['translator']->trans('weixin.menuitem');
+                        }else {
+                            echo $view['translator']->trans('weixin.menu');
+                        }
+                        ?></h4>
                 </div>
                 <div class="panel-body menu-editor-body">
-
+                    <?php echo $view['form']->start($form); ?>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <?php echo $view['form']->row($form['name']); ?>
+                            <?php echo $view['form']->row($form['type']); ?>
+                            <div class="url <?php if ($form->vars['value']->getType() == 'message') echo 'hidden'; ?>">
+                                <?php echo $view['form']->row($form['url']); ?>
+                            </div>
+                            <div class="message <?php if ($form->vars['value']->getType() == 'url') echo 'hidden'; ?>">
+                                <?php echo $view['form']->row($form['message']); ?>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <?php echo $view['form']->row($form['save']); ?>
+                            <a class="btn btn-danger"><?php echo $view['translator']->trans('mautic.core.form.delete'); ?></a>
+                        </div>
+                    </div>
+                    <?php echo $view['form']->end($form); ?>
                 </div>
             </div>
         </div>
@@ -77,17 +120,25 @@ echo $view['assets']->includeStylesheet('plugins/WeixinBundle/Assets/css/menu.cs
 
 <script>
     mQuery(document).ready(function () {
-        mQuery('.weixin-menu-bar').on('click', function(){
-            mQuery('.weixin-menu-bar, .weixin-menu-item').removeClass('weixin-menu-selected');
-            mQuery(this).addClass('weixin-menu-selected');
+        mQuery('.msg-type').on('change', function () {
+            mQuery('[data-toggle="msg-type"]').closest('.row').hide();
+            mQuery('[toggle-type~="' + mQuery(this).val() + '"]').closest('.row').show();
 
-            var offset = mQuery(this).offset();
-            mQuery('.weixin-menu-items').offset({top: offset.top - 255, left :offset.left});
+        }).trigger('change');
+
+        mQuery('input[type=radio][name="weixin_menu[type]"],input[type=radio][name="weixin_menu_item[type]"]').on('change', function () {
+            if (mQuery(this).val() == 'url') {
+                mQuery('.url').removeClass('hidden');
+                mQuery('.message').addClass('hidden');
+            } else if (mQuery(this).val() == 'message') {
+                mQuery('.url').addClass('hidden');
+                mQuery('.message').removeClass('hidden');
+            }
         });
 
-        mQuery('.weixin-menu-item').on('click', function(){
-            mQuery('.weixin-menu-item, .weixin-menu-bar').removeClass('weixin-menu-selected');
-            mQuery(this).addClass('weixin-menu-selected');
+        mQuery('#weixin_menu_name,#weixin_menu_item_name').on('input', function () {
+            mQuery('.weixin-menu-selected span').text(mQuery(this).val());
         });
-    });
+    })
+    ;
 </script>

@@ -54,6 +54,7 @@ class Weixin
     public function __construct()
     {
         $this->rules = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
     /**
@@ -281,5 +282,14 @@ class Weixin
         $this->menus = $menus;
     }
 
+    public function addMenu($menu)
+    {
+        $this->menus->add($menu);
+    }
+
+    public function removeMenu($menu)
+    {
+        $this->menus->remove($menu);
+    }
 
 }

@@ -41,8 +41,11 @@ class MenuItem
 
     private $url;
 
+    private $menu;
+
     public function __construct()
     {
+        $this->type = Menu::MENU_TYPE_URL;
     }
 
     /**
@@ -52,8 +55,7 @@ class MenuItem
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('weixin_menu_item')
-            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\WeixinMenuItemRepository');
+        $builder->setTable('weixin_menu_item');
 
         $builder->addId();
 
@@ -67,10 +69,15 @@ class MenuItem
 
         $builder->createField('url', 'string')
             ->columnName('url')
+            ->nullable()
             ->build();
 
         $builder->createManyToOne('message', 'Message')
-            ->addJoinColumn('message_id', 'id', false, false, 'CASCADE')
+            ->addJoinColumn('message_id', 'id', true, false, 'CASCADE')
+            ->build();
+
+        $builder->createManyToOne('menu', 'Menu')
+            ->addJoinColumn('menu_id', 'id', false, false, 'CASCADE')
             ->build();
     }
 
@@ -154,6 +161,21 @@ class MenuItem
         $this->url = $url;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMenu()
+    {
+        return $this->menu;
+    }
+
+    /**
+     * @param mixed $menu
+     */
+    public function setMenu($menu)
+    {
+        $this->menu = $menu;
+    }
 
 
 }
