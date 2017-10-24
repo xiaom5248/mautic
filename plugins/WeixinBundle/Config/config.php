@@ -57,9 +57,13 @@ return [
                 'path'         => '/weixin/menu/edit/{menuId}/item/{id}',
                 'controller'   => 'WeixinBundle:Menu:editMenuItem',
             ],
-            'mautic_weixin_menu' => [
-                'path'         => '/weixin/menu',
-                'controller'   => 'WeixinBundle:Menu:index',
+            'mautic_weixin_menu_delete_menu' => [
+                'path'         => '/weixin/menu/delete/{id}',
+                'controller'   => 'WeixinBundle:Menu:deleteMenu',
+            ],
+            'mautic_weixin_menu_delete_menu_item' => [
+                'path'         => '/weixin/menu/delete/item/{id}',
+                'controller'   => 'WeixinBundle:Menu:deleteMenuItem',
             ],
             'mautic_weixin_qrcode' => [
                 'path'         => '/weixin/qrcode',

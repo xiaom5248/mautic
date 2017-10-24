@@ -39,23 +39,26 @@ class MenuType extends AbstractType
             'attr'       => ['class' => 'form-control'],
             'required'   => true,
         ]);
-        $builder->add('type', 'choice', [
-            'label' => 'weixin.menu.type',
-            'choices' => Menu::$types,
-            'label_attr' => ['class' => 'control-label'],
-            'required'   => true,
-            'expanded' => true,
-        ]);
-        $builder->add('url', 'text', [
-            'label' => 'weixin.menu.url',
-            'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
-            'required'   => false,
-        ]);
-        $builder->add('message', MessageType::class, [
-            'label' => false,
-            'required'   => false,
-        ]);
+
+        if(count($builder->getData()->getItems()) == 0) {
+            $builder->add('type', 'choice', [
+                'label' => 'weixin.menu.type',
+                'choices' => Menu::$types,
+                'label_attr' => ['class' => 'control-label'],
+                'required'   => true,
+                'expanded' => true,
+            ]);
+            $builder->add('url', 'text', [
+                'label' => 'weixin.menu.url',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => ['class' => 'form-control'],
+                'required'   => false,
+            ]);
+            $builder->add('message', MessageType::class, [
+                'label' => false,
+                'required'   => false,
+            ]);
+        }
 
         $builder->add('save', 'submit', [
             'label' => 'mautic.core.form.save',

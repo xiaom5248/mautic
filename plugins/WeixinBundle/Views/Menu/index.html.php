@@ -98,17 +98,26 @@ echo $view['assets']->includeStylesheet('plugins/WeixinBundle/Assets/css/menu.cs
                     <div class="row">
                         <div class="col-md-12">
                             <?php echo $view['form']->row($form['name']); ?>
-                            <?php echo $view['form']->row($form['type']); ?>
-                            <div class="url <?php if ($form->vars['value']->getType() == 'message') echo 'hidden'; ?>">
-                                <?php echo $view['form']->row($form['url']); ?>
-                            </div>
-                            <div class="message <?php if ($form->vars['value']->getType() == 'url') echo 'hidden'; ?>">
-                                <?php echo $view['form']->row($form['message']); ?>
-                            </div>
+
+                            <?php if ($form->vars['value'] instanceof \MauticPlugin\WeixinBundle\Entity\MenuItem  || count($form->vars['value']->getItems()) == 0): ?>
+                                <?php echo $view['form']->row($form['type']); ?>
+                                <div class="url <?php if ($form->vars['value']->getType() == 'message') echo 'hidden'; ?>">
+                                    <?php echo $view['form']->row($form['url']); ?>
+                                </div>
+                                <div class="message <?php if ($form->vars['value']->getType() == 'url') echo 'hidden'; ?>">
+                                    <?php echo $view['form']->row($form['message']); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-12">
                             <?php echo $view['form']->row($form['save']); ?>
-                            <a class="btn btn-danger"><?php echo $view['translator']->trans('mautic.core.form.delete'); ?></a>
+
+                            <?php if (isset($currentItem) && $currentItem->getId()): ?>
+                                <a class="btn btn-danger" href="<?php echo $view['router']->path('mautic_weixin_menu_delete_menu_item', ['id' => $currentItem->getId() ]); ?>"><?php echo $view['translator']->trans('mautic.core.form.delete'); ?></a>
+                            <?php elseif(!isset($currentItem) && $currentMenu->getId()): ?>
+                                <a class="btn btn-danger" href="<?php echo $view['router']->path('mautic_weixin_menu_delete_menu', ['id' => $currentMenu->getId() ]); ?>"><?php echo $view['translator']->trans('mautic.core.form.delete'); ?></a>
+
+                            <?php endif; ?>
                         </div>
                     </div>
                     <?php echo $view['form']->end($form); ?>

@@ -122,4 +122,28 @@ class MenuController extends BaseController
         ]);
     }
 
+    public function deleteMenuAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $menu = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Menu')->find($id);
+        $em->remove($menu);
+        $em->flush();
+
+        return $this->redirectToRoute('mautic_weixin_menu');
+    }
+
+    public function deleteMenuItemAction(Request $request, $id)
+    {
+
+        $em = $this->getDoctrine()->getManager();
+        $menuItem = $em->getRepository('MauticPlugin\WeixinBundle\Entity\MenuItem')->find($id);
+        $menuId = $menuItem->getMenu()->getId();
+        $em->remove($menuItem);
+        $em->flush();
+
+        return $this->redirectToRoute('mautic_weixin_menu_edit_menu', ['id' => $menuId]);
+    }
+
+
+
 }
