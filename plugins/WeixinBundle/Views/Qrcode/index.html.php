@@ -10,7 +10,7 @@
  */
 $view->extend('MauticCoreBundle:Default:content.html.php');
 $view['slots']->set('mauticContent', 'weixin');
-$view['slots']->set('headerTitle', $view['translator']->trans('mautic.weixin.qrcode'));
+$view['slots']->set('headerTitle', $view['translator']->trans('weixin.qrcode'));
 
 $view['slots']->set(
     'actions',
