@@ -106,6 +106,8 @@ class LeadField extends FormEntity
      */
     private $object = 'lead';
 
+    private $user;
+
     /**
      * @var array
      */
@@ -185,6 +187,10 @@ class LeadField extends FormEntity
 
         $builder->createField('properties', 'array')
             ->nullable()
+            ->build();
+
+        $builder->createManyToOne('user','Mautic\UserBundle\Entity\User')
+            ->addJoinColumn('user_id', 'id', true, false, 'CASCADE')
             ->build();
     }
 
@@ -700,4 +706,22 @@ class LeadField extends FormEntity
     {
         $this->isUniqueIdentifier = $this->isUniqueIdentifer;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+
 }

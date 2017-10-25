@@ -131,6 +131,8 @@ class User extends FormEntity implements AdvancedUserInterface, \Serializable, E
      */
     private $signature;
 
+    private $fields = [];
+
     /**
      * @param ORM\ClassMetadata $metadata
      */
@@ -206,6 +208,9 @@ class User extends FormEntity implements AdvancedUserInterface, \Serializable, E
 
         $builder->createField('signature', 'text')
             ->nullable()
+            ->build();
+
+        $builder->createField('fields', 'array')
             ->build();
     }
 
@@ -878,4 +883,22 @@ class User extends FormEntity implements AdvancedUserInterface, \Serializable, E
 
         return $thisUser === $thatUser;
     }
+
+    /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     */
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
+    }
+
+
 }

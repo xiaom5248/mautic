@@ -17,6 +17,7 @@ use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\CoreBundle\Helper\LanguageHelper;
+use Mautic\LeadBundle\Form\Type\EntityFieldsBuildFormTrait;
 use Mautic\UserBundle\Model\UserModel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,6 +29,8 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class UserType extends AbstractType
 {
+    use EntityFieldsBuildFormTrait;
+
     /**
      * @var \Symfony\Bundle\FrameworkBundle\Translation\Translator
      */
@@ -91,6 +94,8 @@ class UserType extends AbstractType
     {
         $builder->addEventSubscriber(new CleanFormSubscriber());
         $builder->addEventSubscriber(new FormExitSubscriber('user.user', $options));
+
+        $this->getFormFields($builder, $options, 'user');
 
         $builder->add(
             'username',
@@ -302,6 +307,7 @@ class UserType extends AbstractType
                 ],
                 'ignore_formexit' => false,
                 'in_profile'      => false,
+                'fields' => [],
             ]
         );
     }

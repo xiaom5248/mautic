@@ -514,10 +514,7 @@ class FieldType extends AbstractType
             'object',
             'choice',
             [
-                'choices' => [
-                    'mautic.lead.contact'    => 'lead',
-                    'mautic.company.company' => 'company',
-                ],
+                'choices' => $options['object_choices'],
                 'choices_as_values' => true,
                 'expanded'          => false,
                 'multiple'          => false,
@@ -546,6 +543,10 @@ class FieldType extends AbstractType
         $resolver->setDefaults(
             [
                 'data_class' => 'Mautic\LeadBundle\Entity\LeadField',
+                'object_choices' => [
+                    'mautic.lead.contact'    => 'lead',
+                    'mautic.company.company' => 'company',
+                ],
             ]
         );
     }

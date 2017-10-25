@@ -710,6 +710,34 @@ class FieldModel extends FormModel
         );
     }
 
+    public function getPublishedUserFieldArrays($user, $object = 'user')
+    {
+        return $this->getEntities(
+            [
+                'filter' => [
+                    'force' => [
+                        [
+                            'column' => 'f.isPublished',
+                            'expr'   => 'eq',
+                            'value'  => true,
+                        ],
+                        [
+                            'column' => 'f.object',
+                            'expr'   => 'eq',
+                            'value'  => $object,
+                        ],
+                        [
+                            'column' => 'f.user',
+                            'expr'   => 'eq',
+                            'value'  => $user->getId(),
+                        ],
+                    ],
+                ],
+                'hydration_mode' => 'HYDRATE_ARRAY',
+            ]
+        );
+    }
+
     /**
      * @param string $object
      *

@@ -73,6 +73,10 @@ return [
                 'path'       => '/account',
                 'controller' => 'MauticUserBundle:Profile:index',
             ],
+            'mautic_user_add_field' => [
+                'path'       => '/users/{id}/add-field',
+                'controller' => 'MauticUserBundle:User:addField',
+            ],
         ],
 
         'api' => [

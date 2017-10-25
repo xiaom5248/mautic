@@ -13,7 +13,9 @@ namespace Mautic\UserBundle\Controller;
 
 use Mautic\CoreBundle\Controller\FormController;
 use Mautic\CoreBundle\Helper\InputHelper;
+use Mautic\LeadBundle\Entity\LeadField;
 use Mautic\UserBundle\Form\Type as FormType;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class UserController.
@@ -44,7 +46,7 @@ class UserController extends FormController
             $start = 0;
         }
 
-        $orderBy    = $this->get('session')->get('mautic.user.orderby', 'u.lastName, u.firstName, u.username');
+        $orderBy = $this->get('session')->get('mautic.user.orderby', 'u.lastName, u.firstName, u.username');
         $orderByDir = $this->get('session')->get('mautic.user.orderbydir', 'ASC');
 
         $search = $this->request->get('search', $this->get('session')->get('mautic.user.filter', ''));
@@ -53,13 +55,13 @@ class UserController extends FormController
         //do some default filtering
         $filter = ['string' => $search, 'force' => ''];
 
-        $tmpl  = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
+        $tmpl = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
         $users = $this->getModel('user.user')->getEntities(
             [
-                'start'      => $start,
-                'limit'      => $limit,
-                'filter'     => $filter,
-                'orderBy'    => $orderBy,
+                'start' => $start,
+                'limit' => $limit,
+                'filter' => $filter,
+                'orderBy' => $orderBy,
                 'orderByDir' => $orderByDir,
             ]);
 
@@ -72,14 +74,14 @@ class UserController extends FormController
             $returnUrl = $this->generateUrl('mautic_user_index', ['page' => $lastPage]);
 
             return $this->postActionRedirect([
-                'returnUrl'      => $returnUrl,
+                'returnUrl' => $returnUrl,
                 'viewParameters' => [
                     'page' => $lastPage,
                     'tmpl' => $tmpl,
                 ],
                 'contentTemplate' => 'MauticUserBundle:User:index',
                 'passthroughVars' => [
-                    'activeLink'    => '#mautic_user_index',
+                    'activeLink' => '#mautic_user_index',
                     'mauticContent' => 'user',
                 ],
             ]);
@@ -91,24 +93,24 @@ class UserController extends FormController
         //set some permissions
         $permissions = [
             'create' => $this->get('mautic.security')->isGranted('user:users:create'),
-            'edit'   => $this->get('mautic.security')->isGranted('user:users:editother'),
+            'edit' => $this->get('mautic.security')->isGranted('user:users:editother'),
             'delete' => $this->get('mautic.security')->isGranted('user:users:deleteother'),
         ];
 
         $parameters = [
-            'items'       => $users,
+            'items' => $users,
             'searchValue' => $search,
-            'page'        => $page,
-            'limit'       => $limit,
+            'page' => $page,
+            'limit' => $limit,
             'permissions' => $permissions,
-            'tmpl'        => $tmpl,
+            'tmpl' => $tmpl,
         ];
 
         return $this->delegateView([
-            'viewParameters'  => $parameters,
+            'viewParameters' => $parameters,
             'contentTemplate' => 'MauticUserBundle:User:list.html.php',
             'passthroughVars' => [
-                'route'         => $this->generateUrl('mautic_user_index', ['page' => $page]),
+                'route' => $this->generateUrl('mautic_user_index', ['page' => $page]),
                 'mauticContent' => 'user',
             ],
         ]);
@@ -139,7 +141,7 @@ class UserController extends FormController
 
         //get the user form factory
         $action = $this->generateUrl('mautic_user_action', ['objectAction' => 'new']);
-        $form   = $model->createForm($user, $this->get('form.factory'), $action);
+        $form = $model->createForm($user, $this->get('form.factory'), $action);
 
         //Check for a submitted form and process it
         if ($this->request->getMethod() == 'POST') {
@@ -147,8 +149,8 @@ class UserController extends FormController
             if (!$cancelled = $this->isFormCancelled($form)) {
                 //check to see if the password needs to be rehashed
                 $submittedPassword = $this->request->request->get('user[plainPassword][password]', null, true);
-                $encoder           = $this->get('security.encoder_factory')->getEncoder($user);
-                $password          = $model->checkNewPassword($user, $encoder, $submittedPassword);
+                $encoder = $this->get('security.encoder_factory')->getEncoder($user);
+                $password = $model->checkNewPassword($user, $encoder, $submittedPassword);
 
                 if ($valid = $this->isFormValid($form)) {
                     //form is valid so process the data
@@ -168,7 +170,7 @@ class UserController extends FormController
                         if ($fetchLanguage['error']) {
                             $user->setLocale(null);
                             $model->saveEntity($user);
-                            $message     = 'mautic.core.could.not.set.language';
+                            $message = 'mautic.core.could.not.set.language';
                             $messageVars = [];
 
                             if (isset($fetchLanguage['message'])) {
@@ -183,12 +185,12 @@ class UserController extends FormController
                         }
                     }
 
-                    $this->addFlash('mautic.core.notice.created',  [
-                        '%name%'      => $user->getName(),
+                    $this->addFlash('mautic.core.notice.created', [
+                        '%name%' => $user->getName(),
                         '%menu_link%' => 'mautic_user_index',
-                        '%url%'       => $this->generateUrl('mautic_user_action', [
+                        '%url%' => $this->generateUrl('mautic_user_action', [
                             'objectAction' => 'edit',
-                            'objectId'     => $user->getId(),
+                            'objectId' => $user->getId(),
                         ]),
                     ]);
                 }
@@ -196,11 +198,11 @@ class UserController extends FormController
 
             if ($cancelled || ($valid && $form->get('buttons')->get('save')->isClicked())) {
                 return $this->postActionRedirect([
-                    'returnUrl'       => $returnUrl,
-                    'viewParameters'  => ['page' => $page],
+                    'returnUrl' => $returnUrl,
+                    'viewParameters' => ['page' => $page],
                     'contentTemplate' => 'MauticUserBundle:User:index',
                     'passthroughVars' => [
-                        'activeLink'    => '#mautic_user_index',
+                        'activeLink' => '#mautic_user_index',
                         'mauticContent' => 'user',
                     ],
                 ]);
@@ -210,11 +212,11 @@ class UserController extends FormController
         }
 
         return $this->delegateView([
-            'viewParameters'  => ['form' => $form->createView()],
+            'viewParameters' => ['form' => $form->createView()],
             'contentTemplate' => 'MauticUserBundle:User:form.html.php',
             'passthroughVars' => [
-                'activeLink'    => '#mautic_user_new',
-                'route'         => $action,
+                'activeLink' => '#mautic_user_new',
+                'route' => $action,
                 'mauticContent' => 'user',
             ],
         ]);
@@ -223,7 +225,7 @@ class UserController extends FormController
     /**
      * Generates edit form and processes post data.
      *
-     * @param int  $objectId
+     * @param int $objectId
      * @param bool $ignorePost
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
@@ -234,7 +236,7 @@ class UserController extends FormController
             return $this->accessDenied();
         }
         $model = $this->getModel('user.user');
-        $user  = $model->getEntity($objectId);
+        $user = $model->getEntity($objectId);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.user.page', 1);
@@ -243,11 +245,11 @@ class UserController extends FormController
         $returnUrl = $this->generateUrl('mautic_user_index', ['page' => $page]);
 
         $postActionVars = [
-            'returnUrl'       => $returnUrl,
-            'viewParameters'  => ['page' => $page],
+            'returnUrl' => $returnUrl,
+            'viewParameters' => ['page' => $page],
             'contentTemplate' => 'MauticUserBundle:User:index',
             'passthroughVars' => [
-                'activeLink'    => '#mautic_user_index',
+                'activeLink' => '#mautic_user_index',
                 'mauticContent' => 'user',
             ],
         ];
@@ -258,8 +260,8 @@ class UserController extends FormController
                 array_merge($postActionVars, [
                     'flashes' => [
                         [
-                            'type'    => 'error',
-                            'msg'     => 'mautic.user.user.error.notfound',
+                            'type' => 'error',
+                            'msg' => 'mautic.user.user.error.notfound',
                             'msgVars' => ['%id%' => $objectId],
                         ],
                     ],
@@ -271,7 +273,10 @@ class UserController extends FormController
         }
 
         $action = $this->generateUrl('mautic_user_action', ['objectAction' => 'edit', 'objectId' => $objectId]);
-        $form   = $model->createForm($user, $this->get('form.factory'), $action);
+
+        $fields = $this->getModel('lead.field')->getPublishedUserFieldArrays($this->getUser());
+
+        $form = $model->createForm($user, $this->get('form.factory'), $action, ['fields' => $fields]);
 
         ///Check for a submitted form and process it
         if (!$ignorePost && $this->request->getMethod() == 'POST') {
@@ -279,12 +284,18 @@ class UserController extends FormController
             if (!$cancelled = $this->isFormCancelled($form)) {
                 //check to see if the password needs to be rehashed
                 $submittedPassword = $this->request->request->get('user[plainPassword][password]', null, true);
-                $encoder           = $this->get('security.encoder_factory')->getEncoder($user);
-                $password          = $model->checkNewPassword($user, $encoder, $submittedPassword);
+                $encoder = $this->get('security.encoder_factory')->getEncoder($user);
+                $password = $model->checkNewPassword($user, $encoder, $submittedPassword);
 
                 if ($valid = $this->isFormValid($form)) {
                     //form is valid so process the data
                     $user->setPassword($password);
+
+                    $userFields = [];
+                    foreach($fields as $field) {
+                        $userFields[$field['alias']] = $form[$field['alias']]->getData();
+                    }
+                    $user->setFields($userFields);
                     $model->saveEntity($user, $form->get('buttons')->get('save')->isClicked());
 
                     //check if the user's locale has been downloaded already, fetch it if not
@@ -300,7 +311,7 @@ class UserController extends FormController
                         if ($fetchLanguage['error']) {
                             $user->setLocale(null);
                             $model->saveEntity($user);
-                            $message     = 'mautic.core.could.not.set.language';
+                            $message = 'mautic.core.could.not.set.language';
                             $messageVars = [];
 
                             if (isset($fetchLanguage['message'])) {
@@ -315,12 +326,12 @@ class UserController extends FormController
                         }
                     }
 
-                    $this->addFlash('mautic.core.notice.updated',  [
-                        '%name%'      => $user->getName(),
+                    $this->addFlash('mautic.core.notice.updated', [
+                        '%name%' => $user->getName(),
                         '%menu_link%' => 'mautic_user_index',
-                        '%url%'       => $this->generateUrl('mautic_user_action', [
+                        '%url%' => $this->generateUrl('mautic_user_action', [
                             'objectAction' => 'edit',
-                            'objectId'     => $user->getId(),
+                            'objectId' => $user->getId(),
                         ]),
                     ]);
                 }
@@ -338,11 +349,11 @@ class UserController extends FormController
         }
 
         return $this->delegateView([
-            'viewParameters'  => ['form' => $form->createView()],
+            'viewParameters' => ['form' => $form->createView(), 'fields' => $fields],
             'contentTemplate' => 'MauticUserBundle:User:form.html.php',
             'passthroughVars' => [
-                'activeLink'    => '#mautic_user_index',
-                'route'         => $action,
+                'activeLink' => '#mautic_user_index',
+                'route' => $action,
                 'mauticContent' => 'user',
             ],
         ]);
@@ -361,52 +372,52 @@ class UserController extends FormController
             return $this->accessDenied();
         }
 
-        $currentUser    = $this->user;
-        $page           = $this->get('session')->get('mautic.user.page', 1);
-        $returnUrl      = $this->generateUrl('mautic_user_index', ['page' => $page]);
-        $success        = 0;
-        $flashes        = [];
+        $currentUser = $this->user;
+        $page = $this->get('session')->get('mautic.user.page', 1);
+        $returnUrl = $this->generateUrl('mautic_user_index', ['page' => $page]);
+        $success = 0;
+        $flashes = [];
         $postActionVars = [
-            'returnUrl'       => $returnUrl,
-            'viewParameters'  => ['page' => $page],
+            'returnUrl' => $returnUrl,
+            'viewParameters' => ['page' => $page],
             'contentTemplate' => 'MauticUserBundle:User:index',
             'passthroughVars' => [
-                'activeLink'    => '#mautic_user_index',
-                'route'         => $returnUrl,
-                'success'       => $success,
+                'activeLink' => '#mautic_user_index',
+                'route' => $returnUrl,
+                'success' => $success,
                 'mauticContent' => 'user',
             ],
         ];
         if ($this->request->getMethod() == 'POST') {
             //ensure the user logged in is not getting deleted
-            if ((int) $currentUser->getId() !== (int) $objectId) {
-                $model  = $this->getModel('user.user');
+            if ((int)$currentUser->getId() !== (int)$objectId) {
+                $model = $this->getModel('user.user');
                 $entity = $model->getEntity($objectId);
 
                 if ($entity === null) {
                     $flashes[] = [
-                        'type'    => 'error',
-                        'msg'     => 'mautic.user.user.error.notfound',
+                        'type' => 'error',
+                        'msg' => 'mautic.user.user.error.notfound',
                         'msgVars' => ['%id%' => $objectId],
                     ];
                 } elseif ($model->isLocked($entity)) {
                     return $this->isLocked($postActionVars, $entity, 'user.user');
                 } else {
                     $model->deleteEntity($entity);
-                    $name      = $entity->getName();
+                    $name = $entity->getName();
                     $flashes[] = [
-                        'type'    => 'notice',
-                        'msg'     => 'mautic.core.notice.deleted',
+                        'type' => 'notice',
+                        'msg' => 'mautic.core.notice.deleted',
                         'msgVars' => [
                             '%name%' => $name,
-                            '%id%'   => $objectId,
+                            '%id%' => $objectId,
                         ],
                     ];
                 }
             } else {
                 $flashes[] = [
                     'type' => 'error',
-                    'msg'  => 'mautic.user.user.error.cannotdeleteself',
+                    'msg' => 'mautic.user.user.error.cannotdeleteself',
                 ];
             }
         } //else don't do anything
@@ -428,17 +439,17 @@ class UserController extends FormController
     public function contactAction($objectId)
     {
         $model = $this->getModel('user.user');
-        $user  = $model->getEntity($objectId);
+        $user = $model->getEntity($objectId);
 
         //user not found
         if ($user === null) {
             return $this->postActionRedirect([
-                'returnUrl'       => $this->generateUrl('mautic_dashboard_index'),
+                'returnUrl' => $this->generateUrl('mautic_dashboard_index'),
                 'contentTemplate' => 'MauticUserBundle:User:contact',
-                'flashes'         => [
+                'flashes' => [
                     [
-                        'type'    => 'error',
-                        'msg'     => 'mautic.user.user.error.notfound',
+                        'type' => 'error',
+                        'msg' => 'mautic.user.user.error.notfound',
                         'msgVars' => ['%id%' => $objectId],
                     ],
                 ],
@@ -446,18 +457,18 @@ class UserController extends FormController
         }
 
         $action = $this->generateUrl('mautic_user_action', ['objectAction' => 'contact', 'objectId' => $objectId]);
-        $form   = $this->createForm(new FormType\ContactType(), [], ['action' => $action]);
+        $form = $this->createForm(new FormType\ContactType(), [], ['action' => $action]);
 
         $currentUser = $this->user;
 
         if ($this->request->getMethod() == 'POST') {
-            $formUrl   = $this->request->request->get('contact[returnUrl]', '', true);
+            $formUrl = $this->request->request->get('contact[returnUrl]', '', true);
             $returnUrl = ($formUrl) ? urldecode($formUrl) : $this->generateUrl('mautic_dashboard_index');
-            $valid     = false;
+            $valid = false;
             if (!$cancelled = $this->isFormCancelled($form)) {
                 if ($valid = $this->isFormValid($form)) {
                     $subject = InputHelper::clean($form->get('msg_subject')->getData());
-                    $body    = InputHelper::clean($form->get('msg_body')->getData());
+                    $body = InputHelper::clean($form->get('msg_body')->getData());
                     $message = \Swift_Message::newInstance()
                         ->setSubject($subject)
                         ->setFrom($currentUser->getEmail(), $currentUser->getName())
@@ -467,7 +478,7 @@ class UserController extends FormController
 
                     $reEntity = $form->get('entity')->getData();
                     if (empty($reEntity)) {
-                        $bundle   = $object   = 'user';
+                        $bundle = $object = 'user';
                         $entityId = $user->getId();
                     } else {
                         $bundle = $object = $reEntity;
@@ -478,19 +489,19 @@ class UserController extends FormController
                     }
 
                     $serializer = $this->get('jms_serializer');
-                    $details    = $serializer->serialize([
-                        'from'    => $currentUser->getName(),
-                        'to'      => $user->getName(),
+                    $details = $serializer->serialize([
+                        'from' => $currentUser->getName(),
+                        'to' => $user->getName(),
                         'subject' => $subject,
                         'message' => $body,
                     ], 'json');
 
                     $log = [
-                        'bundle'    => $bundle,
-                        'object'    => $object,
-                        'objectId'  => $entityId,
-                        'action'    => 'communication',
-                        'details'   => $details,
+                        'bundle' => $bundle,
+                        'object' => $object,
+                        'objectId' => $entityId,
+                        'action' => 'communication',
+                        'details' => $details,
                         'ipAddress' => $this->factory->getIpAddressFromRequest(),
                     ];
                     $this->getModel('core.auditLog')->writeToLog($log);
@@ -503,16 +514,16 @@ class UserController extends FormController
             }
         } else {
             $reEntityId = InputHelper::int($this->request->get('id'));
-            $reSubject  = InputHelper::clean($this->request->get('subject'));
-            $returnUrl  = InputHelper::clean($this->request->get('returnUrl', $this->generateUrl('mautic_dashboard_index')));
-            $reEntity   = InputHelper::clean($this->request->get('entity'));
+            $reSubject = InputHelper::clean($this->request->get('subject'));
+            $returnUrl = InputHelper::clean($this->request->get('returnUrl', $this->generateUrl('mautic_dashboard_index')));
+            $reEntity = InputHelper::clean($this->request->get('entity'));
 
             $form->get('entity')->setData($reEntity);
             $form->get('id')->setData($reEntityId);
             $form->get('returnUrl')->setData($returnUrl);
 
             if (!empty($reEntity) && !empty($reEntityId)) {
-                $model  = $this->getModel($reEntity);
+                $model = $this->getModel($reEntity);
                 $entity = $model->getEntity($reEntityId);
 
                 if ($entity !== null) {
@@ -529,7 +540,7 @@ class UserController extends FormController
             ],
             'contentTemplate' => 'MauticUserBundle:User:contact.html.php',
             'passthroughVars' => [
-                'route'         => $action,
+                'route' => $action,
                 'mauticContent' => 'user',
             ],
         ]);
@@ -542,39 +553,39 @@ class UserController extends FormController
      */
     public function batchDeleteAction()
     {
-        $page      = $this->get('session')->get('mautic.user.page', 1);
+        $page = $this->get('session')->get('mautic.user.page', 1);
         $returnUrl = $this->generateUrl('mautic_user_index', ['page' => $page]);
-        $flashes   = [];
+        $flashes = [];
 
         $postActionVars = [
-            'returnUrl'       => $returnUrl,
-            'viewParameters'  => ['page' => $page],
+            'returnUrl' => $returnUrl,
+            'viewParameters' => ['page' => $page],
             'contentTemplate' => 'MauticUserBundle:User:index',
             'passthroughVars' => [
-                'activeLink'    => '#mautic_user_index',
+                'activeLink' => '#mautic_user_index',
                 'mauticContent' => 'user',
             ],
         ];
 
         if ($this->request->getMethod() == 'POST') {
-            $model       = $this->getModel('user');
-            $ids         = json_decode($this->request->query->get('ids', ''));
-            $deleteIds   = [];
+            $model = $this->getModel('user');
+            $ids = json_decode($this->request->query->get('ids', ''));
+            $deleteIds = [];
             $currentUser = $this->user;
 
             // Loop over the IDs to perform access checks pre-delete
             foreach ($ids as $objectId) {
                 $entity = $model->getEntity($objectId);
 
-                if ((int) $currentUser->getId() === (int) $objectId) {
+                if ((int)$currentUser->getId() === (int)$objectId) {
                     $flashes[] = [
                         'type' => 'error',
-                        'msg'  => 'mautic.user.user.error.cannotdeleteself',
+                        'msg' => 'mautic.user.user.error.cannotdeleteself',
                     ];
                 } elseif ($entity === null) {
                     $flashes[] = [
-                        'type'    => 'error',
-                        'msg'     => 'mautic.user.user.error.notfound',
+                        'type' => 'error',
+                        'msg' => 'mautic.user.user.error.notfound',
                         'msgVars' => ['%id%' => $objectId],
                     ];
                 } elseif (!$this->get('mautic.security')->isGranted('user:users:delete')) {
@@ -591,8 +602,8 @@ class UserController extends FormController
                 $entities = $model->deleteEntities($deleteIds);
 
                 $flashes[] = [
-                    'type'    => 'notice',
-                    'msg'     => 'mautic.user.user.notice.batch_deleted',
+                    'type' => 'notice',
+                    'msg' => 'mautic.user.user.notice.batch_deleted',
                     'msgVars' => [
                         '%count%' => count($entities),
                     ],
@@ -604,6 +615,42 @@ class UserController extends FormController
             array_merge($postActionVars, [
                 'flashes' => $flashes,
             ])
+        );
+    }
+
+    public function addFieldAction(Request $request, $id)
+    {
+        $field = new LeadField();
+        $field->setUser($this->getUser());
+        $model = $this->getModel('lead.field');
+        $form = $model->createForm($field, $this->get('form.factory'), $this->generateUrl('mautic_user_add_field', ['id' => $id]), [
+            'object_choices' => [
+                'mautic.lead.user' => 'user',
+            ],
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($field);
+            $em->flush();
+
+            return $this->redirectToRoute('mautic_user_action', [
+                'objectAction' => 'edit',
+                'objectId ' => $id,
+            ]);
+        }
+
+        return $this->delegateView(
+            [
+                'viewParameters' => [
+                    'form' => $form->createView(),
+                ],
+                'contentTemplate' => 'MauticUserBundle:User:addField.html.php',
+                'passthroughVars' => [
+
+                ],
+            ]
         );
     }
 }
