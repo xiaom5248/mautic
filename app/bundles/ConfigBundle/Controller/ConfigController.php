@@ -160,6 +160,7 @@ class ConfigController extends FormController
 
         $tmpl = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
 
+        $weixins = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->findByOwner($this->getUser());
         return $this->delegateView(
             [
                 'viewParameters' => [
@@ -168,6 +169,7 @@ class ConfigController extends FormController
                     'form'        => $this->setFormTheme($form, 'MauticConfigBundle:Config:form.html.php', $formThemes),
                     'formConfigs' => $formConfigs,
                     'isWritable'  => $isWritabale,
+                    'weixins' => $weixins
                 ],
                 'contentTemplate' => 'MauticConfigBundle:Config:form.html.php',
                 'passthroughVars' => [

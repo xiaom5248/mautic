@@ -35,19 +35,19 @@ class ConfigType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $leadFields = $this->fieldModel->getFieldList(false, false);
-
-        $builder->add(
-            'twitter_handle_field',
-            'choice',
-            [
-                'choices'    => $leadFields,
-                'label'      => 'mautic.social.config.twitter.field.label',
-                'required'   => false,
-                'label_attr' => ['class' => 'control-label'],
-                'attr'       => ['class' => 'form-control'],
-            ]
-        );
+//        $leadFields = $this->fieldModel->getFieldList(false, false);
+//
+//        $builder->add(
+//            'twitter_handle_field',
+//            'choice',
+//            [
+//                'choices'    => $leadFields,
+//                'label'      => 'mautic.social.config.twitter.field.label',
+//                'required'   => false,
+//                'label_attr' => ['class' => 'control-label'],
+//                'attr'       => ['class' => 'form-control'],
+//            ]
+//        );
     }
 
     /**

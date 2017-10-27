@@ -35,6 +35,16 @@ class Weixin
 
     private $accountName;
 
+    private $type;
+
+    private $verified;
+
+    private $createTime;
+
+    private $icon;
+
+    private $deleted;
+
     private $scope;
 
     private $authorizerAppId;
@@ -87,6 +97,27 @@ class Weixin
 
         $builder->createField('authorizerRefreshToken', 'string')
             ->columnName('authorizer_refresh_token')
+            ->build();
+
+        $builder->createField('type', 'string')
+            ->columnName('type')
+            ->build();
+
+        $builder->createField('verified', 'boolean')
+            ->columnName('verified')
+            ->build();
+        $builder->createField('createTime', 'datetime')
+            ->columnName('create_time')
+            ->nullable()
+            ->build();
+
+        $builder->createField('icon', 'string')
+            ->nullable()
+            ->columnName('icon')
+            ->build();
+
+        $builder->createField('deleted', 'boolean')
+            ->columnName('deleted')
             ->build();
 
         $builder->createOneToMany('rules', 'Rule')
@@ -291,5 +322,87 @@ class Weixin
     {
         $this->menus->remove($menu);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVerified()
+    {
+        return $this->verified;
+    }
+
+    /**
+     * @param mixed $verified
+     */
+    public function setVerified($verified)
+    {
+        $this->verified = $verified;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreateTime()
+    {
+        return $this->createTime;
+    }
+
+    /**
+     * @param mixed $createTime
+     */
+    public function setCreateTime($createTime)
+    {
+        $this->createTime = $createTime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param mixed $icon
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param mixed $deleted
+     */
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
+    }
+
+
 
 }
