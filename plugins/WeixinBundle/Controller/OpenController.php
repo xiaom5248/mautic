@@ -23,6 +23,9 @@ class OpenController extends AbstractFormController
 
         $weixin = $this->get('weixin.open_application')->createWeixin($auth_code);
 
+        $weixin->setOwner($this->getUser());
+        $weixin->setCreatedTime(new \DateTime());
+
         $em = $this->getDoctrine()->getManager();
         $em->persist($weixin);
         $em->flush();

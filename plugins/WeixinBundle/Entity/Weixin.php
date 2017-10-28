@@ -43,9 +43,9 @@ class Weixin
 
     private $icon;
 
-    private $deleted;
+    private $deleted = false;
 
-    private $scope;
+    private $scope = '';
 
     private $authorizerAppId;
 
@@ -106,6 +106,7 @@ class Weixin
         $builder->createField('verified', 'boolean')
             ->columnName('verified')
             ->build();
+
         $builder->createField('createTime', 'datetime')
             ->columnName('create_time')
             ->nullable()
