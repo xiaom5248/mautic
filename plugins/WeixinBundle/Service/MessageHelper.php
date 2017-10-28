@@ -9,6 +9,8 @@
 namespace MauticPlugin\WeixinBundle\Service;
 
 use MauticPlugin\WeixinBundle\Entity\Message;
+use MauticPlugin\WeixinBundle\Entity\Rule;
+use MauticPlugin\WeixinBundle\Entity\Weixin;
 
 class MessageHelper
 {
@@ -28,6 +30,22 @@ class MessageHelper
                 $fileName
             );
             $message->setImage('uploads/' . $fileName);
+        }
+    }
+
+    public function getMessageRes(Weixin $weixin, $msg)
+    {
+        foreach ($weixin->getRules() as $rule)
+        {
+            foreach ($rule->getKeywords() as $keyword) {
+                if($keyword->getType() == Rule::RULE_TYPE_COMPLET && $keyword->getKeyword() == $msg) {
+                    return $keyword->getMessage();
+                }
+
+                if($keyword->getType() == Rule::RULE_TYPE_LIKE && strpos($msg, $keyword->getKeyword()) !== false) {
+                    return $keyword->getMessage();
+                }
+            }
         }
     }
 }

@@ -116,10 +116,6 @@ return [
                 'class'     => 'MauticPlugin\WeixinBundle\Service\Application',
                 'arguments' => ['%mautic.weixin.open_configs%']
             ],
-            'weixin.api' => [
-                'class'     => 'MauticPlugin\WeixinBundle\Service\Api',
-                'arguments' => ['%kernel.root_dir%']
-            ],
         ],
     ],
     'parameters' => [

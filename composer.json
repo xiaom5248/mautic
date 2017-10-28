@@ -61,6 +61,8 @@
 
         "symfony/twig-bundle": "~2.8",
 
+        "symfony/serializer": "~3.0",
+
         "doctrine/dbal": "~2.5.4",
         "doctrine/common": "~2.5.3",
         "doctrine/annotations": "1.2.*,>=1.2.7",

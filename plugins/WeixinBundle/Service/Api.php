@@ -8,6 +8,7 @@
 
 namespace MauticPlugin\WeixinBundle\Service;
 
+use MauticPlugin\WeixinBundle\Entity\Menu;
 use MauticPlugin\WeixinBundle\Entity\Message;
 
 class Api
@@ -19,10 +20,16 @@ class Api
         $this->configs = $configs;
     }
 
-    public function updateMenu()
+    public function updateMenu(Menu $menu)
     {
+        $app = new \EasyWeChat\Foundation\Application($this->options);
+
 
     }
 
+    public function sendMessage()
+    {
+
+    }
 
 }
