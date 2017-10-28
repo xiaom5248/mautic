@@ -65,6 +65,10 @@ return [
                 'path'         => '/weixin/menu/delete/item/{id}',
                 'controller'   => 'WeixinBundle:Menu:deleteMenuItem',
             ],
+            'mautic_weixin_menu_update' => [
+                'path'         => '/weixin/menu/update',
+                'controller'   => 'WeixinBundle:Menu:updateMenu',
+            ],
             'mautic_weixin_qrcode' => [
                 'path'         => '/weixin/qrcode',
                 'controller'   => 'WeixinBundle:Qrcode:index',

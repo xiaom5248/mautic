@@ -99,9 +99,12 @@ $configKeys = array_keys($form->children);
                                         </tr>
                                         <?php foreach ($weixins as $weixin) : ?>
                                         <tr>
-                                            <td><?php echo $weixin->getAccountName(); ?></td>
-                                            <td><?php echo $weixin->getType(); ?></td>
-                                            <td><?php echo $weixin->getVerified(); ?></td>
+                                            <td>
+                                                <img src="<?php $weixin->getIcon(); ?>">
+                                                <?php echo $weixin->getAccountName(); ?>
+                                            </td>
+                                            <td><?php echo $weixin->getTypeText(); ?></td>
+                                            <td><?php echo $weixin->getVerifiedText(); ?></td>
                                             <td><?php echo $weixin->getCreateTime() ? $weixin->getCreateTime()->format('Y-m-d H:s:i'):''; ?></td>
                                             <td><a><i class="fa fa-chain-broken"></i></a></td>
                                         </tr>

@@ -144,6 +144,14 @@ class MenuController extends BaseController
         return $this->redirectToRoute('mautic_weixin_menu_edit_menu', ['id' => $menuId]);
     }
 
+    public function updateMenuAction()
+    {
+        $currentWeixin = $this->getCurrentWeixin();
+        $this->get('weixin.api')->updateMenu($currentWeixin);
 
+        $this->get('session')->getFlashBag()->set('info', '同步菜单成功');
+
+        return $this->redirectToRoute('mautic_weixin_menu');
+    }
 
 }

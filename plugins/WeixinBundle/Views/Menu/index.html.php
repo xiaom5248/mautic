@@ -31,6 +31,7 @@ echo $view['assets']->includeStylesheet('plugins/WeixinBundle/Assets/css/menu.cs
     <div class="row">
         <div class="col-md-5">
             <div class="weixin-window">
+                <a href="<?php echo $view['router']->path('mautic_weixin_menu_update'); ?>" class="btn btn-success">同步菜单</a>
                 <div class="weixin-menu">
                     <?php
                     $menuCount = count($currentWeixin->getMenus());

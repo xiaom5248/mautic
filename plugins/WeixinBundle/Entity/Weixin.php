@@ -18,6 +18,7 @@ use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
 use Mautic\LeadBundle\Entity\LeadList;
 use Mautic\LeadBundle\Form\Validator\Constraints\LeadListAccess;
+use MauticPlugin\WeixinBundle\Enum\WeixinEnum;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -404,6 +405,14 @@ class Weixin
         $this->deleted = $deleted;
     }
 
+    public function getTypeText()
+    {
+        return WeixinEnum::$types[$this->type];
+    }
 
+    public function getVerifiedText()
+    {
+        return WeixinEnum::$verified[$this->type];
+    }
 
 }
