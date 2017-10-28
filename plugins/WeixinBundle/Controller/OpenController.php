@@ -14,14 +14,14 @@ class OpenController extends AbstractFormController
 
     public function authAction(Request $request)
     {
-        return $this->get('weixin.open_application')->handleAuth();
+        return $this->get('weixin.api')->handleAuth();
     }
 
     public function authReturnAction(Request $request)
     {
         $auth_code = $request->query->get('auth_code');
 
-        $weixin = $this->get('weixin.open_application')->createWeixin($auth_code);
+        $weixin = $this->get('weixin.api')->createWeixin($auth_code);
 
         $weixin->setOwner($this->getUser());
         $weixin->setCreateTime(new \DateTime());
@@ -39,7 +39,7 @@ class OpenController extends AbstractFormController
 
     public function oauthLoginAction()
     {
-        $url = $this->get('weixin.open_application')->getLoginUrl();
+        $url = $this->get('weixin.api')->getLoginUrl();
         return $this->redirect($url);
     }
 }

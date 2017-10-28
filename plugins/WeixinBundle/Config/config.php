@@ -121,10 +121,10 @@ return [
                 'class'     => 'MauticPlugin\WeixinBundle\Service\MessageHelper',
                 'arguments' => ['%kernel.root_dir%']
             ],
-            'weixin.open_application' => [
-                'class'     => 'MauticPlugin\WeixinBundle\Service\Application',
-                'arguments' => ['%mautic.weixin.open_configs%']
-            ],
+//            'weixin.open_application' => [
+//                'class'     => 'MauticPlugin\WeixinBundle\Service\Application',
+//                'arguments' => ['%mautic.weixin.open_configs%']
+//            ],
             'weixin.api' => [
                 'class'     => 'MauticPlugin\WeixinBundle\Service\Api',
                 'arguments' => ['%mautic.weixin.configs%']
@@ -132,19 +132,19 @@ return [
         ],
     ],
     'parameters' => [
-        'weixin.open_configs' => [
-            'debug'                => false,                        //是否调试模式
-            'component_app_id'     => 'wx8c1a03d2f7e747c8',           //第三方公众平台app id
-            'component_app_secret' => 'd12409c5c671eb649d9da1187b0e39db',       //第三方公众平台app secret
-            'token'                => '123123',                      //公众号消息校验Token
-            'aes_key'              => '1234567891234567891234567891234567891234567',                    //公众号消息加解密Key
-
-            'redirect_uri' => 'http://m-demo.linkall.sh.cn/s/weixin/oauth-return',                  //授权回调页面URI
-            'log' => [                                              //日志
-                'level' => 'debug',
-                'file'  => '/tmp/easyopenwechat.log',
-            ],
-        ],
+//        'weixin.open_configs' => [
+//            'debug'                => false,                        //是否调试模式
+//            'component_app_id'     => 'wx8c1a03d2f7e747c8',           //第三方公众平台app id
+//            'component_app_secret' => 'd12409c5c671eb649d9da1187b0e39db',       //第三方公众平台app secret
+//            'token'                => '123123',                      //公众号消息校验Token
+//            'aes_key'              => '1234567891234567891234567891234567891234567',                    //公众号消息加解密Key
+//
+//            'redirect_uri' => 'http://m-demo.linkall.sh.cn/s/weixin/oauth-return',                  //授权回调页面URI
+//            'log' => [                                              //日志
+//                'level' => 'debug',
+//                'file'  => '/tmp/easyopenwechat.log',
+//            ],
+//        ],
         'weixin.configs' => [
             'open_platform' => [
                 'app_id'   => 'wx8c1a03d2f7e747c8',
