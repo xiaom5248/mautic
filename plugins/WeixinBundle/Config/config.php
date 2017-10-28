@@ -131,7 +131,7 @@ return [
             'token'                => '123123',                      //公众号消息校验Token
             'aes_key'              => '1234567891234567891234567891234567891234567',                    //公众号消息加解密Key
 
-            'redirect_uri' => 'http://m-demo.linkall.sh.cn/s/oauth-return',                  //授权回调页面URI
+            'redirect_uri' => 'http://m-demo.linkall.sh.cn/s/weixin/oauth-return',                  //授权回调页面URI
             'log' => [                                              //日志
                 'level' => 'debug',
                 'file'  => '/tmp/easyopenwechat.log',

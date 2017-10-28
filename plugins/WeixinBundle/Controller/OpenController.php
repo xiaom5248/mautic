@@ -20,18 +20,10 @@ class OpenController extends AbstractFormController
     public function authReturnAction(Request $request)
     {
         $auth_code = $request->query->get('auth_code');
-        $auth_info = $this->get('weixin.open_application')->authorization->setAuthorizationCode($auth_code)->getAuthorizationInfo();
 
-        dump($auth_info);
+        $weixin = $this->get('weixin.open_application')->createWeixin($auth_code);
 
         $em = $this->getDoctrine()->getManager();
-        $weixin = new Weixin();
-
-        $weixin->setAccountName($auth_info['nick_name']);
-        $weixin->setIcon($auth_info['head_img']);
-        $weixin->setType($auth_info['service_type_info']['id']);
-        $weixin->setVerified($auth_info['verify_type_info']['id']);
-
         $em->persist($weixin);
         $em->flush();
 
