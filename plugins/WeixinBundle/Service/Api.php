@@ -18,16 +18,24 @@ use MauticPlugin\WeixinBundle\Entity\Weixin;
 class Api
 {
     private $configs;
+    private $app;
+    private $openPlatform;
 
     public function __construct($configs)
     {
         $this->configs = $configs;
+        $app = new \EasyWeChat\Foundation\Application($configs);
+        $this->openPlatform = $app->open_platform;
+    }
+
+    public function setWeixin(Weixin $weixin)
+    {
+        $this->app = $this->openPlatform->createAuthorizerApplication($weixin->getAuthorizerAppId(), $weixin->getAuthorizerRefreshToken());
     }
 
     public function updateMenu(Weixin $weixin)
     {
-        $app = new \EasyWeChat\Foundation\Application($this->options);
-        $menu = $app->menu;
+        $menu = $this->app->menu;
 
         $buttons = [];
         foreach ($weixin->getMenus() as $menu) {
@@ -90,8 +98,7 @@ class Api
                 break;
         }
 
-        $app = new \EasyWeChat\Foundation\Application($this->options);
-        $server = $app->server;
+        $server = $this->app->server;
         $server->setMessageHandler(function () use ($msg) {
             return $msg;
         });

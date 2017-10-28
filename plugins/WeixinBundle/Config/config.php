@@ -125,6 +125,10 @@ return [
                 'class'     => 'MauticPlugin\WeixinBundle\Service\Application',
                 'arguments' => ['%mautic.weixin.open_configs%']
             ],
+            'weixin.api' => [
+                'class'     => 'MauticPlugin\WeixinBundle\Service\Api',
+                'arguments' => ['%mautic.weixin.configs%']
+            ],
         ],
     ],
     'parameters' => [
@@ -139,6 +143,14 @@ return [
             'log' => [                                              //日志
                 'level' => 'debug',
                 'file'  => '/tmp/easyopenwechat.log',
+            ],
+        ],
+        'weixin.configs' => [
+            'open_platform' => [
+                'app_id'   => 'wx8c1a03d2f7e747c8',
+                'secret'   => 'd12409c5c671eb649d9da1187b0e39db',
+                'token'    => '123123',
+                'aes_key'  => '1234567891234567891234567891234567891234567'
             ],
         ]
     ]
