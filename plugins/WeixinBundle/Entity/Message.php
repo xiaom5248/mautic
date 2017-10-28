@@ -60,6 +60,9 @@ class Message
 
     private $image;
 
+    private $imageId;
+
+    private $imageUrl;
 
     public function __construct()
     {
@@ -113,6 +116,16 @@ class Message
 
         $builder->createField('image', 'string')
             ->columnName('image')
+            ->nullable()
+            ->build();
+
+        $builder->createField('imageId', 'integer')
+            ->columnName('image_id')
+            ->nullable()
+            ->build();
+
+        $builder->createField('imageUrl', 'string')
+            ->columnName('image_url')
             ->nullable()
             ->build();
     }
@@ -297,6 +310,38 @@ class Message
     public function setImage($image)
     {
         $this->image = $image;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImageId()
+    {
+        return $this->imageId;
+    }
+
+    /**
+     * @param mixed $imageId
+     */
+    public function setImageId($imageId)
+    {
+        $this->imageId = $imageId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImageUrl()
+    {
+        return $this->imageUrl;
+    }
+
+    /**
+     * @param mixed $imageUrl
+     */
+    public function setImageUrl($imageUrl)
+    {
+        $this->imageUrl = $imageUrl;
     }
 
 

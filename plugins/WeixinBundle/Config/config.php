@@ -79,6 +79,11 @@ return [
                 'controller'   => 'WeixinBundle:Open:oauthLogin',
             ],
 
+            'mautic_weixin_open_auth_return' => [
+                'path'         => '/weixin/oauth-return',
+                'controller'   => 'WeixinBundle:Open:authReturn',
+            ],
+
         ],
         'public' => [
             'mautic_weixin_open_auth' => [

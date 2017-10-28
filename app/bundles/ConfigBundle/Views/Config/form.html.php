@@ -31,7 +31,7 @@ $configKeys = array_keys($form->children);
                     <?php if (!isset($formConfigs[$key]) || !count($form[$key]->children)) {
                         continue;
                     } ?>
-                    <li role="presentation" class="list-group-item <?php echo $i === 0 ? 'in active' : ''; ?>">
+                    <li role="presentation" class="list-group-item <?php echo $i === 0 and $tag != 'weixin' ? 'in active' : ''; ?>">
                         <?php $containsErrors = ($view['form']->containsErrors($form[$key])) ? ' text-danger' : ''; ?>
                         <a href="#<?php echo $key; ?>" aria-controls="<?php echo $key; ?>" role="tab" data-toggle="tab"
                            class="steps<?php echo $containsErrors; ?>">
@@ -42,7 +42,7 @@ $configKeys = array_keys($form->children);
                         </a>
                     </li>
                 <?php endforeach; ?>
-                <li role="presentation" class="list-group-item">
+                <li role="presentation" class="list-group-item <?php echo $tag == 'weixin' ? 'in active' : ''; ?>">
                     <a href="#social_config" aria-controls="social_config" role="tab" data-toggle="tab"
                        class="steps">
                         社交媒体设置
@@ -67,14 +67,14 @@ $configKeys = array_keys($form->children);
                     continue;
                 endif;
                 ?>
-                <div role="tabpanel" class="tab-pane fade <?php echo $i === 0 ? 'in active' : ''; ?> bdr-w-0"
+                <div role="tabpanel" class="tab-pane fade <?php echo $i === 0 and $tag != 'weixin' ? 'in active' : ''; ?> bdr-w-0"
                      id="<?php echo $key; ?>">
                     <div class="pt-md pr-md pl-md pb-md">
                         <?php echo $view['form']->widget($form[$key], ['formConfig' => $formConfigs[$key]]); ?>
                     </div>
                 </div>
             <?php endforeach; ?>
-            <div role="tabpanel" class="tab-pane fade  bdr-w-0" id="social_config">
+            <div role="tabpanel" class="tab-pane fade <?php echo $tag == 'weixin' ? 'in active' : ''; ?> bdr-w-0" id="social_config">
                 <div class="pt-md pr-md pl-md pb-md">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
