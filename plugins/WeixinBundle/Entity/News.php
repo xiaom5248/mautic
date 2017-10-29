@@ -47,14 +47,12 @@ class News
 
     }
 
-    /**
-     * @param ORM\ClassMetadata $metadata
-     */
     public static function loadMetadata(ORM\ClassMetadata $metadata)
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('weixin_news');
+        $builder->setTable('weixin_news')
+            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\NewsRepository');;
 
         $builder->addId();
 

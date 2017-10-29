@@ -87,6 +87,10 @@ return [
                 'controller'   => 'WeixinBundle:Article:index',
                 'defaults' => ['page' => 1],
             ],
+            'mautic_weixin_article_sync' => [
+                'path'         => '/weixin/article/sync',
+                'controller'   => 'WeixinBundle:Article:sync',
+            ],
             'mautic_weixin_choose_weixin' => [
                 'path'         => '/weixin/choose-weixin',
                 'controller'   => 'WeixinBundle:AutoRes:chooseWeixin',
@@ -180,9 +184,9 @@ return [
                 'secret'   => 'd12409c5c671eb649d9da1187b0e39db',
                 'token'    => '123123',
                 'aes_key'  => '1234567891234567891234567891234567891234567',
-                'material_dir' => '%kernel.root_dir%/../material/',
-                'qrcode_dir' => '%kernel.root_dir%/../qrcode/',
             ],
+            'material_dir' => '%kernel.root_dir%/../material/',
+            'qrcode_dir' => '%kernel.root_dir%/../qrcode/',
         ]
     ]
 ];

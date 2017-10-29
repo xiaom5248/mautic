@@ -286,37 +286,40 @@ class Api
 
         for ($i = 0; $i < $count; $i += 20) {
             $lists = $material->lists('news', $i, 20);
-            foreach ($lists['item'] as $news) {
-                $news = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\News')->findBy([
-                    'mediaId' => $news['media_id']
+            foreach ($lists['item'] as $weixinNew) {
+                $news = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\News')->findOneBy([
+                    'mediaId' => $weixinNew['media_id']
                 ]);
-                if ($news) {
-                    continue;
+                if (!$news) {
+                    $news = new \MauticPlugin\WeixinBundle\Entity\News();
+                    $news->setWeixin($weixin);
+                    $news->setMediaId($weixinNew['media_id']);
+                    $this->em->persist($news);
+                } else {
+                    foreach ($news->getItems() as $item) {
+                        $this->em->remove($item);
+                    }
                 }
 
-                $news = new \MauticPlugin\WeixinBundle\Entity\News();
-                $this->em->persist($news);
-                $news->setWeixin($weixin);
-                $news->setMediaId($news['media_id']);
-                $news->setUpdateTime($news['update_time']);
+                $news->setUpdateTime((new \DateTime())->setTimestamp($weixinNew['update_time']));
 
-                foreach ($news['news_item'] as $item) {
+                foreach ($weixinNew['content']['news_item'] as $weixinItem) {
                     $item = new \MauticPlugin\WeixinBundle\Entity\NewsItem();
                     $this->em->persist($item);
                     $item->setNews($news);
-                    $item->setTitle($item['title']);
-                    $item->setThumbMediaId($item['thumb_media_id']);
-                    $item->setShowCoverPic($item['show_cover_pic']);
-                    $item->setAuthor($item['author']);
-                    $item->setDigest($item['digest']);
-                    $item->setContent($item['content']);
-                    $item->setUrl($item['url']);
-                    $item->setContentSourceUrl($item['content_source_url']);
+                    $item->setTitle($weixinItem['title']);
+                    $item->setThumbMediaId($weixinItem['thumb_media_id']);
+                    $item->setShowCoverPic($weixinItem['show_cover_pic']);
+                    $item->setAuthor($weixinItem['author']);
+                    $item->setDigest($weixinItem['digest']);
+                    $item->setContent($weixinItem['content']);
+                    $item->setUrl($weixinItem['url']);
+                    $item->setContentSourceUrl($weixinItem['content_source_url']);
 
-                    $image = $material->get($item['thumb_media_id']);
-                    $filename = $this->configs['material_dir'] . md5(uniqid()) . '.jpg';
-                    file_put_contents($filename, $image);
-                    $item->setThumbMedia($filename);
+                    $image = $material->get($weixinItem['thumb_media_id']);
+                    $filename = md5(uniqid()) . '.jpg';
+                    file_put_contents($this->configs['material_dir'] . $filename, $image);
+                    $item->setThumbMedia('material/'.$filename);
 
                 }
             }

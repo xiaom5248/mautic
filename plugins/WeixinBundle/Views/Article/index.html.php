@@ -17,7 +17,7 @@ $view['slots']->set(
     $view->render(
         'WeixinBundle:Common:switcher.html.php',
         [
-            'currentWeixin' => $currentWeixin,'weixins' => $weixins,
+            'currentWeixin' => $currentWeixin, 'weixins' => $weixins,
         ]
     )
 );
@@ -26,29 +26,88 @@ $pageButtons = [];
 
 ?>
 
+    <div class="row">
+        <div class="col-md-2 col-md-offset-10">
+            <a href="<?php echo $view['router']->path('mautic_weixin_article_sync'); ?>" class="btn btn-default">同步公众号已有图文</a>
+        </div>
+    </div>
 
 <?php if (count($items)): ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered">
             <thead>
             <tr>
-
-
+                <th></th>
+                <th>图文</th>
+                <th>更新时间</th>
+                <th>群发记录</th>
             </tr>
             </thead>
             <tbody>
+            <?php foreach ($items as $item): ?>
+                <tr>
+                    <td>
+                    <?php
 
+                    $custom = [];
+
+                    $custom[] = [
+                        'attr' => [
+                            'href' => '',
+                            'data-toggle' => 'ajax',
+                            'data-method' => 'GET',
+                        ],
+                        'btnText' => '从微信同步更新',
+                        'iconClass' => 'fa fa-refresh',
+                    ];
+
+                    $custom[] = [
+                        'attr' => [
+                            'href' => '',
+                            'data-toggle' => 'ajax',
+                            'data-method' => 'GET',
+                        ],
+                        'btnText' => '定时群发',
+                        'iconClass' => 'fa fa-send',
+                    ];
+
+                    $custom[] = [
+                        'attr' => [
+                            'href' => '',
+                            'data-toggle' => 'ajax',
+                            'data-method' => 'GET',
+                        ],
+                        'btnText' => '群发',
+                        'iconClass' => 'fa fa-send',
+                    ];
+
+                    echo $view->render('MauticCoreBundle:Helper:list_actions.html.php', [
+                        'item' => $item,
+                        'templateButtons' => [
+
+                        ],
+                        'routeBase' => 'contact',
+                        'langVar' => 'lead.lead',
+                        'customButtons' => $custom,
+                        'nameGetter' => 'getId'
+                    ]);
+                    ?>
+                    </td>
+                    <td><?php echo '<img style="max-height:80px;" src="' . $view['assets']->getUrl($item->getItems()->first()->getThumbMedia()) . '">' ?></td>
+                    <td><?php echo $item->getUpdateTime()->format('Y-m-d H:s:i') ?></td>
+                    <td><?php echo '' ?></td>
+                </tr>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
     <div class="panel-footer">
         <?php echo $view->render('MauticCoreBundle:Helper:pagination.html.php', [
             'totalItems' => $totalItems,
-            'page'       => $page,
-            'limit'      => 10,
-            'menuLinkId' => 'mautic_contact_index',
-            'baseUrl'    => $view['router']->path('mautic_contact_index'),
-            'tmpl'       => 'list',
+            'page' => $page,
+            'limit' => 10,
+            'baseUrl' => $view['router']->path('mautic_weixin_article'),
+            'target' => '',
             'sessionVar' => 'article',
         ]); ?>
     </div>

@@ -68,7 +68,7 @@ class Qrcode
         $builder = new ClassMetadataBuilder($metadata);
 
         $builder->setTable('weixin_qrcode')
-            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\QrcodeRepository');;
+            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\QrcodeRepository');
 
         $builder->addId();
 
