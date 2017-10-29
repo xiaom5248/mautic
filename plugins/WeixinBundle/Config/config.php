@@ -70,12 +70,26 @@ return [
                 'controller'   => 'WeixinBundle:Menu:updateMenu',
             ],
             'mautic_weixin_qrcode' => [
-                'path'         => '/weixin/qrcode',
+                'path'         => '/weixin/qrcode/{page}',
                 'controller'   => 'WeixinBundle:Qrcode:index',
+                'defaults' => ['page' => 1],
+            ],
+            'mautic_weixin_qrcode_new' => [
+                'path'         => '/weixin/qrcode/new',
+                'controller'   => 'WeixinBundle:Qrcode:new',
+            ],
+            'mautic_weixin_qrcode_show' => [
+                'path'         => '/weixin/qrcode/show/{id}',
+                'controller'   => 'WeixinBundle:Qrcode:show',
             ],
             'mautic_weixin_article' => [
-                'path'         => '/weixin/article',
+                'path'         => '/weixin/article/{page}',
                 'controller'   => 'WeixinBundle:Article:index',
+                'defaults' => ['page' => 1],
+            ],
+            'mautic_weixin_choose_weixin' => [
+                'path'         => '/weixin/choose-weixin',
+                'controller'   => 'WeixinBundle:AutoRes:chooseWeixin',
             ],
 
             'mautic_weixin_open_oauth' => [
@@ -87,6 +101,10 @@ return [
                 'path'         => '/weixin/oauth-return',
                 'controller'   => 'WeixinBundle:Open:authReturn',
             ],
+            'mautic_weixin_open_unlink' => [
+                'path'         => '/weixin/unlink/{id}',
+                'controller'   => 'WeixinBundle:Open:unlink',
+            ],
 
         ],
         'public' => [
@@ -94,6 +112,11 @@ return [
                 'path'         => '/weixin/auth',
                 'controller'   => 'WeixinBundle:Open:auth',
             ],
+            'mautic_weixin_open_message' => [
+                'path'         => '/weixin/{appId}/callback',
+                'controller'   => 'WeixinBundle:Open:handleMessage',
+            ],
+
         ]
     ],
     'menu' => [
@@ -119,7 +142,7 @@ return [
         'others' => [
             'weixin.helper.message' => [
                 'class'     => 'MauticPlugin\WeixinBundle\Service\MessageHelper',
-                'arguments' => ['%kernel.root_dir%']
+                'arguments' => ['@weixin.api', '%kernel.root_dir%']
             ],
 //            'weixin.open_application' => [
 //                'class'     => 'MauticPlugin\WeixinBundle\Service\Application',
@@ -127,7 +150,7 @@ return [
 //            ],
             'weixin.api' => [
                 'class'     => 'MauticPlugin\WeixinBundle\Service\Api',
-                'arguments' => ['%mautic.weixin.configs%']
+                'arguments' => ['@doctrine', '%mautic.weixin.configs%']
             ],
         ],
     ],
@@ -146,11 +169,19 @@ return [
 //            ],
 //        ],
         'weixin.configs' => [
+            'debug'  => true,
+            'log' => [
+                'level'      => 'debug',
+                'permission' => 0777,
+                'file'       => '/tmp/easywechat.log',
+            ],
             'open_platform' => [
                 'app_id'   => 'wx8c1a03d2f7e747c8',
                 'secret'   => 'd12409c5c671eb649d9da1187b0e39db',
                 'token'    => '123123',
-                'aes_key'  => '1234567891234567891234567891234567891234567'
+                'aes_key'  => '1234567891234567891234567891234567891234567',
+                'material_dir' => '%kernel.root_dir%/../material/',
+                'qrcode_dir' => '%kernel.root_dir%/../qrcode/',
             ],
         ]
     ]

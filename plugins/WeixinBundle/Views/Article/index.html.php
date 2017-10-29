@@ -17,7 +17,7 @@ $view['slots']->set(
     $view->render(
         'WeixinBundle:Common:switcher.html.php',
         [
-            'currentWeixin' => $currentWeixin,
+            'currentWeixin' => $currentWeixin,'weixins' => $weixins,
         ]
     )
 );
@@ -25,13 +25,33 @@ $view['slots']->set(
 $pageButtons = [];
 
 ?>
-<div class="box-layout">
-    <div class="col-md-12 bg-white height-auto">
-        <div class="row">
-        </div>
+
+
+<?php if (count($items)): ?>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+            <tr>
+
+
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
     </div>
-</div>
-
-<script>
-
-</script>
+    <div class="panel-footer">
+        <?php echo $view->render('MauticCoreBundle:Helper:pagination.html.php', [
+            'totalItems' => $totalItems,
+            'page'       => $page,
+            'limit'      => 10,
+            'menuLinkId' => 'mautic_contact_index',
+            'baseUrl'    => $view['router']->path('mautic_contact_index'),
+            'tmpl'       => 'list',
+            'sessionVar' => 'article',
+        ]); ?>
+    </div>
+<?php else: ?>
+    <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php'); ?>
+<?php endif; ?>

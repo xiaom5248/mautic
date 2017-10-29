@@ -62,10 +62,17 @@ class Weixin
 
     private $menus;
 
+    private $news;
+
     public function __construct()
     {
         $this->rules = new ArrayCollection();
         $this->menus = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return $this->getAccountName();
     }
 
     /**
@@ -130,6 +137,13 @@ class Weixin
             ->build();
 
         $builder->createOneToMany('menus', 'Menu')
+            ->setIndexBy('id')
+            ->mappedBy('weixin')
+            ->cascadePersist()
+            ->fetchExtraLazy()
+            ->build();
+
+        $builder->createOneToMany('news', 'News')
             ->setIndexBy('id')
             ->mappedBy('weixin')
             ->cascadePersist()
@@ -413,6 +427,22 @@ class Weixin
     public function getVerifiedText()
     {
         return WeixinEnum::$verified[$this->type];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNews()
+    {
+        return $this->news;
+    }
+
+    /**
+     * @param mixed $news
+     */
+    public function setNews($news)
+    {
+        $this->news = $news;
     }
 
 }

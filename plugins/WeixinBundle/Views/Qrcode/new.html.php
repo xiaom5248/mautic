@@ -10,14 +10,15 @@
  */
 $view->extend('MauticCoreBundle:Default:content.html.php');
 $view['slots']->set('mauticContent', 'weixin');
-$view['slots']->set('headerTitle', $view['translator']->trans('mautic.weixin.auto_res'));
+$view['slots']->set('headerTitle', $view['translator']->trans('weixin.qrcode'));
 
 $view['slots']->set(
     'actions',
     $view->render(
         'WeixinBundle:Common:switcher.html.php',
         [
-            'currentWeixin' => $currentWeixin,'weixins' => $weixins,
+            'currentWeixin' => $currentWeixin,
+            'weixins' => $weixins,
         ]
     )
 );
@@ -47,3 +48,17 @@ $pageButtons = [];
         </div>
     </div>
 </div>
+
+<script>
+
+    (function () {
+        mQuery(document).ready(function() {
+            mQuery('.msg-type').on('change', function() {
+                mQuery('[data-toggle="msg-type"]').closest('.row').hide();
+                mQuery('[toggle-type~="'+mQuery(this).val()+'"]').closest('.row').show();
+
+            }).trigger('change');
+        });
+    })();
+
+</script>

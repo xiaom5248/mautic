@@ -17,6 +17,38 @@ class OpenController extends AbstractFormController
         return $this->get('weixin.api')->handleAuth();
     }
 
+    public function handleMessageAction(Request $request, $appId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $weixin = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->findOneBy(
+            ['authorizerAppId' => $appId]
+        );
+
+        return $this->get('weixin.api')->handleMessage($weixin);
+    }
+
+
+    public function unlinkAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $weixin = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->find($id);
+
+//        try {
+            $this->get('weixin.api')->unlinkWeixin($weixin);
+//        } catch (\Exception $e){
+
+//        }
+
+        $em->remove($weixin);
+        $em->flush();
+
+        return $this->redirectToRoute('mautic_config_action', [
+            'tag' => 'weixin',
+            'objectAction' => 'edit',
+        ]);
+    }
+
     public function authReturnAction(Request $request)
     {
         $auth_code = $request->query->get('auth_code');

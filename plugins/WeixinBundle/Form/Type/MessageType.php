@@ -35,7 +35,7 @@ class MessageType extends AbstractType
             'label'      => 'mautic.weixin.message.msg_type',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control msg-type'],
-            'choices'    => Message::$msgTypes
+            'choices'    => $options['msg_type']
         ]);
 
         $builder->add('content', 'textarea', [
@@ -115,6 +115,7 @@ class MessageType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class'         => 'MauticPlugin\WeixinBundle\Entity\Message',
+            'msg_type' => Message::$msgTypes
         ]);
     }
 

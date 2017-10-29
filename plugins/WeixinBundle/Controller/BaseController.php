@@ -13,10 +13,15 @@ abstract class BaseController extends AbstractFormController
      */
     protected function getCurrentWeixin()
     {
+        $currentWeixin = null;
+        if ($this->get('session')->get('current_weixin_id')) {
+            $currentWeixinId = $this->get('session')->get('current_weixin_id');
+            $currentWeixin = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->find($currentWeixinId);
+        }
 
-        if(!$this->get('session')->get('current_weixin_id')) {
+        if (!$currentWeixin) {
             $weixin = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->findOneByOwner($this->getUser());
-            if(!$weixin) {
+            if (!$weixin) {
                 $this->get('session')->getFlashBag()->add('error', 'weixin.no_available_account');
                 return $this->redirectToRoute('mautic_dashboard_index');
             }
@@ -24,9 +29,24 @@ abstract class BaseController extends AbstractFormController
             return $weixin;
         }
 
-        $currentWeixinId = $this->get('session')->get('current_weixin_id');
-        $currentWeixin = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->find($currentWeixinId);
-
         return $currentWeixin;
+    }
+
+    protected function getWeixins()
+    {
+        return $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->findByOwner($this->getUser());
+
+    }
+
+    public function delegateView($args)
+    {
+        $weixins = $this->getWeixins();
+        if (!isset($args['viewParameters'])){
+            $args['viewParameters'] = ['weixins' => $weixins];
+        }else{
+            $args['viewParameters']['weixins'] = $weixins;
+        }
+
+        return parent::delegateView($args);
     }
 }

@@ -16,11 +16,15 @@ class ArticleController extends BaseController
 
         $currentWeixin = $this->getCurrentWeixin();
 
+        if(count($currentWeixin->getNews()) == 0){
+            $this->get('weixin.api')->initArticles();
+        }
+
         return $this->delegateView([
             'viewParameters' => [
                 'currentWeixin' => $currentWeixin,
             ],
-            'contentTemplate' => 'WeixinBundle:Qrcode:index.html.php',
+            'contentTemplate' => 'WeixinBundle:Article:index.html.php',
             'passthroughVars' => [
 
             ],
