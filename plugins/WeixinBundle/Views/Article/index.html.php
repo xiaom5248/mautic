@@ -28,7 +28,7 @@ $pageButtons = [];
 
     <div class="row">
         <div class="col-md-2 col-md-offset-10">
-            <a href="<?php echo $view['router']->path('mautic_weixin_article_sync'); ?>" class="btn btn-default">同步公众号已有图文</a>
+            <a href="<?php echo $view['router']->path('mautic_weixin_article_sync_all'); ?>" class="btn btn-default">同步公众号已有图文</a>
         </div>
     </div>
 
@@ -48,12 +48,11 @@ $pageButtons = [];
                 <tr>
                     <td>
                     <?php
-
                     $custom = [];
 
                     $custom[] = [
                         'attr' => [
-                            'href' => '',
+                            'href' => $view['router']->path('mautic_weixin_article_sync', ['id' => $item->getId()]),
                             'data-toggle' => 'ajax',
                             'data-method' => 'GET',
                         ],

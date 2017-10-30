@@ -82,13 +82,21 @@ return [
                 'path'         => '/weixin/qrcode/show/{id}',
                 'controller'   => 'WeixinBundle:Qrcode:show',
             ],
+            'mautic_weixin_qrcode_download' => [
+                'path'         => '/weixin/qrcode/download/{id}',
+                'controller'   => 'WeixinBundle:Qrcode:download',
+            ],
             'mautic_weixin_article' => [
                 'path'         => '/weixin/article/{page}',
                 'controller'   => 'WeixinBundle:Article:index',
                 'defaults' => ['page' => 1],
             ],
+            'mautic_weixin_article_sync_all' => [
+                'path'         => '/weixin/article/sync-all',
+                'controller'   => 'WeixinBundle:Article:syncAll',
+            ],
             'mautic_weixin_article_sync' => [
-                'path'         => '/weixin/article/sync',
+                'path'         => '/weixin/article/sync/{id}',
                 'controller'   => 'WeixinBundle:Article:sync',
             ],
             'mautic_weixin_choose_weixin' => [

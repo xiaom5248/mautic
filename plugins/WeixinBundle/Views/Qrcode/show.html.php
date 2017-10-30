@@ -63,8 +63,8 @@ $pageButtons = [];
         <div class="col-md-12">
             <table class="table table-condensed">
                 <tr>
-                    <th>扫码时间</th>
                     <th>扫码地址</th>
+                    <th>扫码时间</th>
                 </tr>
                 <?php foreach ($qrcode->getScans() as $scan): ?>
                     <tr>
@@ -73,6 +73,11 @@ $pageButtons = [];
                     </tr>
                 <?php endforeach; ?>
             </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn btn-default" href="<?php echo $view['router']->path('mautic_weixin_qrcode_download', ['id' => $qrcode->getId()]); ?>">下载二维码</a>
         </div>
     </div>
 </div>

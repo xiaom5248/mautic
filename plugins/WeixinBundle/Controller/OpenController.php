@@ -34,13 +34,13 @@ class OpenController extends AbstractFormController
 
         $weixin = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->find($id);
 
-//        try {
+        try {
             $this->get('weixin.api')->unlinkWeixin($weixin);
-//        } catch (\Exception $e){
+        } catch (\Exception $e){
 
-//        }
+        }
 
-        $em->remove($weixin);
+        $weixin->setOwner(null);
         $em->flush();
 
         return $this->redirectToRoute('mautic_config_action', [

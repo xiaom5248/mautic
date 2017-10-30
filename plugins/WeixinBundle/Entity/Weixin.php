@@ -155,7 +155,7 @@ class Weixin
             ->build();
 
         $builder->createManyToOne('owner','Mautic\UserBundle\Entity\User')
-            ->addJoinColumn('owner_id', 'id', false, false, 'CASCADE')
+            ->addJoinColumn('owner_id', 'id', true, false, 'CASCADE')
             ->build();
     }
 

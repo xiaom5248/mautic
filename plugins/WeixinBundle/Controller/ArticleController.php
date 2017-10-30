@@ -34,11 +34,25 @@ class ArticleController extends BaseController
         ]);
     }
 
-    public function syncAction()
+    public function syncAllAction()
     {
         $currentWeixin = $this->getCurrentWeixin();
         $this->get('weixin.api')->syncArticles($currentWeixin);
 
         return $this->redirectToRoute('mautic_weixin_article');
+    }
+
+    public function syncAction($id)
+    {
+        $news = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\News')->find($id);
+        $this->get('weixin.api')->syncArticle($news);
+        $this->get('session')->getFlashBag()->set('notice', '更新成功');
+        return $this->redirectToRoute('mautic_weixin_article');
+    }
+
+    public function sendAction(Request $request, $id)
+    {
+        $news = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\News')->find($id);
+
     }
 }

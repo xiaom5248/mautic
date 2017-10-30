@@ -7,7 +7,9 @@ use MauticPlugin\WeixinBundle\Entity\Qrcode;
 use MauticPlugin\WeixinBundle\Form\Type\FollowedMessageType;
 use MauticPlugin\WeixinBundle\Form\Type\KeywordMessageType;
 use MauticPlugin\WeixinBundle\Form\Type\QrcodeType;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class QrcodeController extends BaseController
 {
@@ -102,6 +104,26 @@ class QrcodeController extends BaseController
 
             ],
         ]);
+    }
+
+    public function downloadAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $qrcode = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Qrcode')->find($id);
+
+        if ($qrcode->getImage()) {
+            $response = new BinaryFileResponse($this->getParameter('kernel.root_dir') . '/../' . $qrcode->getImage());
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            return $response;
+        } else {
+            $filename = md5(uniqid()) . '.png';
+            (new \Endroid\QrCode\QrCode($qrcode->getUrl()))->writeFile($this->getParameter('kernel.root_dir') . '/../qrcode/' . $filename);
+            $qrcode->setImage('qrcode/' . $filename);
+            $em->flush();
+            $response = new BinaryFileResponse($this->getParameter('kernel.root_dir') . '/../' . $qrcode->getImage());
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            return $response;
+        }
     }
 
 }

@@ -133,7 +133,11 @@ class Api
         $auth_info = $this->getOpenPlatform()->getAuthorizationInfo($code);
         $authorizer_info = $this->getOpenPlatform()->getAuthorizerInfo($auth_info->first()['authorizer_appid']);
 
-        $weixin = new Weixin();
+        $weixin = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->findOneBy(['authorizerAppId' => $auth_info['authorization_info']['authorizer_appid']]);
+        if(!$weixin){
+            $weixin = new Weixin();
+        }
+
         $weixin->setAuthorizerAppId($auth_info['authorization_info']['authorizer_appid']);
         $weixin->setAuthorizerAccessToken($auth_info['authorization_info']['authorizer_access_token']);
         $weixin->setAuthorizerRefreshToken($auth_info['authorization_info']['authorizer_refresh_token']);
@@ -287,6 +291,7 @@ class Api
         for ($i = 0; $i < $count; $i += 20) {
             $lists = $material->lists('news', $i, 20);
             foreach ($lists['item'] as $weixinNew) {
+
                 $news = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\News')->findOneBy([
                     'mediaId' => $weixinNew['media_id']
                 ]);
@@ -316,22 +321,56 @@ class Api
                     $item->setUrl($weixinItem['url']);
                     $item->setContentSourceUrl($weixinItem['content_source_url']);
 
-                    $image = $material->get($weixinItem['thumb_media_id']);
-                    $filename = md5(uniqid()) . '.jpg';
-                    file_put_contents($this->configs['material_dir'] . $filename, $image);
-                    $item->setThumbMedia('material/'.$filename);
+                    try{
+                        $image = $material->get($weixinItem['thumb_media_id']);
+                        $filename = md5(uniqid()) . '.jpg';
+                        file_put_contents($this->configs['material_dir'] . $filename, $image);
+                        $item->setThumbMedia('material/' . $filename);
+                    } catch (\Exception $e) {
+
+                    }
 
                 }
             }
-
         }
-
         $this->em->flush();
     }
 
-    public function uploadArticle()
+    public function syncArticle(\MauticPlugin\WeixinBundle\Entity\News $news)
     {
-        $article = new Article();
+
+        $this->setWeixin($news->getWeixin());
+        $material = $this->app->material;
+        $resource = $material->get($news->getMediaId());
+        $news->setUpdateTime((new \DateTime())->setTimestamp($resource['update_time']));
+
+        foreach ($news->getItems() as $item) {
+            $this->em->remove($item);
+        }
+
+        foreach ($resource['news_item'] as $weixinItem) {
+            $item = new \MauticPlugin\WeixinBundle\Entity\NewsItem();
+            $this->em->persist($item);
+            $item->setNews($news);
+            $item->setTitle($weixinItem['title']);
+            $item->setThumbMediaId($weixinItem['thumb_media_id']);
+            $item->setShowCoverPic($weixinItem['show_cover_pic']);
+            $item->setAuthor($weixinItem['author']);
+            $item->setDigest($weixinItem['digest']);
+            $item->setContent($weixinItem['content']);
+            $item->setUrl($weixinItem['url']);
+            $item->setContentSourceUrl($weixinItem['content_source_url']);
+
+            $image = $material->get($weixinItem['thumb_media_id']);
+            $filename = md5(uniqid()) . '.jpg';
+            file_put_contents($this->configs['material_dir'] . $filename, $image);
+            $item->setThumbMedia('material/' . $filename);
+        }
+        $this->em->flush();
+    }
+
+    public function sendArticle(\MauticPlugin\WeixinBundle\Entity\News $news)
+    {
 
     }
 
