@@ -6,6 +6,7 @@ use Mautic\CoreBundle\Controller\AbstractFormController;
 use MauticPlugin\WeixinBundle\Entity\Qrcode;
 use MauticPlugin\WeixinBundle\Form\Type\FollowedMessageType;
 use MauticPlugin\WeixinBundle\Form\Type\KeywordMessageType;
+use MauticPlugin\WeixinBundle\Form\Type\QrcodeLogoType;
 use MauticPlugin\WeixinBundle\Form\Type\QrcodeType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -93,6 +94,13 @@ class QrcodeController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $qrcode = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Qrcode')->find($id);
 
+        if (!$qrcode->getImage()) {
+            $filename = md5(uniqid()) . '.png';
+            (new \Endroid\QrCode\QrCode($qrcode->getUrl()))->writeFile($this->getParameter('kernel.root_dir') . '/../qrcode/' . $filename);
+            $qrcode->setImage('qrcode/' . $filename);
+            $em->persist($qrcode);
+            $em->flush();
+        }
 
         return $this->delegateView([
             'viewParameters' => [
@@ -106,24 +114,68 @@ class QrcodeController extends BaseController
         ]);
     }
 
+    public function logoAction(Request $request, $id)
+    {
+        $currentWeixin = $this->getCurrentWeixin();
+
+        $em = $this->getDoctrine()->getManager();
+        $qrcode = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Qrcode')->find($id);
+
+        $form = $this->createForm(QrcodeLogoType::class, $qrcode);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $fileName = md5(uniqid()) . '.png';
+            $file = $form->get('file')->getData();
+            $file->move(
+                $this->getParameter('kernel.root_dir') . '/../qrcode',
+                $fileName
+            );
+            $qrcode->setLogo('qrcode/' . $fileName);
+            $qr = imagecreatefrompng($this->getParameter('kernel.root_dir') . '/../' . $qrcode->getImage());
+            $logo = imagecreatefrompng($this->getParameter('kernel.root_dir') . '/../' . $qrcode->getLogo());
+
+            $qrWidth = imagesx($qr);
+            $qrHeight = imagesy($qr);
+
+            $logoWidth = imagesx($logo);
+            $logoHeight = imagesy($logo);
+
+            // Scale logo to fit in the QR Code
+            $logoQrWidth = $qrWidth / 5;
+            $scale = $logoWidth / $logoQrWidth;
+            $logoQrHeight = $logoHeight / $scale;
+
+            imagecopyresampled($qr, $logo, $qrWidth / 5 * 2, $qrHeight / 5 * 2, 0, 0, $logoQrWidth, $logoQrHeight, $logoWidth, $logoHeight);
+            $finalImage = md5(uniqid()) . '.png';
+            imagepng($qr, $this->getParameter('kernel.root_dir') . '/../qrcode/' . $finalImage);
+            $qrcode->setFinalImage('qrcode/' . $finalImage);
+            $em->persist($qrcode);
+            $em->flush();
+
+            return $this->redirectToRoute('mautic_weixin_qrcode_show', ['id' => $qrcode->getId()]);
+        }
+
+        return $this->delegateView([
+            'viewParameters' => [
+                'currentWeixin' => $currentWeixin,
+                'form' => $form->createView(),
+            ],
+            'contentTemplate' => 'WeixinBundle:Qrcode:logo.html.php',
+            'passthroughVars' => [
+
+            ],
+        ]);
+    }
+
     public function downloadAction($id)
     {
         $em = $this->getDoctrine()->getManager();
         $qrcode = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Qrcode')->find($id);
 
-        if ($qrcode->getImage()) {
-            $response = new BinaryFileResponse($this->getParameter('kernel.root_dir') . '/../' . $qrcode->getImage());
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
-            return $response;
-        } else {
-            $filename = md5(uniqid()) . '.png';
-            (new \Endroid\QrCode\QrCode($qrcode->getUrl()))->writeFile($this->getParameter('kernel.root_dir') . '/../qrcode/' . $filename);
-            $qrcode->setImage('qrcode/' . $filename);
-            $em->flush();
-            $response = new BinaryFileResponse($this->getParameter('kernel.root_dir') . '/../' . $qrcode->getImage());
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
-            return $response;
-        }
+        $response = new BinaryFileResponse($this->getParameter('kernel.root_dir') . ' /../' . $qrcode->getImage());
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+        return $response;
     }
 
 }

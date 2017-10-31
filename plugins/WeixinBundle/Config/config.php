@@ -86,6 +86,10 @@ return [
                 'path'         => '/weixin/qrcode/download/{id}',
                 'controller'   => 'WeixinBundle:Qrcode:download',
             ],
+            'mautic_weixin_qrcode_logo' => [
+                'path'         => '/weixin/qrcode/logo/{id}',
+                'controller'   => 'WeixinBundle:Qrcode:logo',
+            ],
             'mautic_weixin_article' => [
                 'path'         => '/weixin/article/{page}',
                 'controller'   => 'WeixinBundle:Article:index',

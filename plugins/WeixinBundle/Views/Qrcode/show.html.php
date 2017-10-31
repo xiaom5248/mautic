@@ -45,8 +45,15 @@ $pageButtons = [];
                 </tr>
                 <tr>
                     <th>二维码</th>
-                    <td><?php $qrCode = new \Endroid\QrCode\QrCode($qrcode->getUrl());
-                        echo '<img style="max-height:150px;" src="' . $qrCode->writeDataUri() . '">' ?></td>
+                    <td><img style="max-height:150px;" src="<?php echo $view['assets']->getUrl($qrcode->getImage()); ?>"></td>
+                <tr>
+                <tr>
+                    <th>Logo</th>
+                    <td><img style="max-height:150px;" src="<?php echo $view['assets']->getUrl($qrcode->getLogo()); ?>"></td>
+                <tr>
+                <tr>
+                    <th>二维码</th>
+                    <td><img style="max-height:150px;" src="<?php echo $view['assets']->getUrl($qrcode->getFinalImage()); ?>"></td>
                 <tr>
                 <tr>
                     <th>访问人数</th>
@@ -77,6 +84,7 @@ $pageButtons = [];
     </div>
     <div class="row">
         <div class="col-md-12">
+            <a class="btn btn-success" href="<?php echo $view['router']->path('mautic_weixin_qrcode_logo', ['id' => $qrcode->getId()]); ?>">Logo</a>
             <a class="btn btn-default" href="<?php echo $view['router']->path('mautic_weixin_qrcode_download', ['id' => $qrcode->getId()]); ?>">下载二维码</a>
         </div>
     </div>

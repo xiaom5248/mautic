@@ -95,10 +95,10 @@ class MessageType extends AbstractType
                     new File(
                         [
                             'mimeTypes' => [
-                                'image/gif',
                                 'image/jpeg',
                                 'image/png',
                             ],
+                            'maxSize' => '1M',
                             'mimeTypesMessage' => 'mautic.lead.avatar.types_invalid',
                         ]
                     ),

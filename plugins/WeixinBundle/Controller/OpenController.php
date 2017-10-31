@@ -41,6 +41,7 @@ class OpenController extends AbstractFormController
         }
 
         $weixin->setOwner(null);
+        $em->persist($weixin);
         $em->flush();
 
         return $this->redirectToRoute('mautic_config_action', [
