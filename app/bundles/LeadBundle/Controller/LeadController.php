@@ -407,7 +407,7 @@ class LeadController extends FormController
         $page = $this->get('session')->get('mautic.lead.page', 1);
 
         $action = $this->generateUrl('mautic_contact_action', ['objectAction' => 'new']);
-        $fields = $this->getModel('lead.field')->getPublishedFieldArrays('lead');
+        $fields = $this->getModel('lead.field')->getPublishedVisibleFieldArrays('lead');
 
         $form = $model->createForm($lead, $this->get('form.factory'), $action, ['fields' => $fields]);
 
@@ -591,7 +591,7 @@ class LeadController extends FormController
         }
 
         $action = $this->generateUrl('mautic_contact_action', ['objectAction' => 'edit', 'objectId' => $objectId]);
-        $fields = $this->getModel('lead.field')->getPublishedFieldArrays('lead');
+        $fields = $this->getModel('lead.field')->getPublishedVisibleFieldArrays('lead');
         $form   = $model->createForm($lead, $this->get('form.factory'), $action, ['fields' => $fields]);
 
         ///Check for a submitted form and process it

@@ -710,6 +710,34 @@ class FieldModel extends FormModel
         );
     }
 
+    public function getPublishedVisibleFieldArrays($object = 'lead')
+    {
+        return $this->getEntities(
+            [
+                'filter' => [
+                    'force' => [
+                        [
+                            'column' => 'f.isPublished',
+                            'expr'   => 'eq',
+                            'value'  => true,
+                        ],
+                        [
+                            'column' => 'f.isVisible',
+                            'expr'   => 'eq',
+                            'value'  => true,
+                        ],
+                        [
+                            'column' => 'f.object',
+                            'expr'   => 'eq',
+                            'value'  => $object,
+                        ],
+                    ],
+                ],
+                'hydration_mode' => 'HYDRATE_ARRAY',
+            ]
+        );
+    }
+
     public function getPublishedUserFieldArrays($user, $object = 'user')
     {
         return $this->getEntities(
