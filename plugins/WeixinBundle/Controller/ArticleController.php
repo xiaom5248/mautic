@@ -2,9 +2,10 @@
 
 namespace MauticPlugin\WeixinBundle\Controller;
 
-use Mautic\CoreBundle\Controller\AbstractFormController;
-use MauticPlugin\WeixinBundle\Form\Type\FollowedMessageType;
-use MauticPlugin\WeixinBundle\Form\Type\KeywordMessageType;
+use MauticPlugin\WeixinBundle\Entity\NewsSend;
+use MauticPlugin\WeixinBundle\Form\Type\NewsSendScheduleType;
+use MauticPlugin\WeixinBundle\Form\Type\NewsSendType;
+use Symfony\Component\HttpFoundation\Request;
 
 class ArticleController extends BaseController
 {
@@ -53,6 +54,64 @@ class ArticleController extends BaseController
     public function sendAction(Request $request, $id)
     {
         $news = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\News')->find($id);
+        $currentWeixin = $this->getCurrentWeixin();
 
+        $send = new NewsSend();
+        $send->setNews($news);
+        $form = $this->createForm(NewsSendType::class, $send);
+
+        $form->handleRequest($request);
+
+        if($form->isValid()) {
+            if($send->getSendType() == NewsSend::NEWS_SEND_ALL) {
+                $this->get('weixin.api')->sendArticleDirect($send);
+            }
+
+            return $this->redirectToRoute('mautic_weixin_article');
+        }
+
+        return $this->delegateView([
+            'viewParameters' => [
+                'currentWeixin' => $currentWeixin,
+                'form' => $form->createView(),
+            ],
+            'contentTemplate' => 'WeixinBundle:Article:send.html.php',
+            'passthroughVars' => [
+
+            ],
+        ]);
+    }
+
+
+    public function sendScheduleAction(Request $request, $id)
+    {
+        $news = $this->getDoctrine()->getRepository('MauticPlugin\WeixinBundle\Entity\News')->find($id);
+        $currentWeixin = $this->getCurrentWeixin();
+
+        $send = new NewsSend();
+        $send->setNews($news);
+        $form = $this->createForm(NewsSendScheduleType::class, $send);
+
+        $form->handleRequest($request);
+
+        if($form->isValid()) {
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($send);
+            $em->flush();
+
+            return $this->redirectToRoute('mautic_weixin_article');
+        }
+
+        return $this->delegateView([
+            'viewParameters' => [
+                'currentWeixin' => $currentWeixin,
+                'form' => $form->createView(),
+            ],
+            'contentTemplate' => 'WeixinBundle:Article:send.html.php',
+            'passthroughVars' => [
+
+            ],
+        ]);
     }
 }

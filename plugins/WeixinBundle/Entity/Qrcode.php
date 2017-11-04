@@ -55,6 +55,14 @@ class Qrcode
 
     private $scans;
 
+    private $leadField1;
+
+    private $leadField1Value;
+
+    private $leadField2;
+
+    private $leadField2Value;
+
     public function __construct()
     {
         $this->scans = new ArrayCollection();
@@ -115,6 +123,22 @@ class Qrcode
         $builder->createManyToOne('message', 'Message')
             ->addJoinColumn('message_id', 'id', true, false, 'CASCADE')
             ->build();
+//
+//        $builder->createManyToOne('leadField1', 'integer')
+//            ->columnName('lead_field1')
+//            ->build();
+//
+//        $builder->createField('leadField1Value', 'string')
+//            ->columnName('lead_field1_value')
+//            ->build();
+//
+//        $builder->createManyToOne('leadField2', 'integer')
+//            ->columnName('lead_field2')
+//            ->build();
+//
+//        $builder->createField('leadField2Value', 'string')
+//            ->columnName('lead_field2_value')
+//            ->build();
 
         $builder->createOneToMany('scans', 'QrcodeScan')
             ->setIndexBy('id')

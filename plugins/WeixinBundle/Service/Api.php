@@ -17,6 +17,8 @@ use EasyWeChat\OpenPlatform\Guard;
 use MauticPlugin\WeixinBundle\Entity\Menu;
 use MauticPlugin\WeixinBundle\Entity\MenuItem;
 use MauticPlugin\WeixinBundle\Entity\Message;
+use MauticPlugin\WeixinBundle\Entity\NewsHistory;
+use MauticPlugin\WeixinBundle\Entity\NewsSend;
 use MauticPlugin\WeixinBundle\Entity\Qrcode;
 use MauticPlugin\WeixinBundle\Entity\QrcodeScan;
 use MauticPlugin\WeixinBundle\Entity\Rule;
@@ -134,7 +136,7 @@ class Api
         $authorizer_info = $this->getOpenPlatform()->getAuthorizerInfo($auth_info->first()['authorizer_appid']);
 
         $weixin = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')->findOneBy(['authorizerAppId' => $auth_info['authorization_info']['authorizer_appid']]);
-        if(!$weixin){
+        if (!$weixin) {
             $weixin = new Weixin();
         }
 
@@ -321,7 +323,7 @@ class Api
                     $item->setUrl($weixinItem['url']);
                     $item->setContentSourceUrl($weixinItem['content_source_url']);
 
-                    try{
+                    try {
                         $image = $material->get($weixinItem['thumb_media_id']);
                         $filename = md5(uniqid()) . '.jpg';
                         file_put_contents($this->configs['material_dir'] . $filename, $image);
@@ -369,9 +371,29 @@ class Api
         $this->em->flush();
     }
 
-    public function sendArticle(\MauticPlugin\WeixinBundle\Entity\News $news)
+    public function sendArticleDirect(\MauticPlugin\WeixinBundle\Entity\NewsSend $send)
     {
+        $this->setWeixin($send->getNews()->getWeixin());
+        if ($send->getSendType() == NewsSend::NEWS_SEND_ALL) {
+            $this->app->broadcast->sendNews($send->getNews()->getMediaId());
 
+        }
+        if ($send->getSendType() == NewsSend::NEWS_SEND_GROUP) {
+
+        }
+
+        $this->createSendHistory($send->getNews(), NewsHistory::TYPE_DERICT);
+    }
+
+    private function createSendHistory(\MauticPlugin\WeixinBundle\Entity\News $news, $type)
+    {
+        $history = new NewsHistory();
+        $history->setNews($news);
+        $history->setTime(new \DateTime());
+        $history->setType($type);
+
+        $this->em->persist($history);
+        $this->em->flush();
     }
 
     public function uploadQrcode(Qrcode $qrcode)

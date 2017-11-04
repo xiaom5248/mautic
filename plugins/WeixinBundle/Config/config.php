@@ -86,6 +86,14 @@ return [
                 'path'         => '/weixin/qrcode/download/{id}',
                 'controller'   => 'WeixinBundle:Qrcode:download',
             ],
+            'mautic_weixin_qrcode_delete' => [
+                'path'         => '/weixin/qrcode/delete/{id}',
+                'controller'   => 'WeixinBundle:Qrcode:delete',
+            ],
+            'mautic_weixin_qrcode_edit' => [
+                'path'         => '/weixin/qrcode/edit/{id}',
+                'controller'   => 'WeixinBundle:Qrcode:edit',
+            ],
             'mautic_weixin_qrcode_logo' => [
                 'path'         => '/weixin/qrcode/logo/{id}',
                 'controller'   => 'WeixinBundle:Qrcode:logo',
@@ -103,16 +111,22 @@ return [
                 'path'         => '/weixin/article/sync/{id}',
                 'controller'   => 'WeixinBundle:Article:sync',
             ],
+            'mautic_weixin_article_send' => [
+                'path'         => '/weixin/article/send/{id}',
+                'controller'   => 'WeixinBundle:Article:send',
+            ],
+            'mautic_weixin_article_send_schedule' => [
+                'path'         => '/weixin/article/send-schedule/{id}',
+                'controller'   => 'WeixinBundle:Article:sendSchedule',
+            ],
             'mautic_weixin_choose_weixin' => [
                 'path'         => '/weixin/choose-weixin',
                 'controller'   => 'WeixinBundle:AutoRes:chooseWeixin',
             ],
-
             'mautic_weixin_open_oauth' => [
                 'path'         => '/weixin-oauth',
                 'controller'   => 'WeixinBundle:Open:oauthLogin',
             ],
-
             'mautic_weixin_open_auth_return' => [
                 'path'         => '/weixin/oauth-return',
                 'controller'   => 'WeixinBundle:Open:authReturn',
@@ -121,7 +135,6 @@ return [
                 'path'         => '/weixin/unlink/{id}',
                 'controller'   => 'WeixinBundle:Open:unlink',
             ],
-
         ],
         'public' => [
             'mautic_weixin_open_auth' => [
@@ -140,7 +153,7 @@ return [
             'items' => [
                 'mautic.channels.weixin' => [
                     'route'  => 'mautic_weixin_auto_res',
-                    'access' => ['sms:smses:viewown', 'sms:smses:viewother'],
+                    'access' => ['weixin:weixins:viewown', 'weixin:weixins:viewother'],
                     'parent' => 'mautic.core.channels',
 //                    'checks' => [
 //                        'integration' => [

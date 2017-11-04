@@ -25,7 +25,7 @@ class MessageHelper
 
     public function handleMessageImage(Weixin $weixin, Message $message, $file)
     {
-        if (in_array($message->getMsgType(), [Message::MSG_TYPE_IMG, Message::MSG_TYPE_IMGTEXT])) {
+        if ($file && in_array($message->getMsgType(), [Message::MSG_TYPE_IMG, Message::MSG_TYPE_IMGTEXT])) {
 
             $result = $this->weixinApi->uploadImage($weixin, $file);
             $message->setImageId($result['media_id']);

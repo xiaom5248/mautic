@@ -26,11 +26,16 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 /**
  * Class Weixin.
  */
-class NewsHistory
+class NewsSend
 {
 
-    const TYPE_DERICT = 'direct';
-    const TYPE_SCHEDULE = 'schedule';
+    const NEWS_SEND_ALL = 'all';
+    const NEWS_SEND_GROUP = 'group';
+
+    static $types = [
+        self::NEWS_SEND_ALL => 'weixin.news.type.all',
+        self::NEWS_SEND_GROUP => 'weixin.news.type.group'
+    ];
 
     /**
      * @var int
@@ -39,9 +44,11 @@ class NewsHistory
 
     private $news;
 
-    private $time;
+    private $sendTime;
 
-    private $type;
+    private $sendType;
+
+    private $group;
 
     public function __construct()
     {
@@ -52,21 +59,22 @@ class NewsHistory
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('weixin_news_history');
+        $builder->setTable('weixin_news_send')
+            ->setCustomRepositoryClass('MauticPlugin\WeixinBundle\Entity\NewsSendRepository');;
 
         $builder->addId();
 
-        $builder->createField('time', 'datetime')
-            ->columnName('time')
+        $builder->createField('sendTime', 'datetime')
+            ->columnName('send_time')
             ->nullable()
             ->build();
 
-        $builder->createField('type', 'string')
-            ->columnName('type')
+        $builder->createField('sendType', 'string')
+            ->columnName('send_type')
             ->build();
 
         $builder->createManyToOne('news', 'News')
-            ->addJoinColumn('news_id', 'id', false, false, 'CASCADE')
+            ->addJoinColumn('weixin_id', 'id', false, false, 'CASCADE')
             ->build();
 
     }
@@ -106,33 +114,49 @@ class NewsHistory
     /**
      * @return mixed
      */
-    public function getTime()
+    public function getSendTime()
     {
-        return $this->time;
+        return $this->sendTime;
     }
 
     /**
-     * @param mixed $time
+     * @param mixed $sendTime
      */
-    public function setTime($time)
+    public function setSendTime($sendTime)
     {
-        $this->time = $time;
+        $this->sendTime = $sendTime;
     }
 
     /**
      * @return mixed
      */
-    public function getType()
+    public function getSendType()
     {
-        return $this->type;
+        return $this->sendType;
     }
 
     /**
-     * @param mixed $type
+     * @param mixed $sendType
      */
-    public function setType($type)
+    public function setSendType($sendType)
     {
-        $this->type = $type;
+        $this->sendType = $sendType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param mixed $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
     }
 
 }

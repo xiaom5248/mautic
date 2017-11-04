@@ -25,7 +25,7 @@ class QrcodeRepository extends CommonRepository
     {
         $q = $this->createQueryBuilder('qr')
             ->select('MAX(qr.nb) AS nb')
-            ->where('qr.weixin = '.$weixin->getId())
+            ->where('qr.weixin = ' . $weixin->getId())
             ->groupBy('qr.weixin');
 
         $index = $q->getQuery()->getResult();
@@ -33,12 +33,24 @@ class QrcodeRepository extends CommonRepository
         return (isset($index[0]) && isset($index[0]['nb'])) ? $index[0]['nb'] + 1 : 1;
     }
 
-    public function getCount()
+    public function getAll($user, $limit, $offset)
     {
         $q = $this->createQueryBuilder('qr')
-            ->select('count(qr.id) AS nb');
-//            ->where('qr.weixin = '.$weixin->getId());
+            ->leftJoin('qr.weixin', 'w')
+            ->where('w.owner = ' . $user->getId())
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+        ;
 
+        return $q->getQuery()->getResult();
+    }
+
+    public function getCount($user)
+    {
+        $q = $this->createQueryBuilder('qr')
+            ->select('count(qr.id) AS nb')
+            ->leftJoin('qr.weixin', 'w')
+            ->where('w.owner = ' . $user->getId());
 
         return $q->getQuery()->getSingleScalarResult();
     }

@@ -38,7 +38,8 @@ $pageButtons = [];
             <thead>
             <tr>
                 <th></th>
-                <th>图文</th>
+                <th>图</th>
+                <th>文</th>
                 <th>更新时间</th>
                 <th>群发记录</th>
             </tr>
@@ -62,7 +63,7 @@ $pageButtons = [];
 
                     $custom[] = [
                         'attr' => [
-                            'href' => '',
+                            'href' => $view['router']->path('mautic_weixin_article_send_schedule', ['id' => $item->getId()]),
                             'data-toggle' => 'ajax',
                             'data-method' => 'GET',
                         ],
@@ -72,7 +73,7 @@ $pageButtons = [];
 
                     $custom[] = [
                         'attr' => [
-                            'href' => '',
+                            'href' => $view['router']->path('mautic_weixin_article_send', ['id' => $item->getId()]),
                             'data-toggle' => 'ajax',
                             'data-method' => 'GET',
                         ],
@@ -93,6 +94,7 @@ $pageButtons = [];
                     ?>
                     </td>
                     <td><?php echo '<img style="max-height:80px;" src="' . $view['assets']->getUrl($item->getItems()->first()->getThumbMedia()) . '">' ?></td>
+                    <td><?php echo $item->getItems()->first()->getContent() ?></td>
                     <td><?php echo $item->getUpdateTime()->format('Y-m-d H:s:i') ?></td>
                     <td><?php echo '' ?></td>
                 </tr>

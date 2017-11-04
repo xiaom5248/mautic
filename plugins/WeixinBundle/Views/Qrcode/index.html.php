@@ -37,6 +37,7 @@ $pageButtons = [];
         <table class="table table-hover table-striped table-bordered">
             <thead>
             <tr>
+                <th></th>
                 <th>二维码名称</th>
                 <th>公众号</th>
                 <th>标签</th>
@@ -49,6 +50,41 @@ $pageButtons = [];
             <tbody>
             <?php foreach ($items as $item): ?>
                 <tr>
+                    <td>
+                        <?php
+                        $custom = [];
+
+                        $custom[] = [
+                            'attr' => [
+                                'href' => $view['router']->path('mautic_weixin_qrcode_delete', ['id' => $item->getId()]),
+                                'data-toggle' => 'ajax',
+                                'data-method' => 'GET',
+                            ],
+                            'btnText' => $view['translator']->trans('mautic.core.form.delete'),
+                        ];
+
+                        $custom[] = [
+                            'attr' => [
+                                'href' => $view['router']->path('mautic_weixin_qrcode_edit', ['id' => $item->getId()]),
+                                'data-toggle' => 'ajax',
+                                'data-method' => 'GET',
+                            ],
+                            'btnText' => $view['translator']->trans('mautic.core.form.edit'),
+                            'iconClass' => 'fa fa-pencil-square-o',
+
+                        ];
+                        echo $view->render('MauticCoreBundle:Helper:list_actions.html.php', [
+                            'item' => $item,
+                            'templateButtons' => [
+
+                            ],
+                            'routeBase' => 'contact',
+                            'langVar' => 'lead.lead',
+                            'customButtons' => $custom,
+                            'nameGetter' => 'getId'
+                        ]);
+                        ?>
+                    </td>
                     <td><a href="<?php echo $view['router']->path('mautic_weixin_qrcode_show', ['id' => $item->getId()])?>"><?php echo $item->getName() ?></a></td>
                     <td><?php echo $item->getWeixin() ?></td>
                     <td><?php echo $item->getTag() ?></td>
