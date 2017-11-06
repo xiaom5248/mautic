@@ -50,6 +50,8 @@ class NewsSend
 
     private $group;
 
+    private $hasSent = false;
+
     public function __construct()
     {
 
@@ -73,8 +75,12 @@ class NewsSend
             ->columnName('send_type')
             ->build();
 
+        $builder->createField('hasSent', 'boolean')
+            ->columnName('has_sent')
+            ->build();
+
         $builder->createManyToOne('news', 'News')
-            ->addJoinColumn('weixin_id', 'id', false, false, 'CASCADE')
+            ->addJoinColumn('news_id', 'id', false, false, 'CASCADE')
             ->build();
 
     }
@@ -157,6 +163,22 @@ class NewsSend
     public function setGroup($group)
     {
         $this->group = $group;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHasSent()
+    {
+        return $this->hasSent;
+    }
+
+    /**
+     * @param bool $hasSent
+     */
+    public function setHasSent($hasSent)
+    {
+        $this->hasSent = $hasSent;
     }
 
 }

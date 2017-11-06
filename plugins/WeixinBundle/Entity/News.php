@@ -42,6 +42,8 @@ class News
 
     private $items;
 
+    private $histories;
+
     public function __construct()
     {
 
@@ -76,6 +78,12 @@ class News
             ->fetchExtraLazy()
             ->build();
 
+        $builder->createOneToMany('histories', 'NewsHistory')
+            ->setIndexBy('id')
+            ->mappedBy('news')
+            ->cascadePersist()
+            ->fetchExtraLazy()
+            ->build();
     }
 
     /**
@@ -158,6 +166,20 @@ class News
         $this->items = $items;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getHistories()
+    {
+        return $this->histories;
+    }
 
+    /**
+     * @param mixed $histories
+     */
+    public function setHistories($histories)
+    {
+        $this->histories = $histories;
+    }
 
 }

@@ -48,55 +48,63 @@ $pageButtons = [];
             <?php foreach ($items as $item): ?>
                 <tr>
                     <td>
-                    <?php
-                    $custom = [];
+                        <?php
+                        $custom = [];
 
-                    $custom[] = [
-                        'attr' => [
-                            'href' => $view['router']->path('mautic_weixin_article_sync', ['id' => $item->getId()]),
-                            'data-toggle' => 'ajax',
-                            'data-method' => 'GET',
-                        ],
-                        'btnText' => '从微信同步更新',
-                        'iconClass' => 'fa fa-refresh',
-                    ];
+                        $custom[] = [
+                            'attr' => [
+                                'href' => $view['router']->path('mautic_weixin_article_sync', ['id' => $item->getId()]),
+                                'data-toggle' => 'ajax',
+                                'data-method' => 'GET',
+                            ],
+                            'btnText' => '从微信同步更新',
+                            'iconClass' => 'fa fa-refresh',
+                        ];
 
-                    $custom[] = [
-                        'attr' => [
-                            'href' => $view['router']->path('mautic_weixin_article_send_schedule', ['id' => $item->getId()]),
-                            'data-toggle' => 'ajax',
-                            'data-method' => 'GET',
-                        ],
-                        'btnText' => '定时群发',
-                        'iconClass' => 'fa fa-send',
-                    ];
+                        $custom[] = [
+                            'attr' => [
+                                'href' => $view['router']->path('mautic_weixin_article_send_schedule', ['id' => $item->getId()]),
+                                'data-toggle' => 'ajax',
+                                'data-method' => 'GET',
+                            ],
+                            'btnText' => '定时群发',
+                            'iconClass' => 'fa fa-send',
+                        ];
 
-                    $custom[] = [
-                        'attr' => [
-                            'href' => $view['router']->path('mautic_weixin_article_send', ['id' => $item->getId()]),
-                            'data-toggle' => 'ajax',
-                            'data-method' => 'GET',
-                        ],
-                        'btnText' => '群发',
-                        'iconClass' => 'fa fa-send',
-                    ];
+                        $custom[] = [
+                            'attr' => [
+                                'href' => $view['router']->path('mautic_weixin_article_send', ['id' => $item->getId()]),
+                                'data-toggle' => 'ajax',
+                                'data-method' => 'GET',
+                            ],
+                            'btnText' => '群发',
+                            'iconClass' => 'fa fa-send',
+                        ];
 
-                    echo $view->render('MauticCoreBundle:Helper:list_actions.html.php', [
-                        'item' => $item,
-                        'templateButtons' => [
+                        echo $view->render('MauticCoreBundle:Helper:list_actions.html.php', [
+                            'item' => $item,
+                            'templateButtons' => [
 
-                        ],
-                        'routeBase' => 'contact',
-                        'langVar' => 'lead.lead',
-                        'customButtons' => $custom,
-                        'nameGetter' => 'getId'
-                    ]);
-                    ?>
+                            ],
+                            'routeBase' => 'contact',
+                            'langVar' => 'lead.lead',
+                            'customButtons' => $custom,
+                            'nameGetter' => 'getId'
+                        ]);
+                        ?>
                     </td>
                     <td><?php echo '<img style="max-height:80px;" src="' . $view['assets']->getUrl($item->getItems()->first()->getThumbMedia()) . '">' ?></td>
                     <td><?php echo $item->getItems()->first()->getContent() ?></td>
                     <td><?php echo $item->getUpdateTime()->format('Y-m-d H:s:i') ?></td>
-                    <td><?php echo '' ?></td>
+                    <td>
+                        <ul>
+                            <?php
+                            foreach ($item->getHistories() as $history) {
+                                echo '<li>' . (string)$history . '</li>';
+                            }
+                            ?>
+                        </ul>
+                    </td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

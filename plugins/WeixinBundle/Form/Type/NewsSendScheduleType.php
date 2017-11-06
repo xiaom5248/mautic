@@ -37,13 +37,18 @@ class NewsSendScheduleType extends AbstractType
             'label' => 'weixin.news.type',
             'choices' => NewsSend::$types,
             'label_attr' => ['class' => 'control-label'],
-            'required'   => true,
+            'required' => true,
             'expanded' => true,
         ]);
+        $attr['data-toggle'] = 'datetime';
         $builder->add('sendTime', 'datetime', [
             'label' => 'weixin.news.time',
             'label_attr' => ['class' => 'control-label'],
-            'required'   => true,
+            'widget' => 'single_text',
+            'required' => true,
+            'attr' => $attr,
+            'format' => 'yyyy-MM-dd HH:mm',
+            'with_seconds' => false,
         ]);
 
         $builder->add('save', 'submit', [

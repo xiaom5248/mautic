@@ -43,6 +43,8 @@ class NewsHistory
 
     private $type;
 
+    private $sendType;
+
     public function __construct()
     {
 
@@ -65,10 +67,19 @@ class NewsHistory
             ->columnName('type')
             ->build();
 
+        $builder->createField('sendType', 'string')
+            ->columnName('send_type')
+            ->build();
+
         $builder->createManyToOne('news', 'News')
             ->addJoinColumn('news_id', 'id', false, false, 'CASCADE')
             ->build();
 
+    }
+
+    public function __toString()
+    {
+        return $this->getTime()->format('Y-m-d H:s:i') . ' (' . $this->getSendType() . ')';
     }
 
     /**
@@ -135,4 +146,21 @@ class NewsHistory
         $this->type = $type;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSendType()
+    {
+        return $this->sendType;
+    }
+
+    /**
+     * @param mixed $sendType
+     */
+    public function setSendType($sendType)
+    {
+        $this->sendType = $sendType;
+    }
+
 }
+

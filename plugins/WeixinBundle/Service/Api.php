@@ -382,15 +382,18 @@ class Api
 
         }
 
-        $this->createSendHistory($send->getNews(), NewsHistory::TYPE_DERICT);
+        $send->setHasSent(true);
+        $this->em->persist($send);
+        $this->createSendHistory($send->getNews(), NewsHistory::TYPE_DERICT, $send->getSendType());
     }
 
-    private function createSendHistory(\MauticPlugin\WeixinBundle\Entity\News $news, $type)
+    private function createSendHistory(\MauticPlugin\WeixinBundle\Entity\News $news, $type, $sendType)
     {
         $history = new NewsHistory();
         $history->setNews($news);
         $history->setTime(new \DateTime());
         $history->setType($type);
+        $history->setSendType($sendType);
 
         $this->em->persist($history);
         $this->em->flush();
