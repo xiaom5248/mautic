@@ -226,6 +226,7 @@ class Field
 
         $builder->addNullableField('leadField', 'string', 'lead_field');
 
+        //user field in form, like leadField in Mautic
         $builder->addNullableField('userField', 'string', 'user_field');
 
         $builder->addNullableField('saveResult', 'boolean', 'save_result');

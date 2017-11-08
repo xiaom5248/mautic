@@ -50,6 +50,10 @@ return [
                 'path'       => '/video/hit',
                 'controller' => 'MauticPageBundle:Public:hitVideo',
             ],
+            'mautic_page_qrcode' => [
+                'path'       => '/page/{id}/qrcode',
+                'controller' => 'MauticPageBundle:Page:qrcode',
+            ]
         ],
         'api' => [
             'mautic_api_pagesstandard' => [
