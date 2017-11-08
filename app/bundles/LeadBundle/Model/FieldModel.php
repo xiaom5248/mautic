@@ -778,6 +778,17 @@ class FieldModel extends FormModel
             'expr'   => 'eq',
             'value'  => $object,
         ];
+        $forceFilters[] = [
+            'column' => 'f.isPublished',
+            'expr'   => 'eq',
+            'value'  => true,
+        ];
+        $forceFilters[] = [
+            'column' => 'f.isVisible',
+            'expr'   => 'eq',
+            'value'  => true,
+        ];
+
         $contactFields = $this->getEntities(
             [
                 'filter' => [
@@ -798,6 +809,88 @@ class FieldModel extends FormModel
                 'group_label'  => $this->translator->trans('mautic.lead.field.group.'.$contactField['group']),
                 'defaultValue' => $contactField['defaultValue'],
                 'properties'   => $contactField['properties'],
+            ];
+        }
+
+        if($object == 'user') {
+            $fields['firstName'] = [
+                'label'        => '名',
+                'alias'        => 'first_name',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
+            ];
+
+            $fields['lastName'] = [
+                'label'        => '姓',
+                'alias'        => 'last_name',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
+            ];
+
+            $fields['position'] = [
+                'label'        => '职务',
+                'alias'        => 'position',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
+            ];
+
+            $fields['role'] = [
+                'label'        => '姓',
+                'alias'        => 'role_id',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
+            ];
+
+            $fields['role'] = [
+                'label'        => '签名',
+                'alias'        => 'signature',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
+            ];
+
+            $fields['username'] = [
+                'label'        => '用户名',
+                'alias'        => 'username',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
+            ];
+
+            $fields['password'] = [
+                'label'        => '密码',
+                'alias'        => 'password',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
+            ];
+
+            $fields['email'] = [
+                'label'        => '邮件地址',
+                'alias'        => 'email',
+                'type'         => 'text',
+                'group'        => 'core',
+                'group_label'  => $this->translator->trans('mautic.lead.field.group.core'),
+                'defaultValue' => null,
+                'properties'   => [],
             ];
         }
 

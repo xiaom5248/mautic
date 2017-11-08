@@ -122,7 +122,7 @@ class PluginController extends FormController
 
         $domesticIntegrations = [];
         $exoticIntegrations = [];
-        $filter = ['CRM', 'Email', 'OMS', 'Sms', 'Weixin', 'Youzan'];
+        $filter = ['CRM', 'Email', 'OMS', 'Emay', 'Weixin', 'Youzan'];
         foreach ($integrations as $key => $integration) {
             if(in_array($key, $filter)){
                 $domesticIntegrations[] = $integration;

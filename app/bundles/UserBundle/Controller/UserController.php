@@ -141,7 +141,8 @@ class UserController extends FormController
 
         //get the user form factory
         $action = $this->generateUrl('mautic_user_action', ['objectAction' => 'new']);
-        $form = $model->createForm($user, $this->get('form.factory'), $action);
+        $fields = $this->getModel('lead.field')->getPublishedUserFieldArrays($this->getUser());
+        $form = $model->createForm($user, $this->get('form.factory'), $action, ['fields' => $fields]);
 
         //Check for a submitted form and process it
         if ($this->request->getMethod() == 'POST') {
@@ -155,6 +156,11 @@ class UserController extends FormController
                 if ($valid = $this->isFormValid($form)) {
                     //form is valid so process the data
                     $user->setPassword($password);
+                    $userFields = [];
+                    foreach ($fields as $field) {
+                        $userFields[$field['alias']] = $form[$field['alias']]->getData();
+                    }
+                    $user->setFields($userFields);
                     $model->saveEntity($user);
 
                     //check if the user's locale has been downloaded already, fetch it if not
@@ -212,7 +218,7 @@ class UserController extends FormController
         }
 
         return $this->delegateView([
-            'viewParameters' => ['form' => $form->createView()],
+            'viewParameters' => ['form' => $form->createView(), 'fields' => $fields],
             'contentTemplate' => 'MauticUserBundle:User:form.html.php',
             'passthroughVars' => [
                 'activeLink' => '#mautic_user_new',
@@ -292,7 +298,7 @@ class UserController extends FormController
                     $user->setPassword($password);
 
                     $userFields = [];
-                    foreach($fields as $field) {
+                    foreach ($fields as $field) {
                         $userFields[$field['alias']] = $form[$field['alias']]->getData();
                     }
                     $user->setFields($userFields);

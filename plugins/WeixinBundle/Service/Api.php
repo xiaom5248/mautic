@@ -130,6 +130,13 @@ class Api
         return $response->getTargetUrl();
     }
 
+    public function test($weixin)
+    {
+        $authorizer_info = $this->getOpenPlatform()->getAuthorizerInfo($auth_info->first()['authorizer_appid']);
+        dump($authorizer_info);
+        die();
+    }
+
     public function createWeixin($code)
     {
         $auth_info = $this->getOpenPlatform()->getAuthorizationInfo($code);

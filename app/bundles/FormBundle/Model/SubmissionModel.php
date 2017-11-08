@@ -149,6 +149,7 @@ class SubmissionModel extends CommonFormModel
     public function saveSubmission($post, $server, Form $form, Request $request = null, $returnEvent = false)
     {
         $leadFields = $this->leadFieldModel->getFieldListWithProperties(false);
+        $userFields = $this->leadFieldModel->getFieldListWithProperties('user');
 
         //everything matches up so let's save the results
         $submission = new Submission();
@@ -189,6 +190,7 @@ class SubmissionModel extends CommonFormModel
         $results          = [];
         $tokens           = [];
         $leadFieldMatches = [];
+        $userFieldMatches = [];
         $validationErrors = [];
 
         /** @var Field $f */
@@ -299,6 +301,18 @@ class SubmissionModel extends CommonFormModel
                 $leadFieldMatches[$leadField] = $leadValue;
             }
 
+            $userField = $f->getUserField();
+            if (!empty($userField)) {
+                $userValue = $value;
+                if (is_array($userValue)) {
+                    // Multiselect user fields store the values with bars
+                    $delimeter = ('multiselect' === $userFields[$userField]['type']) ? '|' : ', ';
+                    $userValue = implode($delimeter, $userValue);
+                }
+
+                $userFieldMatches[$userField] = $userValue;
+            }
+
             //convert array from checkbox groups and multiple selects
             if (is_array($value)) {
                 $value = implode(', ', $value);
@@ -328,6 +342,10 @@ class SubmissionModel extends CommonFormModel
         if (!empty($leadFieldMatches)) {
             $lead = $this->createLeadFromSubmit($form, $leadFieldMatches, $leadFields);
             $submission->setLead($lead);
+        }
+
+        if (!empty($userFieldMatches)) {
+            $user = $this->createUserFromSubmit($form, $userFieldMatches, $userFields);
         }
 
         // Get updated lead if applicable with tracking ID
@@ -951,6 +969,11 @@ class SubmissionModel extends CommonFormModel
         }
 
         return $lead;
+    }
+
+    protected function createUserFromSubmit($form, array $userFieldMatches, $userFields)
+    {
+
     }
 
     /**
