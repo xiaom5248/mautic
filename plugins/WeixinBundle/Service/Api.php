@@ -23,6 +23,7 @@ use MauticPlugin\WeixinBundle\Entity\Qrcode;
 use MauticPlugin\WeixinBundle\Entity\QrcodeScan;
 use MauticPlugin\WeixinBundle\Entity\Rule;
 use MauticPlugin\WeixinBundle\Entity\Weixin;
+use MauticPlugin\WeixinBundle\Event\Event;
 
 class Api
 {
@@ -30,11 +31,13 @@ class Api
     private $app;
     private $openPlatform;
     private $em;
+    private $dispatcher;
 
-    public function __construct($doctrine, $configs)
+    public function __construct($doctrine, $dispatcher, $configs)
     {
         $this->configs = $configs;
         $this->em = $doctrine->getManager();
+        $this->dispatcher = $dispatcher;
     }
 
     private function getOpenPlatform()
@@ -70,7 +73,9 @@ class Api
         $server = $this->app->server;
         $server->setMessageHandler(function ($message) use ($weixin) {
             file_put_contents('/tmp/test.log', json_encode($message) . PHP_EOL, FILE_APPEND);
+            $event = new Event($weixin, $message);
             if ($message->MsgType == 'event') {
+                $this->dispatcher->dispatch($message->Event, $event);
                 switch ($message->Event) {
                     case 'subscribe':
                         if (false !== strstr($message->EventKey, 'qrscene')) {
@@ -83,6 +88,9 @@ class Api
                             return $this->sendMessage($qrcode->getMessage());
                         }
                         return $this->sendMessage($weixin->getFollowedMessage());
+                    case 'unsubscribe':
+
+                        break;
                     case 'CLICK':
                         $message = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\Message')->find($message->EventKey);
                         return $this->sendMessage($message);
