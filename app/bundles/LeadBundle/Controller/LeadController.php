@@ -620,17 +620,17 @@ class LeadController extends FormController
                     $model->modifyCompanies($lead, $companies);
 
                     // Upload avatar if applicable
-                    $image = $form['preferred_profile_image']->getData();
-                    if ($image == 'custom') {
-                        // Check for a file
-                        /** @var UploadedFile $file */
-                        if ($file = $form['custom_avatar']->getData()) {
-                            $this->uploadAvatar($lead);
-
-                            // Note the avatar update so that it can be forced to update
-                            $this->get('session')->set('mautic.lead.avatar.updated', true);
-                        }
-                    }
+//                    $image = $form['preferred_profile_image']->getData();
+//                    if ($image == 'custom') {
+//                        // Check for a file
+//                        /** @var UploadedFile $file */
+//                        if ($file = $form['custom_avatar']->getData()) {
+//                            $this->uploadAvatar($lead);
+//
+//                            // Note the avatar update so that it can be forced to update
+//                            $this->get('session')->set('mautic.lead.avatar.updated', true);
+//                        }
+//                    }
 
                     $identifier = $this->get('translator')->trans($lead->getPrimaryIdentifier());
 

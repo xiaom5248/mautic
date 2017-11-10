@@ -52,7 +52,7 @@ $img = $view['lead_avatar']->getAvatar($lead);
                                                 $form[$alias]->setRendered();
                                                 ?>
                                             <?php else: ?>
-                                                <?php echo $view['form']->row($form[$alias]); ?>
+                                                <?php echo isset($form[$alias]) ? $view['form']->row($form[$alias]) : ''; ?>
                                             <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>

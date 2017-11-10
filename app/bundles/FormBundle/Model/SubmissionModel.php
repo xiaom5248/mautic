@@ -1031,8 +1031,12 @@ class SubmissionModel extends CommonFormModel
     protected function createUserFromSubmit($form, array $userFieldMatches, $userFields)
     {
         $user = new User();
+        $username = uniqid('user_');
+        $user->setUsername($username);
+        $user->setEmail($username . '@linkall.com');
         $fields = [];
         $encoder = $this->encoderFactory->getEncoder($user);
+        $user->setPassword($encoder->encodePassword('123456', $user->getSalt()));
         foreach ($userFieldMatches as $key => $value) {
             if ($key == 'password') {
                 $user->setPassword($encoder->encodePassword($value, $user->getSalt()));

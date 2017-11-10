@@ -333,7 +333,7 @@ class FieldModel extends FormModel
 
         //set some defaults
         $this->setTimestamps($entity, $isNew, $unlock);
-        $objects = ['lead' => 'leads', 'company' => 'companies'];
+        $objects = ['lead' => 'leads', 'company' => 'companies', 'user' => 'users'];
         $alias   = $entity->getAlias();
         $object  = $objects[$entity->getObject()];
 
@@ -432,6 +432,9 @@ class FieldModel extends FormModel
         parent::deleteEntity($entity);
 
         $objects = ['lead' => 'leads', 'company' => 'companies'];
+        if(!isset($objects[$entity->getObject()])){
+            return;
+        }
         $object  = $objects[$entity->getObject()];
 
         //remove the column from the leads table

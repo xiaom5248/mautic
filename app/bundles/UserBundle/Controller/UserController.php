@@ -870,9 +870,7 @@ class UserController extends FormController
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($field);
-            $em->flush();
+            $model->saveEntity($field);
 
             return $this->redirectToRoute('mautic_user_index', [
 

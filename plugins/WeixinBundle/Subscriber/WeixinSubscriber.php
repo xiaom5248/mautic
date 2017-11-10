@@ -8,6 +8,7 @@
 
 namespace MauticPlugin\WeixinBundle\Subscriber;
 
+use Mautic\LeadBundle\Entity\Lead;
 use MauticPlugin\WeixinBundle\Event\Event;
 use MauticPlugin\WeixinBundle\Event\Events;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,11 +18,13 @@ class WeixinSubscriber implements EventSubscriberInterface
 
     private $em;
     private $api;
+    private $leadModel;
 
-    public function __construct($doctrine, $api)
+    public function __construct($doctrine, $api, $leadModel)
     {
         $this->api = $api;
         $this->em = $doctrine->getManager();
+        $this->leadModel = $leadModel;
     }
 
     public static function getSubscribedEvents()
@@ -34,7 +37,13 @@ class WeixinSubscriber implements EventSubscriberInterface
 
     public function onSubscribe(Event $event)
     {
-
+        $message = $event->getMsg();
+        $lead = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->getLeadsByFieldValue('wechat_openid', $message['FromUserName']);
+        if(!$lead) {
+            $lead = new Lead();
+            $lead->set
+            $userInfos = $this->api->getUserInfos($message['FromUserName']);
+        }
     }
 
     public function onUnsubscribe(Event $event)

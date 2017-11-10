@@ -237,6 +237,8 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
      */
     private $channelRules = [];
 
+    private $weixinActions;
+
     /**
      * Constructor.
      */
@@ -250,6 +252,7 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
         $this->stageChangeLog   = new ArrayCollection();
         $this->frequencyRules   = new ArrayCollection();
         $this->companyChangeLog = new ArrayCollection();
+        $this->weixinActions = new ArrayCollection();
     }
 
     /**
@@ -391,6 +394,13 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
                 ->cascadeAll()
                 ->fetchExtraLazy()
                 ->build();
+
+        $builder->createOneToMany('weixinActions', 'MauticPlugin\WeixinBundle\Entity\Weixin')
+            ->orphanRemoval()
+            ->mappedBy('contact')
+            ->cascadeAll()
+            ->fetchExtraLazy()
+            ->build();
 
         self::loadFixedFieldMetadata(
             $builder,

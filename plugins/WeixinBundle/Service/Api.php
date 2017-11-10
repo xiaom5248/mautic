@@ -439,5 +439,10 @@ class Api
         $this->em->flush();
     }
 
+    public function getUserInfos($weixin, $openId)
+    {
+        $this->setWeixin($weixin);
+        return $this->app->user->get($openId);
+    }
 
 }
