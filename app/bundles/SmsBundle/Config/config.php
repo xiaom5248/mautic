@@ -46,6 +46,14 @@ return [
                     'doctrine.orm.entity_manager',
                 ],
             ],
+            'mautic.sms.points.subscriber' => [
+                'class'     => \Mautic\SmsBundle\EventListener\PointSubscriber::class,
+                'arguments' => [
+                    'mautic.point.model.point',
+                ],
+            ],
+
+
         ],
         'forms' => [
             'mautic.form.type.sms' => [
@@ -85,6 +93,11 @@ return [
                 'class'     =>  'Mautic\SmsBundle\Form\Type\SmsTestSendType',
                 'arguments' =>  'mautic.factory',
                 'alias'     =>  'smstest',
+            ],
+            'mautic.form.type.sms_opem_list' => [
+                'class'     =>  'Mautic\SmsBundle\Form\Type\SmsOpenType',
+                'arguments' =>  'mautic.factory',
+                'alias'     =>  'smsopen_list',
             ]
         ],
         'helpers' => [

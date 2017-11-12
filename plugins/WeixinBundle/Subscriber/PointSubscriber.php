@@ -14,6 +14,7 @@ namespace MauticPlugin\WeixinBundle\Subscriber;
 use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\FormBundle\Event\SubmissionEvent;
 use Mautic\FormBundle\FormEvents;
+use Mautic\LeadBundle\Model\LeadModel;
 use Mautic\PointBundle\Event\PointBuilderEvent;
 use Mautic\PointBundle\Model\PointModel;
 use Mautic\PointBundle\PointEvents;
@@ -29,15 +30,17 @@ class PointSubscriber extends CommonSubscriber
      * @var PointModel
      */
     protected $pointModel;
+    protected $em;
 
     /**
      * PointSubscriber constructor.
      *
      * @param PointModel $pointModel
      */
-    public function __construct(PointModel $pointModel)
+    public function __construct(PointModel $pointModel, $doctrine)
     {
         $this->pointModel = $pointModel;
+        $this->em = $doctrine->getManager();
     }
 
     /**
@@ -48,6 +51,7 @@ class PointSubscriber extends CommonSubscriber
         return [
             PointEvents::POINT_ON_BUILD => ['onPointBuild', 0],
             Events::WEIXIN_UNSUBSCRIBE  => ['onUnsubscribe', 0],
+            Events::WEIXIN_SUBSCRIBE  => ['onSubscribe', 0],
         ];
     }
 
@@ -75,13 +79,19 @@ class PointSubscriber extends CommonSubscriber
 
     }
 
-    /**
-     * Trigger point actions for form submit.
-     *
-     * @param SubmissionEvent $event
-     */
+    public function onSubscribe(Event $event)
+    {
+        $message = $event->getMsg();
+        $leads = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->getLeadsByFieldValue('wechat_openid', $message['FromUserName']);
+        $lead = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->find(key($leads));
+        $this->pointModel->triggerAction('weixin.subscribe', $event->getMsg(), null, $lead);
+    }
+
     public function onUnsubscribe(Event $event)
     {
-        $this->pointModel->triggerAction('weixin.unsubscribe', $event->getMsg());
+        $message = $event->getMsg();
+        $leads = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->getLeadsByFieldValue('wechat_openid', $message['FromUserName']);
+        $lead = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->find(key($leads));
+        $this->pointModel->triggerAction('weixin.unsubscribe', $event->getMsg(), null, $lead);
     }
 }

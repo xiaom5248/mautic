@@ -89,6 +89,8 @@ class PageModel extends FormModel
      */
     protected $pageTrackableModel;
 
+    private $pointModel;
+
     /**
      * PageModel constructor.
      *
@@ -105,7 +107,8 @@ class PageModel extends FormModel
         LeadModel $leadModel,
         FieldModel $leadFieldModel,
         RedirectModel $pageRedirectModel,
-        TrackableModel $pageTrackableModel
+        TrackableModel $pageTrackableModel,
+        $pointModel
     ) {
         $this->cookieHelper       = $cookieHelper;
         $this->ipLookupHelper     = $ipLookupHelper;
@@ -114,6 +117,7 @@ class PageModel extends FormModel
         $this->pageRedirectModel  = $pageRedirectModel;
         $this->pageTrackableModel = $pageTrackableModel;
         $this->dateTimeHelper     = new DateTimeHelper();
+        $this->pointModel = $pointModel;
     }
 
     /**
@@ -541,6 +545,13 @@ class PageModel extends FormModel
                         $channelId = reset($clickthrough['channel']);
                         $channel   = key($clickthrough['channel']);
 
+                        if($channelId == 'sms') {
+                            $this->pointModel->triggerAction('sms.url');
+                        }
+
+                        if($channelId == 'email') {
+                            $this->pointModel->triggerAction('email.url');
+                        }
                         $this->pageTrackableModel->getRepository()->upHitCount($page->getId(), $channel, $channelId, 1, $isUnique);
                     }
                 } catch (\Exception $exception) {

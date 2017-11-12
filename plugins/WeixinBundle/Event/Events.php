@@ -11,7 +11,7 @@ namespace MauticPlugin\WeixinBundle\Event;
 class Events
 {
 
-    const WEIXIN_SUBSCRIBE = 'weixin.event_subscribe';
-    const WEIXIN_UNSUBSCRIBE = 'weixin.event_unsubscribe';
+    const WEIXIN_SUBSCRIBE = 'weixin.subscribe';
+    const WEIXIN_UNSUBSCRIBE = 'weixin.unsubscribe';
 
 }

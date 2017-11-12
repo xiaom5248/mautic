@@ -98,11 +98,13 @@ class QrcodeController extends BaseController
             $em->persist($qrcode);
             $em->flush();
         }
+        $model = $this->getModel('lead.lead');
 
         return $this->delegateView([
             'viewParameters' => [
                 'currentWeixin' => $currentWeixin,
                 'qrcode' => $qrcode,
+                'model' => $model,
             ],
             'contentTemplate' => 'WeixinBundle:Qrcode:show.html.php',
             'passthroughVars' => [

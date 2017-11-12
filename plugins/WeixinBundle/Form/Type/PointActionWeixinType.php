@@ -20,10 +20,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 class PointActionWeixinType extends AbstractType
 {
     private $tokenStorage;
+    private $em;
 
-    public function __construct($tokenStorage)
+    public function __construct($tokenStorage, $doctrine)
     {
         $this->tokenStorage = $tokenStorage;
+        $this->em = $doctrine->getManager();
     }
 
     /**
@@ -34,11 +36,20 @@ class PointActionWeixinType extends AbstractType
     {
         $user = $this->tokenStorage->getToken()->getUser();
 
-        $builder->add('weixins', 'entity', [
-            'class' => 'MauticPlugin\WeixinBundle\Entity\Weixin',
-            'query_builder' => function($er) use($user) {
-                return $er->createQueryBuilder('w')->where('w.owner = :owner')->setParameter('owner', $user);
-            },
+        $weixins = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\Weixin')
+            ->createQueryBuilder('w')
+            ->where('w.owner = :owner')
+            ->setParameter('owner', $user)
+            ->getQuery()
+            ->getResult();
+
+        $choices = [];
+        foreach($weixins as $weixin){
+            $choices[$weixin->getId()] = (string) $weixin;
+        }
+
+        $builder->add('weixins', 'choice', [
+            'choices' => $choices,
             'expanded'    => false,
             'multiple'    => true,
             'label'       => 'weixin.point.action.weixins',

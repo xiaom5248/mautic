@@ -395,7 +395,7 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
                 ->fetchExtraLazy()
                 ->build();
 
-        $builder->createOneToMany('weixinActions', 'MauticPlugin\WeixinBundle\Entity\Weixin')
+        $builder->createOneToMany('weixinActions', 'MauticPlugin\WeixinBundle\Entity\LeadWeixinAction')
             ->orphanRemoval()
             ->mappedBy('contact')
             ->cascadeAll()

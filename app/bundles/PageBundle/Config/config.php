@@ -254,6 +254,7 @@ return [
                     'mautic.lead.model.field',
                     'mautic.page.model.redirect',
                     'mautic.page.model.trackable',
+                    'mautic.point.model.point',
                 ],
                 'methodCalls' => [
                     'setCatInUrl' => [

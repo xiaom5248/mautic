@@ -24,6 +24,7 @@ use MauticPlugin\WeixinBundle\Entity\QrcodeScan;
 use MauticPlugin\WeixinBundle\Entity\Rule;
 use MauticPlugin\WeixinBundle\Entity\Weixin;
 use MauticPlugin\WeixinBundle\Event\Event;
+use MauticPlugin\WeixinBundle\Event\Events;
 
 class Api
 {
@@ -75,9 +76,9 @@ class Api
             file_put_contents('/tmp/test.log', json_encode($message) . PHP_EOL, FILE_APPEND);
             $event = new Event($weixin, $message);
             if ($message->MsgType == 'event') {
-                $this->dispatcher->dispatch($message->Event, $event);
                 switch ($message->Event) {
                     case 'subscribe':
+                        $this->dispatcher->dispatch(Events::WEIXIN_SUBSCRIBE, $event);
                         if (false !== strstr($message->EventKey, 'qrscene')) {
                             $qrnb = ltrim($message->EventKey, 'qrscene_');
                             $qrcode = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\Qrcode')->findOneBy([
@@ -89,7 +90,7 @@ class Api
                         }
                         return $this->sendMessage($weixin->getFollowedMessage());
                     case 'unsubscribe':
-
+                        $this->dispatcher->dispatch(Events::WEIXIN_UNSUBSCRIBE, $event);
                         break;
                     case 'CLICK':
                         $message = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\Message')->find($message->EventKey);
@@ -428,6 +429,10 @@ class Api
         $scan = new QrcodeScan();
         $scan->setQrcode($qrcode);
         $scan->setUser($message->FromUserName);
+
+        $leads = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->getLeadsByFieldValue('wechat_openid', $message['FromUserName']);
+        $lead = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->find(key($leads));
+        $scan->setLead($lead);
         $scan->setScanTime((new \DateTime())->setTimestamp($message->CreateTime));
         $userInfos = $this->app->user->get($message->FromUserName);
         $scan->setCity($userInfos['city']);

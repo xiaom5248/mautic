@@ -185,19 +185,23 @@ return [
         'forms' => [
             'weixin.form.type.pointaction_weixin' => [
                 'class' => 'MauticPlugin\WeixinBundle\Form\Type\PointActionWeixinType',
-                'arguments' => ['@security.token_storage'],
+                'arguments' => [
+                    '@security.token_storage',
+                    '@doctrine'
+                ],
                 'alias' => 'pointaction_weixin',
             ],
         ],
         'events' => [
             'weixin.subscriber' => [
                 'class'     => 'MauticPlugin\WeixinBundle\Subscriber\WeixinSubscriber',
-                'arguments' => ['@doctrine', '@weixin.api']
+                'arguments' => ['@doctrine', '@weixin.api', '@mautic.lead.model.lead']
             ],
             'weixin.point.subscriber' => [
                 'class'     => 'MauticPlugin\WeixinBundle\Subscriber\PointSubscriber',
                 'arguments' => [
                     'mautic.point.model.point',
+                    '@doctrine'
                 ],
 
             ],

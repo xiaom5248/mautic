@@ -41,6 +41,8 @@ class LeadWeixinAction
 
     private $message;
 
+    private $time;
+
     public function __construct()
     {
     }
@@ -62,6 +64,10 @@ class LeadWeixinAction
 
         $builder->createField('message', 'array')
             ->columnName('message')
+            ->build();
+
+        $builder->createField('time', 'datetime')
+            ->columnName('time')
             ->build();
 
         $builder->createManyToOne('weixin', 'Weixin')
@@ -150,5 +156,22 @@ class LeadWeixinAction
     {
         $this->message = $message;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTime()
+    {
+        return $this->time;
+    }
+
+    /**
+     * @param mixed $time
+     */
+    public function setTime($time)
+    {
+        $this->time = $time;
+    }
+
 
 }

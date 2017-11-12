@@ -70,12 +70,14 @@ $pageButtons = [];
         <div class="col-md-12">
             <table class="table table-condensed">
                 <tr>
+                    <th>联系人</th>
                     <th>扫码地址</th>
                     <th>扫码时间</th>
                 </tr>
                 <?php foreach ($qrcode->getScans() as $scan): ?>
                     <tr>
-                        <td><?php echo $scan->getProvince() . $scan->getCity() ?></td>
+                        <td><?php echo $scan->getLead() ? $model->getLeadDetails($scan->getLead())['core']['wechat_nickname']['value'] : '未知联系人'; ?></td>
+                        <td><?php echo empty($scan->getCity()) ? '未知地点' : $scan->getProvince() . $scan->getCity() ?></td>
                         <td><?php echo $scan->getScanTime()->format('Y-m-d H:s:i') ?></td>
                     </tr>
                 <?php endforeach; ?>
