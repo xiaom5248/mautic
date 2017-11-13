@@ -19,6 +19,12 @@ return [
                     'mautic.sms.model.sms',
                 ],
             ],
+            'mautic.sms.reportbundle.subscriber' => [
+                'class'     => 'Mautic\SmsBundle\EventListener\ReportSubscriber',
+                'arguments' => [
+                    'doctrine.dbal.default_connection',
+                ],
+            ],
             'mautic.sms.smsbundle.subscriber' => [
                 'class'     => 'Mautic\SmsBundle\EventListener\SmsSubscriber',
                 'arguments' => [
