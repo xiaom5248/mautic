@@ -135,6 +135,10 @@ return [
                 'path'         => '/weixin/unlink/{id}',
                 'controller'   => 'WeixinBundle:Open:unlink',
             ],
+            'mautic_weixin_sych_users' => [
+                'path'         => '/weixin/sych/{id}/users',
+                'controller'   => 'WeixinBundle:Open:sychUsers',
+            ],
         ],
         'public' => [
             'mautic_weixin_open_auth' => [

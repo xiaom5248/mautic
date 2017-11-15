@@ -181,6 +181,21 @@ $view['slots']->set(
                             <?php ++$step; ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
+                    <li>
+                        <a href="#weixin" class="group" data-toggle="tab">
+                            <?php echo $view['translator']->trans('mautic.lead.field.group.weixin'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#page" class="group" data-toggle="tab">
+                            <?php echo $view['translator']->trans('mautic.lead.field.group.page'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#order" class="group" data-toggle="tab">
+                            <?php echo $view['translator']->trans('mautic.lead.field.group.order'); ?>
+                        </a>
+                    </li>
                 </ul>
 
                 <!-- start: tab-content -->
@@ -218,6 +233,58 @@ $view['slots']->set(
                         </div>
                         <?php ++$i; ?>
                     <?php endforeach; ?>
+                    <div class="tab-pane fade bdr-w-0" id="weixin">
+                        <div class="pr-md pl-md pb-md">
+                            <h4>关注公众号</h4>
+                            <div class="panel shd-none mb-0">
+                                <table class="table table-bordered table-striped mb-0">
+                                    <tbody>
+                                    <?php
+                                        foreach($lead->getWeixinActions() as $action) {
+                                            if($action->getEvent() == 'weixin.subscribe') {
+                                                echo '<tr><td>'.$action->getWeixin().'</td><td>'.$action->getTime()->format('Y-m-d').'</td></tr>';
+                                            }
+                                        }
+                                    ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>取消关注公众号</h4>
+                            <div class="panel shd-none mb-0">
+                                <table class="table table-bordered table-striped mb-0">
+                                    <tbody>
+                                    <?php
+                                    foreach($lead->getWeixinActions() as $action) {
+                                        if($action->getEvent() == 'weixin.unsubscribe') {
+                                            echo '<tr><td>'.$action->getWeixin().'</td><td>'.$action->getTime()->format('Y-m-d').'</td></tr>';
+                                        }
+                                    }
+                                    ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade bdr-w-0" id="page">
+                        <div class="pr-md pl-md pb-md">
+                            <div class="panel shd-none mb-0">
+                                <table class="table table-bordered table-striped mb-0">
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade bdr-w-0" id="order">
+                        <div class="pr-md pl-md pb-md">
+                            <div class="panel shd-none mb-0">
+                                <table class="table table-bordered table-striped mb-0">
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--/ lead detail collapseable -->

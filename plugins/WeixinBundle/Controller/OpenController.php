@@ -75,4 +75,11 @@ class OpenController extends AbstractFormController
         $url = $this->get('weixin.api')->getLoginUrl();
         return $this->redirect($url);
     }
+
+
+
+    public function sychUsersAction($id)
+    {
+        return $this->redirectToRoute('mautic_weixin_auto_res');
+    }
 }

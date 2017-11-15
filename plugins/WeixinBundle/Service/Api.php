@@ -14,6 +14,7 @@ use EasyWeChat\Message\Image;
 use EasyWeChat\Message\News;
 use EasyWeChat\Message\Text;
 use EasyWeChat\OpenPlatform\Guard;
+use Mautic\LeadBundle\Entity\Lead;
 use MauticPlugin\WeixinBundle\Entity\Menu;
 use MauticPlugin\WeixinBundle\Entity\MenuItem;
 use MauticPlugin\WeixinBundle\Entity\Message;
@@ -448,6 +449,17 @@ class Api
     {
         $this->setWeixin($weixin);
         return $this->app->user->get($openId);
+    }
+
+    public function sychUsers($weixin)
+    {
+        $this->setWeixin($weixin);
+        $lists = $this->app->user->lists($nextOpenId = null);
+
+        foreach($lists['data']['openid'] as $openid) {
+            $event = new Event($weixin, ['FromUserName' => $openid]);
+            $this->dispatcher->dispatch(Events::WEIXIN_SUBSCRIBE, $event);
+        }
     }
 
 }

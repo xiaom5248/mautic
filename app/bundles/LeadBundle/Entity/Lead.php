@@ -1913,4 +1913,22 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
 
         return $rules;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getWeixinActions()
+    {
+        return $this->weixinActions;
+    }
+
+    /**
+     * @param ArrayCollection $weixinActions
+     */
+    public function setWeixinActions($weixinActions)
+    {
+        $this->weixinActions = $weixinActions;
+    }
+
+
 }

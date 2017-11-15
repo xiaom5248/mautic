@@ -5,6 +5,7 @@ namespace MauticPlugin\WeixinBundle\Controller;
 use Mautic\CoreBundle\Controller\AbstractFormController;
 use MauticPlugin\WeixinBundle\Form\Type\FollowedMessageType;
 use MauticPlugin\WeixinBundle\Form\Type\KeywordMessageType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 abstract class BaseController extends AbstractFormController
 {
@@ -49,4 +50,5 @@ abstract class BaseController extends AbstractFormController
 
         return parent::delegateView($args);
     }
+
 }
