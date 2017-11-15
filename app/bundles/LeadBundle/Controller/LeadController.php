@@ -1669,7 +1669,7 @@ class LeadController extends FormController
         $leadFields       = $lead->getProfileFields();
         $leadFields['id'] = $lead->getId();
         $leadEmail        = $leadFields['email'];
-        $leadName         = $leadFields['firstname'].' '.$leadFields['lastname'];
+        $leadName         = $leadFields['firstname'];
 
         // Set onwer ID to be the current user ID so it will use his signature
         $leadFields['owner_id'] = $this->get('mautic.helper.user')->getUser()->getId();
