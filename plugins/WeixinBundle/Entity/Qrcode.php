@@ -123,22 +123,26 @@ class Qrcode
         $builder->createManyToOne('message', 'Message')
             ->addJoinColumn('message_id', 'id', true, false, 'CASCADE')
             ->build();
-//
-//        $builder->createManyToOne('leadField1', 'integer')
-//            ->columnName('lead_field1')
-//            ->build();
-//
-//        $builder->createField('leadField1Value', 'string')
-//            ->columnName('lead_field1_value')
-//            ->build();
-//
-//        $builder->createManyToOne('leadField2', 'integer')
-//            ->columnName('lead_field2')
-//            ->build();
-//
-//        $builder->createField('leadField2Value', 'string')
-//            ->columnName('lead_field2_value')
-//            ->build();
+
+        $builder->createField('leadField1', 'string')
+            ->columnName('lead_field1')
+            ->nullable()
+            ->build();
+
+        $builder->createField('leadField1Value', 'string')
+            ->columnName('lead_field1_value')
+            ->nullable()
+            ->build();
+
+        $builder->createField('leadField2', 'string')
+            ->columnName('lead_field2')
+            ->nullable()
+            ->build();
+
+        $builder->createField('leadField2Value', 'string')
+            ->columnName('lead_field2_value')
+            ->nullable()
+            ->build();
 
         $builder->createOneToMany('scans', 'QrcodeScan')
             ->setIndexBy('id')
@@ -348,6 +352,71 @@ class Qrcode
 
         return count($subScans);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLeadField1()
+    {
+        return $this->leadField1;
+    }
+
+    /**
+     * @param mixed $leadField1
+     */
+    public function setLeadField1($leadField1)
+    {
+        $this->leadField1 = $leadField1;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLeadField1Value()
+    {
+        return $this->leadField1Value;
+    }
+
+    /**
+     * @param mixed $leadField1Value
+     */
+    public function setLeadField1Value($leadField1Value)
+    {
+        $this->leadField1Value = $leadField1Value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLeadField2()
+    {
+        return $this->leadField2;
+    }
+
+    /**
+     * @param mixed $leadField2
+     */
+    public function setLeadField2($leadField2)
+    {
+        $this->leadField2 = $leadField2;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLeadField2Value()
+    {
+        return $this->leadField2Value;
+    }
+
+    /**
+     * @param mixed $leadField2Value
+     */
+    public function setLeadField2Value($leadField2Value)
+    {
+        $this->leadField2Value = $leadField2Value;
+    }
+
 
 
 }

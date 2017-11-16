@@ -48,10 +48,10 @@ class WeixinSubscriber implements EventSubscriberInterface
             $lead = $this->em->getRepository('Mautic\LeadBundle\Entity\Lead')->find(key($leads));
         }
 
+        $userInfos = $this->api->getUserInfos($weixin, $message['FromUserName']);
+
         if (!isset($lead)) {
             $lead = new Lead();
-
-            $userInfos = $this->api->getUserInfos($weixin, $message['FromUserName']);
 
             $this->leadModel->setFieldValues($lead, [
                 'firstname' => $userInfos['nickname'],
@@ -62,12 +62,26 @@ class WeixinSubscriber implements EventSubscriberInterface
                 'origin_from' => $weixin->getAccountName().'公众号导入'
             ], true);
 
-            $time = new \DateTime('@' . $userInfos['subscribe_time']);
             $lead->setDateIdentified(new \DateTime());
-
-            $this->leadModel->saveEntity($lead);
-            $this->createWeixinAction($weixin, $lead, $message, $time, Events::WEIXIN_SUBSCRIBE);
         }
+
+        if (false !== strstr($message->EventKey, 'qrscene')) {
+            $qrnb = ltrim($message->EventKey, 'qrscene_');
+            $qrcode = $this->em->getRepository('MauticPlugin\WeixinBundle\Entity\Qrcode')->findOneBy([
+                'weixin' => $weixin,
+                'nb' => $qrnb,
+            ]);
+            if($qrcode->getLeadField1()) {
+                $lead->addUpdatedField($qrcode->getLeadField1(), $qrcode->getLeadField1Value());
+            }
+            if($qrcode->getLeadField2()) {
+                $lead->addUpdatedField($qrcode->getLeadField2(), $qrcode->getLeadField2Value());
+            }
+        }
+
+        $this->leadModel->saveEntity($lead);
+        $time = new \DateTime('@' . $userInfos['subscribe_time']);
+        $this->createWeixinAction($weixin, $lead, $message, $time, Events::WEIXIN_SUBSCRIBE);
     }
 
     public function onUnsubscribe(Event $event)

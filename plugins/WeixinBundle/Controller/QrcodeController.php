@@ -49,9 +49,11 @@ class QrcodeController extends BaseController
             'type' => 2,
         ]);
         $qrcode = new Qrcode();
+        $fields = $this->getModel('lead.field')->getFieldList();
         $form = $this->createForm(QrcodeType::class, $qrcode, [
             'action' => $this->generateUrl('mautic_weixin_qrcode_new'),
             'weixins' => $weixins,
+            'fields' => current($fields)
         ]);
         $form->handleRequest($request);
 
@@ -99,12 +101,14 @@ class QrcodeController extends BaseController
             $em->flush();
         }
         $model = $this->getModel('lead.lead');
+        $fields = $this->getModel('lead.field')->getFieldList();
 
         return $this->delegateView([
             'viewParameters' => [
                 'currentWeixin' => $currentWeixin,
                 'qrcode' => $qrcode,
                 'model' => $model,
+                'fields' => current($fields),
             ],
             'contentTemplate' => 'WeixinBundle:Qrcode:show.html.php',
             'passthroughVars' => [
@@ -187,10 +191,11 @@ class QrcodeController extends BaseController
         ]);
 
         $qrcode = $em->getRepository('MauticPlugin\WeixinBundle\Entity\Qrcode')->find($id);
-
+        $fields = $this->getModel('lead.field')->getFieldList();
         $form = $this->createForm(QrcodeType::class, $qrcode, [
-            'action' => $this->generateUrl('mautic_weixin_qrcode_new'),
+            'action' => $this->generateUrl('mautic_weixin_qrcode_edit', ['id' => $id]),
             'weixins' => $weixins,
+            'fields' => current($fields),
         ]);
         $form->handleRequest($request);
 
@@ -205,7 +210,6 @@ class QrcodeController extends BaseController
             $qrcode->setNb($index);
             $this->get('weixin.api')->uploadQrcode($qrcode);
             $qrcode->setCreateTime(new \DateTime());
-            $em->persist($qrcode);
             $em->flush();
 
             return $this->redirectToRoute('mautic_weixin_qrcode');

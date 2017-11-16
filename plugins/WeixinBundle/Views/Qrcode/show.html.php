@@ -44,6 +44,22 @@ $pageButtons = [];
                     <td><?php echo $qrcode->getTag() ?></td>
                 </tr>
                 <tr>
+                    <th>关联联系人字段</th>
+                    <td><?php echo $qrcode->getLeadField1() ? $fields[$qrcode->getLeadField1()] : '' ?></td>
+                </tr>
+                <tr>
+                    <th>值</th>
+                    <td><?php echo $qrcode->getLeadField1Value() ?></td>
+                </tr>
+                <tr>
+                    <th>关联联系人字段</th>
+                    <td><?php echo $qrcode->getLeadField2() ? $fields[$qrcode->getLeadField2()] : '' ?></td>
+                </tr>
+                <tr>
+                    <th>值</th>
+                    <td><?php echo $qrcode->getLeadField2Value() ?></td>
+                </tr>
+                <tr>
                     <th>二维码</th>
                     <td><img style="max-height:150px;" src="<?php echo $view['assets']->getUrl($qrcode->getImage()); ?>"></td>
                 <tr>

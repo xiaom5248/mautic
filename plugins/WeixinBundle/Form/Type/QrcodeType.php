@@ -51,6 +51,34 @@ class QrcodeType extends AbstractType
             'attr' => ['class' => 'form-control'],
             'required' => true,
         ]);
+        $builder->add('leadField1', 'choice', [
+            'label' => 'weixin.qrcode.leadField',
+            'label_attr' => ['class' => 'control-label'],
+            'choices' => $options['fields'],
+            'attr' => ['class' => 'form-control'],
+            'required' => false,
+        ]);
+        $builder->add('leadField1Value', 'text', [
+            'label' => 'weixin.qrcode.leadField_value',
+            'label_attr' => ['class' => 'control-label'],
+            'attr' => ['class' => 'form-control'],
+            'required' => false,
+        ]);
+        $builder->add('leadField2', 'choice', [
+            'label' => 'weixin.qrcode.leadField',
+            'choices' => $options['fields'],
+            'label_attr' => ['class' => 'control-label'],
+            'attr' => ['class' => 'form-control'],
+            'required' => false,
+        ]);
+
+        $builder->add('leadField2Value', 'text', [
+            'label' => 'weixin.qrcode.leadField_value',
+            'label_attr' => ['class' => 'control-label'],
+            'attr' => ['class' => 'form-control'],
+            'required' => false,
+        ]);
+
         $builder->add('message', MessageType::class, [
             'label' => false,
             'required' => false,
@@ -74,6 +102,7 @@ class QrcodeType extends AbstractType
         $resolver->setDefaults([
             'data_class' => 'MauticPlugin\WeixinBundle\Entity\Qrcode',
             'weixins' => [],
+            'fields' => [],
         ]);
     }
 
