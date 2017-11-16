@@ -460,6 +460,7 @@ class SubmissionModel extends CommonFormModel
             $ipAddress = new IpAddress();
             $ipAddress->setIpAddress($ip);
             $this->em->persist($ipAddress);
+            $this->em->flush();
         }
 
         $submit->setIpAddress($ipAddress);

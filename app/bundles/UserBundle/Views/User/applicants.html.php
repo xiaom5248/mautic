@@ -120,7 +120,7 @@ $view['slots']->set(
 
                         $custom[] = [
                             'attr' => [
-                                'href' => $view['router']->path('mautic_user_action', ['objectAction' => 'new', 'objectId' => $item->getId()]),
+                                'href' => $view['router']->path('mautic_user_action', ['objectAction' => 'active', 'objectId' => $item->getId()]),
                                 'data-toggle' => 'ajax',
                                 'data-method' => 'GET',
                             ],

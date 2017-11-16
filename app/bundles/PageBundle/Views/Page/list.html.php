@@ -157,9 +157,9 @@ if ($tmpl == 'index') {
                         <?php $qrCode = new \Endroid\QrCode\QrCode($url); echo '<img style="max-height:80px;" src="'.$qrCode->writeDataUri().'">'?>
                         </a>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $item->getUniqueHits() . '/' . $item->getHits(); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getUniqueSubmits() . '/' . $item->getSubmits(); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getHits() == 0 ? 0 : number_format($item->getSubmits() / $item->getHits() * 100, 2).'%' ?></td>
+                    <td class="visible-md visible-lg"><?php echo  $item->getHits(). '/' . $item->getUniqueHits(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo  $item->getSubmits(). '/' . $item->getUniqueSubmits(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getUniqueHits() == 0 ? 0 : number_format($item->getUniqueSubmits() / $item->getUniqueHits() * 100, 2).'%' ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
             <?php endforeach; ?>
