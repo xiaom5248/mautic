@@ -90,6 +90,10 @@ return [
                 'path'       => '/companies/{objectAction}/{objectId}',
                 'controller' => 'MauticLeadBundle:Company:execute',
             ],
+            'mautic_import_order_action' => [
+                'path'       => '/import-order',
+                'controller' => 'MauticLeadBundle:Lead:importOrder',
+            ],
         ],
         'api' => [
             'mautic_api_contactsstandard' => [

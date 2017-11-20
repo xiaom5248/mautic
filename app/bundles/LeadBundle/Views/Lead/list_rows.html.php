@@ -73,7 +73,7 @@
                         <div class="small"><?php echo $item->getSecondaryIdentifier(); ?></div>
                     </a>
                 </td>
-                <td class="visible-md visible-lg"><?php echo $fields['core']['mobile']['value']; ?></td>
+                <td class="visible-md visible-lg"><?php echo $fields['core']['mobile']['value'] ? $fields['core']['mobile']['value']:$fields['core']['phone']['value']; ?></td>
                 <td class="visible-md visible-lg"><?php echo $fields['core']['email']['value']; ?></td>
                 <td class="text-center">
                     <?php

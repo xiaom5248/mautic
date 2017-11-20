@@ -269,7 +269,29 @@ $view['slots']->set(
                         <div class="pr-md pl-md pb-md">
                             <div class="panel shd-none mb-0">
                                 <table class="table table-bordered table-striped mb-0">
+                                    <thead>
+                                        <td>链接来源</td>
+                                        <td>内容名称</td>
+                                        <td>点击时间</td>
+                                        <td>访问页数</td>
+                                        <td>访问页面</td>
+                                        <td>停留时间</td>
+                                    </thead>
                                     <tbody>
+                                    <?php
+                                    foreach($events['events'] as $event) {
+                                        if($event['event'] == 'page.hit') {
+                                            echo '<tr><td>'.$event['extra']['hit']['source'].'</td>
+                                                        <td>'.$event['extra']['hit']['sourceName'].'</td>
+                                                        <td>'.$event['timestamp']->format('Y-m-d H:s:i').'</td>
+                                                        <td>1</td>
+                                                        <td>'.$event['extra']['hit']['url'].'</td><td>';
+
+                                            echo $event['extra']['hit']['dateLeft'] ? $event['timestamp']->diff($event['extra']['hit']['dateLeft'])->format('%i:%s') : '未知';
+                                            echo '</td></tr>';
+                                        }
+                                    }
+                                    ?>
                                     </tbody>
                                 </table>
                             </div>
