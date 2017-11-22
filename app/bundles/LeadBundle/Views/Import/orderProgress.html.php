@@ -51,7 +51,7 @@ $header  = ($complete) ? 'mautic.lead.import.success' : 'mautic.lead.import.dono
                 </ul>
             <?php endif; ?>
             <div class="panel-footer">
-                <p class="small"><span class="imported-count"><?php echo $progress[0]; ?></span> / <span class="total-count"><?php echo $progress[1]; ?></span></p>
+                m<p class="small"><span class="imported-count"><?php echo $progress[0]; ?></span> / <span class="total-count"><?php echo $progress[1]; ?></span></p>
                 <?php if (!$complete): ?>
                     <div>
                         <a class="text-danger mt-md" href="<?php echo $view['router']->path('mautic_contact_action', ['objectAction' => 'import', 'cancel' => 1]); ?>" data-toggle="ajax"><?php echo $view['translator']->trans('mautic.core.form.cancel'); ?></a>

@@ -41,6 +41,7 @@ class OrderImportFieldType extends AbstractType
             'unitPrice' => '单价',
             'quantity' => '数量',
             'totalPrice' => '金额',
+            'origin' => '订单来源',
         ];
         foreach ($fields as $field => $label) {
             $builder->add(

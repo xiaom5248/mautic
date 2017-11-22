@@ -16,6 +16,8 @@ use Mautic\CoreBundle\Helper\EmojiHelper;
 use Mautic\CoreBundle\Model\IteratorExportDataModel;
 use Mautic\LeadBundle\Entity\DoNotContact;
 use Mautic\LeadBundle\Entity\Lead;
+use Mautic\LeadBundle\Entity\LeadOrder;
+use Mautic\LeadBundle\Entity\LeadOrderLine;
 use Mautic\LeadBundle\Form\Type\OrderImportFieldType;
 use Mautic\LeadBundle\Model\LeadModel;
 use Symfony\Component\Form\Form;
@@ -1634,6 +1636,7 @@ class LeadController extends FormController
         $session->set('mautic.lead.import.step', 1);
         $session->set('mautic.order.import.step', 1);
         $session->set('mautic.lead.import.progress', [0, 0]);
+        $session->set('mautic.order.import.progress', [0, 0]);
         $session->set('mautic.lead.import.fields', []);
         $session->set('mautic.lead.import.defaultowner', null);
         $session->set('mautic.lead.import.defaultlist', null);
@@ -2371,7 +2374,6 @@ class LeadController extends FormController
 
                 $leadFields   = $fieldModel->getFieldList(false, false);
                 $importFields = $session->get('mautic.lead.import.importfields', []);
-
                 $form = $this->get('form.factory')->create(
                     OrderImportFieldType::class,
                     [],
@@ -2542,7 +2544,6 @@ class LeadController extends FormController
                                     if ($file !== false) {
                                         // Get the headers for matching
                                         $headers = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
-
                                         // Get the number of lines so we can track progress
                                         $file->seek(PHP_INT_MAX);
                                         $linecount = $file->key();
@@ -2661,10 +2662,47 @@ class LeadController extends FormController
         }
     }
 
+    private $orders = [];
+
     private function importOrder($importFields, $data)
     {
-        file_put_contents('/tmp/test.log', json_encode($importFields) . PHP_EOL, FILE_APPEND);
-        file_put_contents('/tmp/test.log', json_encode($data) . PHP_EOL, FILE_APPEND);
+        $orderNo = $data[$importFields['orderNo']];
+
+        if(isset($this->orders[$orderNo])) {
+            $order = $this->orders[$orderNo];
+        }else{
+            $order = new LeadOrder();
+            $order->setOrderNo($orderNo);
+            $this->orders[$orderNo] = $order;
+            $order->setMobile($data[$importFields['contact']]);
+            $lead = $this->getDoctrine()->getRepository('Mautic\LeadBundle\Entity\Lead')->getLeadByMobile($data[$importFields['contact']]);
+            $order->setContact($lead);
+            $order->setOrderTime(date_create_from_format('Y/m/d H:s', $data[$importFields['orderTime']]));
+        }
+
+        $orderLine = new LeadOrderLine();
+        $orderLine->setLeadOrder($order);
+        if(isset($importFields['productName']) && isset($data[$importFields['productName']])) {
+            $orderLine->setProductName($data[$importFields['productName']]);
+        }
+        if(isset($importFields['productType']) && isset($data[$importFields['productType']])) {
+            $orderLine->setProductType($data[$importFields['productType']]);
+        }
+        if(isset($importFields['productColor']) && isset($data[$importFields['productColor']])) {
+            $orderLine->setProductColor($data[$importFields['productColor']]);
+        }
+        if(isset($importFields['productSize']) && isset($data[$importFields['productSize']])) {
+            $orderLine->setProductSize($data[$importFields['productSize']]);
+        }
+        $orderLine->setUnitPrice($data[$importFields['unitPrice']]);
+        $orderLine->setQuantity($data[$importFields['quantity']]);
+        $orderLine->setTotalPrice($data[$importFields['unitPrice']] * $data[$importFields['quantity']]);
+        $order->addOrderLine($orderLine);
+        $order->calculatePrice();
+        $this->getDoctrine()->getManager()->persist($order);
+        $this->getDoctrine()->getManager()->persist($orderLine);
+        $this->getDoctrine()->getManager()->flush();
+
         return false;
     }
 }

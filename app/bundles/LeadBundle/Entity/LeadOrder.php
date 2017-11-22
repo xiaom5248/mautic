@@ -19,12 +19,13 @@ class LeadOrder
 
     private $orderTime;
 
-    private $totalFee;
+    private $totalFee = 0;
 
     private $orderLines;
 
     private $contact;
 
+    private $mobile;
 
     public function __construct()
     {
@@ -43,6 +44,7 @@ class LeadOrder
         $builder->addId();
 
         $builder->createField('origin', 'string')
+            ->nullable()
             ->columnName('origin')
             ->build();
 
@@ -50,12 +52,18 @@ class LeadOrder
             ->columnName('order_no')
             ->build();
 
+        $builder->createField('mobile', 'string')
+            ->columnName('mobile')
+            ->build();
+
         $builder->createField('orderTime', 'datetime')
             ->columnName('order_time')
             ->build();
 
-        $builder->createField('totalFee', 'integer')
+        $builder->createField('totalFee', 'decimal')
             ->columnName('total_fee')
+            ->precision(10)
+            ->scale(2)
             ->build();
 
         $builder->createOneToMany('orderLines', 'LeadOrderLine')
@@ -65,7 +73,7 @@ class LeadOrder
             ->fetchExtraLazy()
             ->build();
 
-        $builder->addContact();
+        $builder->addContact(true, 'CASCADE', false, 'leadOrders');
     }
 
     /**
@@ -164,6 +172,11 @@ class LeadOrder
         $this->orderLines = $orderLines;
     }
 
+    public function addOrderLine($orderLine)
+    {
+        $this->orderLines->add($orderLine);
+    }
+
     /**
      * @return mixed
      */
@@ -180,5 +193,28 @@ class LeadOrder
         $this->contact = $contact;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMobile()
+    {
+        return $this->mobile;
+    }
+
+    /**
+     * @param mixed $mobile
+     */
+    public function setMobile($mobile)
+    {
+        $this->mobile = $mobile;
+    }
+
+    public function calculatePrice()
+    {
+        $this->totalFee = 0;
+        foreach ($this->orderLines as $orderLine) {
+            $this->totalFee += $orderLine->getTotalPrice();
+        }
+    }
 
 }

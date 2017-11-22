@@ -239,6 +239,8 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
 
     private $weixinActions;
 
+    private $leadOrders;
+
     /**
      * Constructor.
      */
@@ -253,6 +255,7 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
         $this->frequencyRules   = new ArrayCollection();
         $this->companyChangeLog = new ArrayCollection();
         $this->weixinActions = new ArrayCollection();
+        $this->leadOrders = new ArrayCollection();
     }
 
     /**
@@ -396,6 +399,13 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
                 ->build();
 
         $builder->createOneToMany('weixinActions', 'MauticPlugin\WeixinBundle\Entity\LeadWeixinAction')
+            ->orphanRemoval()
+            ->mappedBy('contact')
+            ->cascadeAll()
+            ->fetchExtraLazy()
+            ->build();
+
+        $builder->createOneToMany('leadOrders', 'LeadOrder')
             ->orphanRemoval()
             ->mappedBy('contact')
             ->cascadeAll()
@@ -1929,6 +1939,23 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
     {
         $this->weixinActions = $weixinActions;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getLeadOrders()
+    {
+        return $this->leadOrders;
+    }
+
+    /**
+     * @param ArrayCollection $leadOrders
+     */
+    public function setLeadOrders($leadOrders)
+    {
+        $this->leadOrders = $leadOrders;
+    }
+
 
 
 }

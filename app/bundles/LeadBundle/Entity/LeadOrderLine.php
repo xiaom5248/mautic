@@ -65,16 +65,20 @@ class LeadOrderLine
             ->nullable()
             ->build();
 
-        $builder->createField('unitPrice', 'integer')
+        $builder->createField('unitPrice', 'decimal')
             ->columnName('unit_price')
+            ->precision(10)
+            ->scale(2)
             ->build();
 
         $builder->createField('quantity', 'integer')
             ->columnName('quantity')
             ->build();
 
-        $builder->createField('totalPrice', 'integer')
+        $builder->createField('totalPrice', 'decimal')
             ->columnName('total_price')
+            ->precision(10)
+            ->scale(2)
             ->build();
 
         $builder->createManyToOne('leadOrder','LeadOrder')
